@@ -941,7 +941,7 @@ long get_best_dungeon_to_tunnel_to(struct Thing *creatng)
 short setup_person_tunnel_to_position(struct Thing *creatng, MapSubtlCoord stl_x, MapSubtlCoord stl_y, unsigned char a4)
 {
     struct CreatureControl *cctrl;
-    if ( internal_set_thing_state(creatng, CrSt_Tunnelling) )
+    if (internal_set_thing_state(creatng, CrSt_Tunnelling))
     {
         cctrl = creature_control_get_from_thing(creatng);
         cctrl->moveto_pos.x.val = subtile_coord_center(stl_x);

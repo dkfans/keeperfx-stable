@@ -615,7 +615,7 @@ long check_out_unreinforced_drop_place(struct Thing *thing)
         if ( check_place_to_reinforce(thing, slb_x, slb_y) > 0 )
         {
             stl_num = get_subtile_number_at_slab_center(slb_x, slb_y);
-            if ( check_out_uncrowded_reinforce_position(thing, stl_num, &pos_x, &pos_y) )
+            if (check_out_uncrowded_reinforce_position(thing, stl_num, &pos_x, &pos_y))
             {
                 if ( setup_person_move_to_position(thing, pos_x, pos_y, NavRtF_Default) )
                 {

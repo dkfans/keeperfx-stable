@@ -221,9 +221,9 @@ long creature_cannot_move_directly_to(struct Thing *thing, struct Coord3d *pos)
             int i;
 
             if (pos->x.val <= realpos.x.val)
-              i = (realpos.x.val & 0xFF00) - 1;
+              i = (realpos.x.val & (~COORD_PER_STL_MASK)) - 1;
             else
-              i = (realpos.x.val + 256) & 0xFF00;
+              i = (realpos.x.val + 256) & (~COORD_PER_STL_MASK);
             modpos.x.val = i;
             modpos.y.val = delta_y * (i - newpos.x.val) / delta_x + newpos.y.val;
             modpos.z.val = realpos.z.val;
@@ -240,9 +240,9 @@ long creature_cannot_move_directly_to(struct Thing *thing, struct Coord3d *pos)
             realpos.z.val = thing->mappos.z.val;
 
             if (pos->y.val <= realpos.y.val)
-              i = (realpos.y.val & 0xFF00) - 1;
+              i = (realpos.y.val & (~COORD_PER_STL_MASK)) - 1;
             else
-              i = (realpos.y.val + 256) & 0xFF00;
+              i = (realpos.y.val + 256) & (~COORD_PER_STL_MASK);
             modpos.y.val = i;
             modpos.x.val = delta_x * (i - newpos.y.val) / delta_y + newpos.x.val;
             modpos.z.val = realpos.z.val;
@@ -281,9 +281,9 @@ long creature_cannot_move_directly_to(struct Thing *thing, struct Coord3d *pos)
             int i;
 
             if (pos->y.val <= realpos.y.val)
-              i = (realpos.y.val & 0xFF00) - 1;
+              i = (realpos.y.val & (~COORD_PER_STL_MASK)) - 1;
             else
-              i = (realpos.y.val + 256) & 0xFF00;
+              i = (realpos.y.val + 256) & (~COORD_PER_STL_MASK);
             modpos.y.val = i;
             modpos.x.val = delta_x * (i - newpos.y.val) / delta_y + newpos.x.val;
             modpos.z.val = realpos.z.val;
@@ -300,9 +300,9 @@ long creature_cannot_move_directly_to(struct Thing *thing, struct Coord3d *pos)
             realpos.z.val = thing->mappos.z.val;
 
             if (pos->x.val <= realpos.x.val)
-              i = (realpos.x.val & 0xFF00) - 1;
+              i = (realpos.x.val & (~COORD_PER_STL_MASK)) - 1;
             else
-              i = (realpos.x.val + 256) & 0xFF00;
+              i = (realpos.x.val + 256) & (~COORD_PER_STL_MASK);
             modpos.x.val = i;
             modpos.y.val = delta_y * (modpos.x.val - newpos.x.val) / delta_x + newpos.y.val;
             modpos.z.val = realpos.z.val;

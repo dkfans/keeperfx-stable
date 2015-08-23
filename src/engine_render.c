@@ -1777,7 +1777,7 @@ void fiddle_gamut(long pos_x, long pos_y)
     }
 }
 
-void create_line_element(long a1, long a2, long a3, long a4, long bckt_idx, TbPixel color)
+void create_line_element(long beg_w, long beg_h, long end_w, long end_h, long bckt_idx, TbPixel color)
 {
     struct BasicUnk13 *poly;
     if (bckt_idx >= BUCKETS_COUNT)
@@ -1792,10 +1792,10 @@ void create_line_element(long a1, long a2, long a3, long a4, long bckt_idx, TbPi
     buckets[bckt_idx] = (struct BasicQ *)poly;
     if (pixel_size > 0)
     {
-        poly->p.field_0 = a1 / pixel_size;
-        poly->p.field_4 = a2 / pixel_size;
-        poly->p.field_8 = a3 / pixel_size;
-        poly->p.field_C = a4 / pixel_size;
+        poly->p.field_0 = beg_w / pixel_size;
+        poly->p.field_4 = beg_h / pixel_size;
+        poly->p.field_8 = end_w / pixel_size;
+        poly->p.field_C = end_h / pixel_size;
     }
     poly->p.field_10 = color;
 }
@@ -1830,13 +1830,59 @@ void create_line_segment(struct EngineCoord *start, struct EngineCoord *end, TbP
     poly->p.field_10 = color;
 }
 
+/**
+ * Adds a line with constant Z coord to the drawlist of perspective view.
+ * @param color Color index.
+ * @param pos_z The Z coord, constant for whole line.
+ * @param start_x The X coord of start of the line.
+ * @param end_x The X coord of end of the line.
+ * @param start_y The Y coord of start of the line.
+ * @param end_y The Y coord of end of the line.
+ */
+void create_line_const_z(unsigned char color, long pos_z, long start_x, long end_x, long start_y, long end_y)
+{
+    struct EngineCoord end;
+    struct EngineCoord start;
+    long vec_x, vec_y;
+    long pos_x, pos_y;
+    vec_x = end_x - start_x;
+    vec_y = end_y - start_y;
+    create_box_coords(&start, start_x, start_y, pos_z);
+    if (abs(vec_y) > abs(vec_x))
+    {
+        for (pos_y = start_y+COORD_PER_STL; pos_y <= end_y; pos_y+=COORD_PER_STL)
+        {
+            pos_x = vec_x * (pos_y - start_y) / vec_y;
+            create_box_coords(&end, pos_x, pos_y, pos_z);
+            create_line_segment(&start, &end, color);
+            memcpy(&start, &end, sizeof(struct EngineCoord));
+        }
+    } else
+    {
+        for (pos_x = start_x+COORD_PER_STL; pos_x <= end_x; pos_x+=COORD_PER_STL)
+        {
+            pos_y = vec_y * (pos_x - start_x) / vec_x;
+            create_box_coords(&end, pos_x, pos_y, pos_z);
+            create_line_segment(&start, &end, color);
+            memcpy(&start, &end, sizeof(struct EngineCoord));
+        }
+    }
+}
+
+/**
+ * Adds a line with constant XZ coords to the drawlist of perspective view.
+ * @param pos_x The X coord, constant for whole line.
+ * @param pos_z The Z coord, constant for whole line.
+ * @param start_y The Y coord of start of the line.
+ * @param end_y The Y coord of end of the line.
+ */
 void create_line_const_xz(long pos_x, long pos_z, long start_y, long end_y)
 {
     struct EngineCoord end;
     struct EngineCoord start;
     long pos_y;
     create_box_coords(&start, pos_x, start_y, pos_z);
-    for (pos_y = start_y+256; pos_y <= end_y; pos_y+=256)
+    for (pos_y = start_y+COORD_PER_STL; pos_y <= end_y; pos_y+=COORD_PER_STL)
     {
         create_box_coords(&end, pos_x, pos_y, pos_z);
         create_line_segment(&start, &end, map_volume_box.color);
@@ -1844,13 +1890,20 @@ void create_line_const_xz(long pos_x, long pos_z, long start_y, long end_y)
     }
 }
 
+/**
+ * Adds a line with constant XY coords to the drawlist of perspective view.
+ * @param pos_x The X coord, constant for whole line.
+ * @param pos_y The Y coord, constant for whole line.
+ * @param start_z The Z coord of start of the line.
+ * @param end_z The Z coord of end of the line.
+ */
 void create_line_const_xy(long pos_x, long pos_y, long start_z, long end_z)
 {
     struct EngineCoord end;
     struct EngineCoord start;
     long pos_z;
     create_box_coords(&start, pos_x, pos_y, start_z);
-    for (pos_z = start_z+256; pos_z <= end_z; pos_z+=256)
+    for (pos_z = start_z+COORD_PER_STL; pos_z <= end_z; pos_z+=COORD_PER_STL)
     {
         create_box_coords(&end, pos_x, pos_y, pos_z);
         create_line_segment(&start, &end, map_volume_box.color);
@@ -1858,13 +1911,20 @@ void create_line_const_xy(long pos_x, long pos_y, long start_z, long end_z)
     }
 }
 
+/**
+ * Adds a line with constant YZ coords to the drawlist of perspective view.
+ * @param pos_y The Y coord, constant for whole line.
+ * @param pos_z The Z coord, constant for whole line.
+ * @param start_x The X coord of start of the line.
+ * @param end_x The X coord of end of the line.
+ */
 void create_line_const_yz(long pos_y, long pos_z, long start_x, long end_x)
 {
     struct EngineCoord end;
     struct EngineCoord start;
     long pos_x;
     create_box_coords(&start, start_x, pos_y, pos_z);
-    for (pos_x = start_x+256; pos_x <= end_x; pos_x+=256)
+    for (pos_x = start_x+COORD_PER_STL; pos_x <= end_x; pos_x+=COORD_PER_STL)
     {
         create_box_coords(&end, pos_x, pos_y, pos_z);
         create_line_segment(&start, &end, map_volume_box.color);
@@ -2321,7 +2381,59 @@ long do_a_plane_of_engine_columns_sub5(struct EngineCoord *ec1, struct EngineCoo
 
 void do_a_gpoly_gourad_tr(struct EngineCoord *ec1, struct EngineCoord *ec2, struct EngineCoord *ec3, short a4, int a5)
 {
-    _DK_do_a_gpoly_gourad_tr(ec1, ec2, ec3, a4, a5); return;
+    //_DK_do_a_gpoly_gourad_tr(ec1, ec2, ec3, a4, a5); return;
+    if (((ec1->field_8 & ec2->field_8 & ec3->field_8) & 0x1F8) != 0) {
+        return;
+    }
+    if ((ec2->view_width - ec1->view_width) * (ec3->view_height - ec2->view_height)
+      + (ec1->view_height - ec2->view_height) * (ec3->view_width - ec2->view_width) <= 0) {
+        return;
+    }
+    int max_z;
+    max_z = ec1->z;
+    if (max_z < ec2->z)
+        max_z = ec2->z;
+    if (max_z < ec3->z)
+        max_z = ec3->z;
+    if (getpoly >= poly_pool_end) {
+        return;
+    }
+    struct BasicUnk00 *poly;
+    poly = (struct BasicUnk00 *)getpoly;
+    getpoly += sizeof(struct BasicUnk00);
+    int bckt_idx;
+    bckt_idx = max_z / 16;
+    poly->b.next = buckets[bckt_idx];
+    poly->b.kind = QK_PolyTriangle;
+    buckets[bckt_idx] = &poly->b;
+    poly->block = a4;
+    int col1, col2, col3;
+    col1 = ec1->field_A;
+    col2 = ec2->field_A;
+    col3 = ec3->field_A;
+    if (a5 >= 0)
+    {
+        col1 = 4 * col1 * (a5 + 16384) >> 17;
+        col2 = 4 * col2 * (a5 + 16384) >> 17;
+        col3 = 4 * (a5 + 16384) * col3 >> 17;
+    }
+    poly->p1.field_0 = ec1->view_width;
+    poly->p1.field_4 = ec1->view_height;
+    poly->p1.field_8 = 0;
+    poly->p1.field_C = 0;
+    poly->p1.field_10 = col1 << 8;
+
+    poly->p2.field_0 = ec2->view_width;
+    poly->p2.field_4 = ec2->view_height;
+    poly->p2.field_8 = 2097151;
+    poly->p2.field_C = 0;
+    poly->p2.field_10 = col2 << 8;
+
+    poly->p3.field_0 = ec3->view_width;
+    poly->p3.field_4 = ec3->view_height;
+    poly->p3.field_8 = 2097151;
+    poly->p3.field_C = 2097151;
+    poly->p3.field_10 = col3 << 8;
 }
 
 void do_a_gpoly_unlit_tr(struct EngineCoord *ec1, struct EngineCoord *ec2, struct EngineCoord *ec3, short a4)
@@ -2708,9 +2820,198 @@ void draw_map_volume_box(long cor1_x, long cor1_y, long cor2_x, long cor2_y, lon
     map_volume_box.color = color;
 }
 
+unsigned short get_thing_shade(struct Thing *thing)
+{
+    MapSubtlCoord stl_x,stl_y;
+    long lgh[2][2]; // the dimensions are lgh[y][x]
+    long shval;
+    long fract_x,fract_y;
+    stl_x = thing->mappos.x.stl.num;
+    stl_y = thing->mappos.y.stl.num;
+    fract_x = thing->mappos.x.stl.pos;
+    fract_y = thing->mappos.y.stl.pos;
+    lgh[0][0] = get_subtile_lightness(&game.lish,stl_x,  stl_y);
+    lgh[0][1] = get_subtile_lightness(&game.lish,stl_x+1,stl_y);
+    lgh[1][0] = get_subtile_lightness(&game.lish,stl_x,  stl_y+1);
+    lgh[1][1] = get_subtile_lightness(&game.lish,stl_x+1,stl_y+1);
+    shval = (fract_x
+        * (lgh[0][1] + (fract_y * (lgh[1][1] - lgh[0][1]) >> 8)
+        - (lgh[0][0] + (fract_y * (lgh[1][0] - lgh[0][0]) >> 8))) >> 8)
+        + (lgh[0][0] + (fract_y * (lgh[1][0] - lgh[0][0]) >> 8));
+    if (shval < MINIMUM_LIGHTNESS)
+    {
+        shval += (MINIMUM_LIGHTNESS>>2);
+        if (shval > MINIMUM_LIGHTNESS)
+            shval = MINIMUM_LIGHTNESS;
+    } else
+    {
+        // Max lightness value - make sure it won't exceed our limits
+        if (shval > 64*256+255)
+            shval = 64*256+255;
+    }
+    return shval;
+}
+
 void draw_fastview_mapwho(struct Camera *cam, struct JontySpr *spr)
 {
-    _DK_draw_fastview_mapwho(cam, spr);
+    //_DK_draw_fastview_mapwho(cam, spr);
+    char alph_mem;
+    unsigned short flg_mem;
+    flg_mem = lbDisplay.DrawFlags;
+    alph_mem = EngineSpriteDrawUsingAlpha;
+    struct Thing *thing;
+    thing = spr->thing;
+
+    struct KeeperSprite *kspr_arr;
+    kspr_arr = keepersprite_array(thing->anim_sprite);
+    int rotangle;
+    if (kspr_arr->Rotable) {
+        rotangle = thing->move_angle_xy - cam->orient_a;
+    } else {
+        rotangle = thing->move_angle_xy;
+    }
+    {
+        unsigned short mskflags;
+        mskflags = thing->field_4F & (TF4F_Unknown10|TF4F_Unknown20);
+        if (mskflags == TF4F_Unknown10) {
+            lbDisplay.DrawFlags |= Lb_SPRITE_TRANSPAR8;
+        } else
+        if (mskflags == TF4F_Unknown20) {
+            lbDisplay.DrawFlags |= Lb_SPRITE_TRANSPAR4;
+        }
+    }
+    int shade_factor;
+    {
+        int shbase;
+        if ((thing->field_4F & TF4F_Unknown02) == 0) {
+            shbase = get_thing_shade(thing);
+        } else {
+            shbase = MINIMUM_LIGHTNESS;
+        }
+        shade_factor = shbase >> 8;
+    }
+    long scale;
+    scale = thing->sprite_size * (cam->zoom << 13) / 65536 / pixel_size / 65536;
+    if ((thing->field_4F & (TF4F_Unknown04|TF4F_Unknown08)) != 0)
+    {
+        flg_mem = lbDisplay.DrawFlags;
+        lbDisplay.DrawFlags |= Lb_TEXT_UNDERLNSHADOW;
+        lbSpriteReMapPtr = &pixmap.ghost[256 * thing->field_51];
+    } else
+    if (shade_factor == 32)
+    {
+        lbDisplay.DrawFlags &= ~Lb_TEXT_UNDERLNSHADOW;
+    } else
+    {
+        lbDisplay.DrawFlags |= Lb_TEXT_UNDERLNSHADOW;
+        lbSpriteReMapPtr = &pixmap.fade_tables[256 * shade_factor];
+    }
+    EngineSpriteDrawUsingAlpha = 0;
+    switch (thing->field_4F & (TF4F_Unknown04|TF4F_Unknown08))
+    {
+    case TF4F_Unknown04:
+        lbDisplay.DrawFlags |= Lb_SPRITE_TRANSPAR8;
+        lbDisplay.DrawFlags &= ~Lb_TEXT_UNDERLNSHADOW;
+        break;
+    case TF4F_Unknown08:
+        lbDisplay.DrawFlags |= Lb_SPRITE_TRANSPAR4;
+        lbDisplay.DrawFlags &= ~Lb_TEXT_UNDERLNSHADOW;
+        break;
+    case (TF4F_Unknown04|TF4F_Unknown08):
+        EngineSpriteDrawUsingAlpha = 1;
+        break;
+    }
+    struct PlayerInfo *myplyr;
+    myplyr = get_my_player();
+
+    if ((thing->class_id == TCls_Creature) || (thing->class_id == TCls_Object) || (thing->class_id == TCls_DeadCreature))
+    {
+        if ((myplyr->thing_under_hand == thing->index) && ((game.play_gameturn & 2) != 0))
+        {
+            lbDisplay.DrawFlags |= Lb_TEXT_UNDERLNSHADOW;
+            lbSpriteReMapPtr = white_pal;
+        } else
+        if ((thing->field_4F & TF4F_Unknown80) != 0)
+        {
+            lbDisplay.DrawFlags |= Lb_TEXT_UNDERLNSHADOW;
+            lbSpriteReMapPtr = red_pal;
+            thing->field_4F &= 0x7Fu;
+        }
+        thing_being_displayed_is_creature = 1;
+        thing_being_displayed = thing;
+    } else
+    {
+        thing_being_displayed_is_creature = 0;
+        thing_being_displayed = NULL;
+    }
+
+    if (thing->field_48 >= CREATURE_FRAMELIST_LENGTH)
+    {
+        ERRORLOG("Invalid graphic Id %d from model %d, class %d", (int)thing->field_48, (int)thing->model, (int)thing->class_id);
+    } else
+    {
+        if ((thing->class_id == TCls_Object) && ((thing->model == 2) || (thing->model == 4) || (thing->model == 28)))
+        {
+            unsigned short kspr_base;
+            int kspr_scale;
+            unsigned int kspr_frame, kspr_nframes;
+            int shift_x, shift_y;
+            if (thing->model != 28)
+            {
+                kspr_base = 113;
+                if (thing->model == 2)
+                {
+                    if (myplyr->view_type == PVT_DungeonTop)
+                    {
+                        shift_x = 0;
+                        shift_y = 3 * scale >> 3;
+                    } else
+                    {
+                        shift_x = scale * LbSinL(rotangle) >> 20;
+                        shift_y = scale * LbCosL(rotangle) >> 20;
+                    }
+                    kspr_scale = 2 * scale / 3;
+                } else
+                {
+                    if (myplyr->view_type == PVT_DungeonTop)
+                    {
+                        shift_x = (scale >> 2) / 3;
+                        shift_y = (scale >> 1) / 3;
+                    } else
+                    {
+                        shift_x = scale * LbSinL(rotangle) >> 20;
+                        shift_y = (-(LbCosL(rotangle) * (scale + (scale >> 1))) >> 16) / 3;
+                    }
+                    kspr_scale = scale / 3;
+                }
+            } else
+            {
+                kspr_base = 112;
+                if (myplyr->view_type == PVT_DungeonTop)
+                {
+                    shift_x = scale >> 3;
+                    shift_y = (scale >> 2) - scale;
+                } else
+                {
+                    shift_x = scale * LbSinL(rotangle) >> 20;
+                    shift_y = -(LbCosL(rotangle) * (scale + (scale >> 1))) >> 16;
+                }
+                kspr_scale = scale / 2;
+            }
+            kspr_nframes = keepersprite_frames(kspr_base);
+            EngineSpriteDrawUsingAlpha = 0;
+            kspr_frame = (game.play_gameturn + thing->index) % kspr_nframes;
+            process_keeper_sprite(spr->scr_x, spr->scr_y, thing->anim_sprite, rotangle, thing->field_48, scale);
+            EngineSpriteDrawUsingAlpha = 1;
+            process_keeper_sprite(shift_x + spr->scr_x, shift_y + spr->scr_y, kspr_base, kspr_frame, 0, kspr_scale);
+        } else
+        if ((thing->class_id != TCls_Trap) || (thing->model == 1) || (myplyr->id_number == thing->owner) || thing->byte_18)
+        {
+            process_keeper_sprite(spr->scr_x, spr->scr_y, thing->anim_sprite, rotangle, thing->field_48, scale);
+        }
+    }
+    lbDisplay.DrawFlags = flg_mem;
+    EngineSpriteDrawUsingAlpha = alph_mem;
 }
 
 void draw_engine_number(struct Number *num)
@@ -4769,38 +5070,6 @@ void draw_element(struct Map *map, long lightness, long stl_x, long stl_y, long 
 
 }
 
-unsigned short get_thing_shade(struct Thing *thing)
-{
-    MapSubtlCoord stl_x,stl_y;
-    long lgh[2][2]; // the dimensions are lgh[y][x]
-    long shval;
-    long fract_x,fract_y;
-    stl_x = thing->mappos.x.stl.num;
-    stl_y = thing->mappos.y.stl.num;
-    fract_x = thing->mappos.x.stl.pos;
-    fract_y = thing->mappos.y.stl.pos;
-    lgh[0][0] = get_subtile_lightness(&game.lish,stl_x,  stl_y);
-    lgh[0][1] = get_subtile_lightness(&game.lish,stl_x+1,stl_y);
-    lgh[1][0] = get_subtile_lightness(&game.lish,stl_x,  stl_y+1);
-    lgh[1][1] = get_subtile_lightness(&game.lish,stl_x+1,stl_y+1);
-    shval = (fract_x
-        * (lgh[0][1] + (fract_y * (lgh[1][1] - lgh[0][1]) >> 8)
-        - (lgh[0][0] + (fract_y * (lgh[1][0] - lgh[0][0]) >> 8))) >> 8)
-        + (lgh[0][0] + (fract_y * (lgh[1][0] - lgh[0][0]) >> 8));
-    if (shval < MINIMUM_LIGHTNESS)
-    {
-        shval += (MINIMUM_LIGHTNESS>>2);
-        if (shval > MINIMUM_LIGHTNESS)
-            shval = MINIMUM_LIGHTNESS;
-    } else
-    {
-        // Max lightness value - make sure it won't exceed our limits
-        if (shval > 64*256+255)
-            shval = 64*256+255;
-    }
-    return shval;
-}
-
 void lock_keepersprite(unsigned short kspr_idx)
 {
     int frame_num,frame_count;
@@ -5115,7 +5384,7 @@ void draw_single_keepersprite(long kspos_x, long kspos_y, struct KeeperSprite *k
 
 void process_keeper_sprite(short x, short y, unsigned short kspr_base, short kspr_frame, unsigned char sprgroup, long scale)
 {
-    struct KeeperSprite *creature_sprites;
+    struct KeeperSprite *kspr_arr;
     struct PlayerInfo *player;
     struct CreatureControl *cctrl;
     struct KeeperSprite *kspr;
@@ -5141,9 +5410,9 @@ void process_keeper_sprite(short x, short y, unsigned short kspr_base, short ksp
     sprite_delta = llabs(lltemp);
     kspr_idx = keepersprite_index(kspr_base);
     global_scaler = scale;
-    creature_sprites = keepersprite_array(kspr_base);
-    scaled_x = ((scale * (long)creature_sprites->field_C) >> 5) + (long)x;
-    scaled_y = ((scale * (long)creature_sprites->field_E) >> 5) + (long)y;
+    kspr_arr = keepersprite_array(kspr_base);
+    scaled_x = ((scale * (long)kspr_arr->field_C) >> 5) + (long)x;
+    scaled_y = ((scale * (long)kspr_arr->field_E) >> 5) + (long)y;
     SYNCDBG(17,"Scaled (%d,%d)",(int)scaled_x,(int)scaled_y);
     if (thing_is_invalid(thing_being_displayed))
     {
@@ -5175,13 +5444,13 @@ void process_keeper_sprite(short x, short y, unsigned short kspr_base, short ksp
         }
     }
     scaled_y += water_y_offset;
-    if (creature_sprites->Rotable == 0)
+    if (kspr_arr->Rotable == 0)
     {
         if (!heap_manage_keepersprite(kspr_idx))
         {
             return;
         }
-        kspr = &creature_sprites[sprite_group];
+        kspr = &kspr_arr[sprite_group];
         draw_idx = sprite_group + kspr_idx;
         if ( needs_xflip )
         {
@@ -5191,13 +5460,13 @@ void process_keeper_sprite(short x, short y, unsigned short kspr_base, short ksp
             draw_single_keepersprite_omni(scaled_x, scaled_y, kspr, draw_idx, scale);
         }
     } else
-    if (creature_sprites->Rotable == 2)
+    if (kspr_arr->Rotable == 2)
     {
         if (!heap_manage_keepersprite(kspr_idx))
         {
             return;
         }
-        kspr = &creature_sprites[sprite_group + sprite_delta * (long)creature_sprites->FramesCount];
+        kspr = &kspr_arr[sprite_group + sprite_delta * (long)kspr_arr->FramesCount];
         draw_idx = sprite_group + sprite_delta * (long)kspr->FramesCount + kspr_idx;
         if ( needs_xflip )
         {

@@ -1895,6 +1895,7 @@ long check_out_uncrowded_reinforce_position(struct Thing *thing, SubtlCodedCoord
         MapSubtlDelta delta_x,delta_y;
         delta_x = basestl_x - (MapSubtlDelta)thing->mappos.x.stl.num;
         delta_y = basestl_y - (MapSubtlDelta)thing->mappos.y.stl.num;
+        // First check the nearest side
         if (abs(delta_y) < abs(delta_x))
         {
           if (delta_y > 0)
@@ -1925,7 +1926,7 @@ long check_out_uncrowded_reinforce_position(struct Thing *thing, SubtlCodedCoord
                     pos.x.val = subtile_coord_center(stl_x);
                     pos.y.val = subtile_coord_center(stl_y);
                     pos.z.val = get_thing_height_at(thing, &pos);
-                    if ( creature_can_navigate_to_with_storage(thing, &pos, NavRtF_Default) != -1 ) {
+                    if (creature_can_navigate_to_with_storage(thing, &pos, NavRtF_Default) != -1) {
                         *retstl_x = stl_x;
                         *retstl_y = stl_y;
                         return 1;
@@ -1933,6 +1934,7 @@ long check_out_uncrowded_reinforce_position(struct Thing *thing, SubtlCodedCoord
                 }
             }
         }
+        SYNCDBG(18,"No way for %s index %d to reinforce at (%d,%d), checking next",thing_model_name(thing),(int)thing->index,(int)stl_x,(int)stl_y);
         n = (n + 1) % SMALL_AROUND_LENGTH;
     }
     return 0;

@@ -375,10 +375,8 @@ void process_creature_in_training_room(struct Thing *thing, struct Room *room)
             {
                 cctrl->training.pole_stl_x = slab_subtile_center(subtile_slab_fast(thing->mappos.x.stl.num));
                 cctrl->training.pole_stl_y = slab_subtile_center(subtile_slab_fast(thing->mappos.y.stl.num));
-                cctrl->moveto_pos.x.stl.num = stl_x;
-                cctrl->moveto_pos.y.stl.num = stl_y;
-                cctrl->moveto_pos.x.stl.pos = 128;
-                cctrl->moveto_pos.y.stl.pos = 128;
+                cctrl->moveto_pos.x.val = subtile_coord_center(stl_x);
+                cctrl->moveto_pos.y.val = subtile_coord_center(stl_y);
                 cctrl->moveto_pos.z.val = get_thing_height_at(thing, &cctrl->moveto_pos);
                 if (thing_in_wall_at(thing, &cctrl->moveto_pos))
                 {
