@@ -2101,14 +2101,50 @@ struct Thing *check_place_to_pickup_gold(struct Thing *thing, long stl_x, long s
     return _DK_check_place_to_pickup_gold(thing, stl_x, stl_y);
 }
 
-struct Thing *check_place_to_pickup_spell(struct Thing *thing, long a2, long a3)
+struct Thing *check_place_to_pickup_spell(const struct Thing *creatng, MapSubtlCoord stl_x, MapSubtlCoord stl_y, unsigned short flags, long n)
 {
-    return _DK_check_place_to_pickup_spell(thing, a2, a3);
+    //return _DK_check_place_to_pickup_spell(creatng, stl_x, stl_y);
+    TRACE_THING(creatng);
+    struct Map *mapblk;
+    long i;
+    unsigned long k;
+    mapblk = get_map_block_at(stl_x,stl_y);
+    k = 0;
+    i = get_mapwho_thing_index(mapblk);
+    while (i != 0)
+    {
+        struct Thing *thing;
+        thing = thing_get(i);
+        TRACE_THING(thing);
+        if (thing_is_invalid(thing))
+        {
+            ERRORLOG("Jump to invalid thing detected");
+            break;
+        }
+        i = thing->next_on_mapblk;
+        // Per thing code start
+        if (thing_can_be_picked_to_place_in_player_room(thing, creatng->owner, RoK_LIBRARY, flags))
+        {
+            if (n > 0) {
+                n--;
+            } else {
+                return thing;
+            }
+        }
+        // Per thing code end
+        k++;
+        if (k > THINGS_COUNT)
+        {
+            ERRORLOG("Infinite loop detected when sweeping things list");
+            break;
+        }
+    }
+    return INVALID_THING;
 }
 
-struct Thing *check_place_to_pickup_unconscious_body(struct Thing *thing, long a2, long a3)
+struct Thing *check_place_to_pickup_unconscious_body(struct Thing *thing, long stl_x, long stl_y)
 {
-    return _DK_check_place_to_pickup_unconscious_body(thing, a2, a3);
+    return _DK_check_place_to_pickup_unconscious_body(thing, stl_x, stl_y);
 }
 
 long check_place_to_reinforce(struct Thing *creatng, long slb_x, long slb_y)
@@ -2601,7 +2637,7 @@ long check_out_worker_pickup_spellbook(struct Thing *thing, struct DiggerStack *
         return 0;
     }
     struct Thing *sectng;
-    sectng = check_place_to_pickup_spell(thing, stl_x, stl_y);
+    sectng = check_place_to_pickup_spell(thing, stl_x, stl_y, TngFRPickF_Default, 0);
     if (thing_is_invalid(sectng))
     {
         dstack->task_type = DigTsk_None;
