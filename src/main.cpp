@@ -3040,7 +3040,7 @@ void update(void)
     }
     if (game.game_kind == GKind_Unknown1)
     {
-        game.field_14EA4B = 0;
+        game.map_passability_changed = 0;
         return;
     }
 
@@ -3084,7 +3084,7 @@ void update(void)
     message_update();
     update_all_players_cameras();
     update_player_sounds();
-    game.field_14EA4B = 0;
+    game.map_passability_changed = 0;
     SYNCDBG(6,"Finished");
 }
 

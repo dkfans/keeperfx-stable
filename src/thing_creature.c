@@ -4985,7 +4985,7 @@ TngUpdateRet update_creature(struct Thing *thing)
     if (cctrl->force_visible > 0)
         cctrl->force_visible--;
     if (cctrl->byte_8B == 0)
-        cctrl->byte_8B = game.field_14EA4B;
+        cctrl->byte_8B = game.map_passability_changed;
     if (cctrl->field_302 == 0) {
         process_creature_instance(thing);
     }

@@ -456,7 +456,7 @@ long init_navigation(void)
     init_navigation_map();
     triangulate_map(IanMap);
     nav_rulesA2B = navigation_rule_normal;
-    game.field_14EA4B = 1;
+    game.map_passability_changed = 1;
     return 1;
 }
 
@@ -2066,7 +2066,7 @@ long ariadne_get_wallhug_angle(struct Thing *thing, struct Ariadne *arid)
 {
     //return _DK_ariadne_get_wallhug_angle(thing, arid);
     long whangle;
-    if (arid->field_20 == 1)
+    if (arid->hug_side == 1)
     {
         whangle = (LbFPMath_PI/2) * ((angle_to_quadrant(thing->move_angle_xy) - 1) & 3);
         if (ariadne_wallhug_angle_valid(thing, arid, whangle))
@@ -2081,7 +2081,7 @@ long ariadne_get_wallhug_angle(struct Thing *thing, struct Ariadne *arid)
         if (ariadne_wallhug_angle_valid(thing, arid, whangle))
             return whangle;
     } else
-    if (arid->field_20 == 2)
+    if (arid->hug_side == 2)
     {
         whangle = (LbFPMath_PI/2) * ((angle_to_quadrant(thing->move_angle_xy) + 1) & 3);
         if (ariadne_wallhug_angle_valid(thing, arid, whangle))
@@ -2106,46 +2106,46 @@ void ariadne_get_starting_angle_and_side_of_wallhug_for_desireable_move(struct T
     bkp_mappos = thing->mappos;
     int inangle_oneaxis;
     int bkp_angle_xy;
-    int bkp_fld20;
+    int bkp_hug_side;
     int bkp_speed;
     bkp_angle_xy = thing->move_angle_xy;
     bkp_speed = arid->move_speed;
-    bkp_fld20 = arid->field_20;
+    bkp_hug_side = arid->hug_side;
     int angle_beg;
-    int nfld20;
+    int hug_side;
     int angle_end;
     if (inangle == 0)
     {
         angle_beg = 3*LbFPMath_PI/2;
-        nfld20 = 2;
+        hug_side = 2;
         angle_end = LbFPMath_PI/2;
         inangle_oneaxis = 1;
     } else
     if (inangle == LbFPMath_PI/2)
     {
         angle_beg = 0;
-        nfld20 = 2;
+        hug_side = 2;
         angle_end = LbFPMath_PI;
         inangle_oneaxis = 1;
     } else
     if (inangle == LbFPMath_PI)
     {
         angle_beg = LbFPMath_PI/2;
-        nfld20 = 2;
+        hug_side = 2;
         angle_end = 3*LbFPMath_PI/2;
         inangle_oneaxis = 1;
     } else
     if (inangle == 3*LbFPMath_PI/2)
     {
         angle_beg = LbFPMath_PI;
-        nfld20 = 2;
+        hug_side = 2;
         angle_end = 0;
         inangle_oneaxis = 1;
     } else
     {
         NAVIDBG(9,"Unsupported inangle %d",(int)inangle);
         angle_beg = 0;
-        nfld20 = 0;
+        hug_side = 0;
         angle_end = 0;
         inangle_oneaxis = 0;
     }
@@ -2160,7 +2160,7 @@ void ariadne_get_starting_angle_and_side_of_wallhug_for_desireable_move(struct T
     whsteps = size_steps;
     whgot1 = size_steps;
     whgot2 = size_steps;
-    arid->field_20 = nfld20;
+    arid->hug_side = hug_side;
     struct Coord3d pos;
     int i;
     long hug_angle;
@@ -2184,7 +2184,7 @@ void ariadne_get_starting_angle_and_side_of_wallhug_for_desireable_move(struct T
         }
     }
     thing->move_angle_xy = angle_end;
-    arid->field_20 = inangle_oneaxis;
+    arid->hug_side = inangle_oneaxis;
     thing->mappos = bkp_mappos;
     for (i = 0; i < whsteps; i++)
     {
@@ -2208,16 +2208,16 @@ void ariadne_get_starting_angle_and_side_of_wallhug_for_desireable_move(struct T
     thing->move_angle_xy = bkp_angle_xy;
     thing->mappos = bkp_mappos;
     arid->move_speed = bkp_speed;
-    arid->field_20 = bkp_fld20;
+    arid->hug_side = bkp_hug_side;
     if (whgot2 > whgot1)
     {
         *rangle = angle_beg;
-        *rflag = nfld20;
+        *rflag = hug_side;
     } else
     if (whgot2 >= whgot1)
     {
         *rangle = angle_beg;
-        *rflag = nfld20;
+        *rflag = hug_side;
     } else
     {
         *rangle = angle_end;
@@ -2295,7 +2295,7 @@ AriadneReturn ariadne_init_wallhug(struct Thing *thing, struct Ariadne *arid, st
     if (arid->move_speed <= 0) {
         ERRORLOG("Ariadne Speed not positive");
     }
-    if (!ariadne_get_starting_angle_and_side_of_wallhug(thing, arid, pos, &arid->wallhug_angle, &arid->field_20))
+    if (!ariadne_get_starting_angle_and_side_of_wallhug(thing, arid, pos, &arid->wallhug_angle, &arid->hug_side))
     {
         arid->pos_12.x.val = thing->mappos.x.val;
         arid->pos_12.y.val = thing->mappos.y.val;
@@ -2923,7 +2923,7 @@ AriadneReturn ariadne_update_state_on_line(struct Thing *thing, struct Ariadne *
     }
     if (ariadne_creature_blocked_by_wall_at(thing, &arid->pos_12))
     {
-        if ( arid->field_23 )
+        if (arid->may_need_reroute)
         {
             struct Coord3d pos;
             pos.x.val = arid->endpos.x.val;
@@ -2932,27 +2932,25 @@ AriadneReturn ariadne_update_state_on_line(struct Thing *thing, struct Ariadne *
             if (ariadne_initialise_creature_route(thing, &pos, arid->move_speed, arid->route_flags)) {
                 return AridRet_PartOK;
             }
+            return AridRet_OK;
         }
-        else
+        unsigned long blk_flags;
+        blk_flags = ariadne_get_blocked_flags(thing, &arid->pos_12);
+        if (!blocked_by_door_at(thing, &arid->pos_12, blk_flags))
         {
-            unsigned long blk_flags;
-            blk_flags = ariadne_get_blocked_flags(thing, &arid->pos_12);
-            if (!blocked_by_door_at(thing, &arid->pos_12, blk_flags))
-            {
-                struct Coord3d pos;
-                ariadne_push_position_against_wall(thing, &arid->pos_12, &pos);
-                arid->update_state = AridUpSt_Manoeuvre;
-                arid->manoeuvre_state = AridUpSStM_Unkn1;
-                arid->pos_53.x.val = pos.x.val;
-                arid->pos_53.y.val = pos.y.val;
-                arid->pos_53.z.val = pos.z.val;
-                arid->pos_59.x.val = arid->pos_12.x.val;
-                arid->pos_59.y.val = arid->pos_12.y.val;
-                arid->pos_59.z.val = arid->pos_12.z.val;
-                arid->pos_12.x.val = pos.x.val;
-                arid->pos_12.y.val = pos.y.val;
-                arid->pos_12.z.val = pos.z.val;
-            }
+            struct Coord3d pos;
+            ariadne_push_position_against_wall(thing, &arid->pos_12, &pos);
+            arid->update_state = AridUpSt_Manoeuvre;
+            arid->manoeuvre_state = AridUpSStM_Unkn1;
+            arid->pos_53.x.val = pos.x.val;
+            arid->pos_53.y.val = pos.y.val;
+            arid->pos_53.z.val = pos.z.val;
+            arid->pos_59.x.val = arid->pos_12.x.val;
+            arid->pos_59.y.val = arid->pos_12.y.val;
+            arid->pos_59.z.val = arid->pos_12.z.val;
+            arid->pos_12.x.val = pos.x.val;
+            arid->pos_12.y.val = pos.y.val;
+            arid->pos_12.z.val = pos.z.val;
         }
     }
     return AridRet_OK;
@@ -3021,7 +3019,7 @@ AriadneReturn ariadne_update_state_wallhug(struct Thing *thing, struct Ariadne *
         arid->pos_12.z.val = arid->current_waypoint_pos.z.val;
         if (ariadne_creature_blocked_by_wall_at(thing, &arid->pos_12))
         {
-            if ( arid->field_23 )
+            if (arid->may_need_reroute)
             {
                 struct Coord3d pos;
                 pos.x.val = arid->endpos.x.val;
@@ -3030,31 +3028,29 @@ AriadneReturn ariadne_update_state_wallhug(struct Thing *thing, struct Ariadne *
                 if (ariadne_initialise_creature_route(thing, &pos, arid->move_speed, arid->route_flags)) {
                     return AridRet_PartOK;
                 }
+                return AridRet_OK;
             }
-            else
-            {
-                struct Coord3d pos;
-                ariadne_push_position_against_wall(thing, &arid->pos_12, &pos);
-                arid->update_state = AridUpSt_Manoeuvre;
-                arid->manoeuvre_state = AridUpSStM_Unkn1;
-                arid->pos_53.x.val = pos.x.val;
-                arid->pos_53.y.val = pos.y.val;
-                arid->pos_53.z.val = pos.z.val;
-                arid->pos_59.x.val = arid->pos_12.x.val;
-                arid->pos_59.y.val = arid->pos_12.y.val;
-                arid->pos_59.z.val = arid->pos_12.z.val;
-                arid->pos_12.x.val = pos.x.val;
-                arid->pos_12.y.val = pos.y.val;
-                arid->pos_12.z.val = pos.z.val;
-            }
+            struct Coord3d pos;
+            ariadne_push_position_against_wall(thing, &arid->pos_12, &pos);
+            arid->update_state = AridUpSt_Manoeuvre;
+            arid->manoeuvre_state = AridUpSStM_Unkn1;
+            arid->pos_53.x.val = pos.x.val;
+            arid->pos_53.y.val = pos.y.val;
+            arid->pos_53.z.val = pos.z.val;
+            arid->pos_59.x.val = arid->pos_12.x.val;
+            arid->pos_59.y.val = arid->pos_12.y.val;
+            arid->pos_59.z.val = arid->pos_12.z.val;
+            arid->pos_12.x.val = pos.x.val;
+            arid->pos_12.y.val = pos.y.val;
+            arid->pos_12.z.val = pos.z.val;
         }
     } else
     if (thing->move_angle_xy == arid->wallhug_angle)
     {
-        if ((thing->mappos.x.val != arid->pos_12.x.val) || (arid->pos_12.y.val != thing->mappos.y.val))
+        if ((thing->mappos.x.val != arid->pos_12.x.val) || (thing->mappos.y.val != arid->pos_12.y.val))
         {
             ariadne_init_movement_to_current_waypoint(thing, arid);
-            return 0;
+            return AridRet_OK;
         }
         if (distance < arid->field_62)
         {
@@ -3096,36 +3092,36 @@ AriadneReturn ariadne_update_state_wallhug(struct Thing *thing, struct Ariadne *
             pos.y.val = arid->endpos.y.val;
             pos.z.val = arid->endpos.z.val;
             if (ariadne_initialise_creature_route(thing, &pos, arid->move_speed, arid->route_flags) >= 1) {
-                return 3;
+                return AridRet_PartOK;
             }
             return AridRet_OK;
         }
         if (ariadne_creature_blocked_by_wall_at(thing, &arid->pos_12))
         {
-            if (!arid->field_23)
+            if (arid->may_need_reroute)
             {
                 struct Coord3d pos;
-                ariadne_push_position_against_wall(thing, &arid->pos_12, &pos);
-                arid->update_state = AridUpSt_Manoeuvre;
-                arid->manoeuvre_state = AridUpSStM_Unkn2;
-                arid->pos_53.x.val = pos.x.val;
-                arid->pos_53.y.val = pos.y.val;
-                arid->pos_53.z.val = pos.z.val;
-                arid->pos_59.x.val = arid->pos_12.x.val;
-                arid->pos_59.y.val = arid->pos_12.y.val;
-                arid->pos_59.z.val = arid->pos_12.z.val;
-                arid->pos_12.x.val = pos.x.val;
-                arid->pos_12.y.val = pos.y.val;
-                arid->pos_12.z.val = pos.z.val;
+                pos.x.val = arid->endpos.x.val;
+                pos.y.val = arid->endpos.y.val;
+                pos.z.val = arid->endpos.z.val;
+                if (ariadne_initialise_creature_route(thing, &pos, arid->move_speed, arid->route_flags)) {
+                    return AridRet_PartOK;
+                }
                 return AridRet_OK;
             }
             struct Coord3d pos;
-            pos.x.val = arid->endpos.x.val;
-            pos.y.val = arid->endpos.y.val;
-            pos.z.val = arid->endpos.z.val;
-            if (ariadne_initialise_creature_route(thing, &pos, arid->move_speed, arid->route_flags)) {
-                return 3;
-            }
+            ariadne_push_position_against_wall(thing, &arid->pos_12, &pos);
+            arid->update_state = AridUpSt_Manoeuvre;
+            arid->manoeuvre_state = AridUpSStM_Unkn2;
+            arid->pos_53.x.val = pos.x.val;
+            arid->pos_53.y.val = pos.y.val;
+            arid->pos_53.z.val = pos.z.val;
+            arid->pos_59.x.val = arid->pos_12.x.val;
+            arid->pos_59.y.val = arid->pos_12.y.val;
+            arid->pos_59.z.val = arid->pos_12.z.val;
+            arid->pos_12.x.val = pos.x.val;
+            arid->pos_12.y.val = pos.y.val;
+            arid->pos_12.z.val = pos.z.val;
             return AridRet_OK;
           }
     }
@@ -3143,7 +3139,7 @@ AriadneReturn ariadne_get_next_position_for_route(struct Thing *thing, struct Co
         (int)thing->mappos.x.stl.num, (int)thing->mappos.y.stl.num, (int)finalpos->x.stl.num, (int)finalpos->y.stl.num);
     cctrl = creature_control_get_from_thing(thing);
     arid = &cctrl->arid;
-    //result = _DK_ariadne_get_next_position_for_route(thing, finalpos, speed, nextpos, a5); return result;
+    //result = _DK_ariadne_get_next_position_for_route(thing, finalpos, speed, nextpos, flags); return result;
     arid->field_22 = 0;
     if ((finalpos->x.val != arid->endpos.x.val)
      || (finalpos->y.val != arid->endpos.y.val)
@@ -3228,11 +3224,11 @@ AriadneReturn creature_follow_route_to_using_gates(struct Thing *thing, struct C
 {
     SYNCDBG(18,"Starting");
     //return _DK_creature_follow_route_to_using_gates(thing, finalpos, nextpos, speed, flags);
-    if (game.field_14EA4B)
+    if (game.map_passability_changed)
     {
         struct CreatureControl *cctrl;
         cctrl = creature_control_get_from_thing(thing);
-        cctrl->arid.field_23 = 1;
+        cctrl->arid.may_need_reroute = 1;
     }
     return ariadne_get_next_position_for_route(thing, finalpos, speed, nextpos, flags);
 }

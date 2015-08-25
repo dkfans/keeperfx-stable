@@ -4164,7 +4164,7 @@ struct Room *place_room(PlayerNumber owner, RoomKind rkind, MapSubtlCoord stl_x,
     struct SlabMap *slb;
     long slb_x, slb_y;
     long i;
-    game.field_14EA4B = 1;
+    game.map_passability_changed = 1;
     if (subtile_coords_invalid(stl_x, stl_y))
         return INVALID_ROOM;
     slb_x = subtile_slab_fast(stl_x);

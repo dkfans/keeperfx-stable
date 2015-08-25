@@ -2916,7 +2916,7 @@ void draw_fastview_mapwho(struct Camera *cam, struct JontySpr *spr)
         shade_factor = shbase >> 8;
     }
     long scale;
-    scale = thing->sprite_size * (cam->zoom << 13) / 65536 / pixel_size / 65536;
+    scale = thing->sprite_size * ((long long)cam->zoom << 13) / 65536 / pixel_size / 65536;
     if ((thing->field_4F & (TF4F_Unknown04|TF4F_Unknown08)) != 0)
     {
         flg_mem = lbDisplay.DrawFlags;
@@ -2932,17 +2932,17 @@ void draw_fastview_mapwho(struct Camera *cam, struct JontySpr *spr)
         lbSpriteReMapPtr = &pixmap.fade_tables[256 * shade_factor];
     }
     EngineSpriteDrawUsingAlpha = 0;
-    switch (thing->field_4F & (TF4F_Unknown04|TF4F_Unknown08))
+    switch (thing->field_4F & (TF4F_Unknown20|TF4F_Unknown10))
     {
-    case TF4F_Unknown04:
+    case TF4F_Unknown10:
         lbDisplay.DrawFlags |= Lb_SPRITE_TRANSPAR8;
         lbDisplay.DrawFlags &= ~Lb_TEXT_UNDERLNSHADOW;
         break;
-    case TF4F_Unknown08:
+    case TF4F_Unknown20:
         lbDisplay.DrawFlags |= Lb_SPRITE_TRANSPAR4;
         lbDisplay.DrawFlags &= ~Lb_TEXT_UNDERLNSHADOW;
         break;
-    case (TF4F_Unknown04|TF4F_Unknown08):
+    case (TF4F_Unknown10|TF4F_Unknown20):
         EngineSpriteDrawUsingAlpha = 1;
         break;
     }
