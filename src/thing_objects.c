@@ -1060,13 +1060,13 @@ long food_moves(struct Thing *objtng)
     else
     {
         int vel_x, vel_y;
-        vel_x = 32 * LbSinL(objtng->food.word_18) >> 16;
+        vel_x = distance_with_angle_to_coord_x(32, objtng->food.word_18);
         pos.x.val += vel_x;
-        vel_y = -(32 * LbCosL(objtng->food.word_18) >> 8) >> 8;
+        vel_y = distance_with_angle_to_coord_y(32, objtng->food.word_18);
         pos.y.val += vel_y;
         if (thing_in_wall_at(objtng, &pos))
         {
-            objtng->food.word_18 = ACTION_RANDOM(0x7FF);
+            objtng->food.word_18 = ACTION_RANDOM(2*LbFPMath_PI);
         }
         int sangle;
         long dangle;
@@ -1660,8 +1660,8 @@ TngUpdateRet object_update_armour(struct Thing *objtng)
      || (abs(objtng->mappos.z.val - pos.z.val) > 512))
     {
         shspeed = objtng->byte_15;
-        pos.x.val += 32 * LbSinL(682 * shspeed) >> 16;
-        pos.y.val += -(32 * LbCosL(682 * shspeed) >> 8) >> 8;
+        pos.x.val += distance_with_angle_to_coord_x(32, (2*LbFPMath_PI/3) * shspeed);
+        pos.y.val += distance_with_angle_to_coord_y(32, (2*LbFPMath_PI/3) * shspeed);
         pos.z.val += shspeed * (thing->clipbox_size_yz >> 1);
         move_thing_in_map(objtng, &pos);
         objtng->move_angle_xy = thing->move_angle_xy;

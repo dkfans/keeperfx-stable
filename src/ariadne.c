@@ -110,8 +110,8 @@ DLLIMPORT long _DK_ariadne_check_forward_for_wallhug_gap(struct Thing *thing, st
 DLLIMPORT void _DK_triangulation_initxy(long outfri_x1, long outfri_y1, long outfri_x2, long outfri_y2);
 DLLIMPORT void _DK_nearest_search(long sizexy, long srcx, long srcy, long dstx, long dsty, long *px, long *py);
 DLLIMPORT unsigned long _DK_nav_same_component(long ptAx, long ptAy, long ptBx, long ptBy);
-DLLIMPORT void _DK_edge_points8(long tri_beg_id, long tag_id, long *tri_end_id, long *a4, long *a5, long *wp_lim);
-DLLIMPORT long _DK_calc_intersection(struct Gate *gt, long tag_id, long tri_end_id, long a4, long a5);
+DLLIMPORT void _DK_edge_points8(long tri_beg_id, long tag_id, long *tri_end_id, long *hug_angle, long *a5, long *wp_lim);
+DLLIMPORT long _DK_calc_intersection(struct Gate *gt, long tag_id, long tri_end_id, long hug_angle, long a5);
 DLLIMPORT void _DK_cull_gate_to_point(struct Gate *gt, long tag_id);
 DLLIMPORT void _DK_cull_gate_to_best_point(struct Gate *gt, long tag_id);
 DLLIMPORT void _DK_set_nearpoint(long tri_id, long cor_id, long dstx, long dsty, long *px, long *py);
@@ -274,7 +274,7 @@ void path_out_a_bit(struct Path *path, const long *route);
 void gate_navigator_init8(struct Pathway *pway, long trAx, long trAy, long trBx, long trBy, long wp_lim, unsigned char a7);
 void route_through_gates(const struct Pathway *pway, struct Path *path, long subroute);
 long ariadne_push_position_against_wall(struct Thing *thing, const struct Coord3d *pos1, struct Coord3d *pos_out);
-long ariadne_check_forward_for_wallhug_gap(struct Thing *thing, struct Ariadne *arid, struct Coord3d *pos, long a4);
+long ariadne_check_forward_for_wallhug_gap(struct Thing *thing, struct Ariadne *arid, struct Coord3d *pos, long hug_angle);
 long ariadne_get_blocked_flags(struct Thing *thing, const struct Coord3d *pos);
 long triangle_findSE8(long ptfind_x, long ptfind_y);
 long ma_triangle_route(long ptfind_x, long ptfind_y, long *ptstart_x);
@@ -2956,9 +2956,144 @@ AriadneReturn ariadne_update_state_on_line(struct Thing *thing, struct Ariadne *
     return AridRet_OK;
 }
 
-long ariadne_check_forward_for_wallhug_gap(struct Thing *thing, struct Ariadne *arid, struct Coord3d *pos, long a4)
+long ariadne_check_forward_for_wallhug_gap(struct Thing *thing, struct Ariadne *arid, struct Coord3d *pos, long hug_angle)
 {
-    return _DK_ariadne_check_forward_for_wallhug_gap(thing, arid, pos, a4);
+    //return _DK_ariadne_check_forward_for_wallhug_gap(thing, arid, pos, a4);
+    TbBool one_axis_angle;
+    int thing_radius;
+    struct Coord3d *pos1;
+    struct Coord3d wall_pushed_pos;
+    one_axis_angle = 0;
+    thing_radius = thing_nav_sizexy(thing) / 2;
+    switch (hug_angle)
+    {
+    case LbFPMath_PI:
+        pos1 = pos;
+        if ( ((thing_radius + pos->y.val) & ~COORD_PER_STL_MASK) > ((thing_radius + thing->mappos.y.val) & ~COORD_PER_STL_MASK) )
+        {
+          wall_pushed_pos.x.val = pos->x.val;
+          wall_pushed_pos.y.val = thing_radius + thing->mappos.y.val;
+          one_axis_angle = 1;
+          wall_pushed_pos.y.stl.pos = COORD_PER_STL - 1;
+          wall_pushed_pos.y.val -= thing_radius;
+        }
+        break;
+    case 3*LbFPMath_PI/2:
+        pos1 = pos;
+        if ( ((pos->x.val - thing_radius) & ~COORD_PER_STL_MASK) < ((thing->mappos.x.val - thing_radius) & ~COORD_PER_STL_MASK) )
+        {
+          wall_pushed_pos.y.val = pos->y.val;
+          wall_pushed_pos.x.val = thing->mappos.x.val - thing_radius;
+          one_axis_angle = 1;
+          wall_pushed_pos.x.stl.pos = 0;
+          wall_pushed_pos.x.val += thing_radius;
+        }
+        break;
+    case LbFPMath_PI/2:
+        pos1 = pos;
+        if ( ((thing_radius + pos->x.val) & ~COORD_PER_STL_MASK) > ((thing_radius + thing->mappos.x.val) & ~COORD_PER_STL_MASK) )
+        {
+          wall_pushed_pos.y.val = pos->y.val;
+          wall_pushed_pos.x.val = thing_radius + thing->mappos.x.val;
+          one_axis_angle = 1;
+          wall_pushed_pos.x.stl.pos = COORD_PER_STL - 1;
+          wall_pushed_pos.x.val -= thing_radius;
+        }
+        break;
+    case 0:
+          pos1 = pos;
+          if ( ((pos->y.val - thing_radius) & ~COORD_PER_STL_MASK) < ((thing->mappos.y.val - thing_radius) & ~COORD_PER_STL_MASK) )
+          {
+            wall_pushed_pos.x.val = pos->x.val;
+            wall_pushed_pos.y.val = thing->mappos.y.val - thing_radius;
+            wall_pushed_pos.y.stl.pos = 0;
+            one_axis_angle = 1;
+            wall_pushed_pos.y.val += thing_radius;
+          }
+        break;
+    default:
+        pos1 = pos;
+        break;
+    }
+    if (!one_axis_angle)
+      return 0;
+
+    int angle;
+    MapCoord bkp_z;
+    TbBool cannot_move;
+    int speed;
+    struct Coord3d next_pos;
+    struct Coord3d bkp_pos;
+
+    if (arid->hug_side == 1)
+    {
+        angle = ((angle_to_quadrant(hug_angle) - 1) & 3) << 9;
+        speed = arid->move_speed;
+        bkp_z = thing->mappos.z.val;
+        set_coords_to_cylindric_shift(&next_pos, &thing->mappos, speed, angle, 0);
+        next_pos.z.val = get_floor_height_under_thing_at(thing, &thing->mappos);
+        thing->mappos.z.val = next_pos.z.val;
+        cannot_move = creature_cannot_move_directly_to(thing, &next_pos);
+        thing->mappos.z.val = bkp_z;
+        if (cannot_move)
+        {
+            bkp_pos = thing->mappos;
+            thing->mappos = wall_pushed_pos;
+            thing->mappos.z.val = get_thing_height_at(thing, &thing->mappos);
+
+            angle = ((angle_to_quadrant(hug_angle) - 1) & 3) << 9;
+            speed = arid->move_speed;
+            bkp_z = thing->mappos.z.val;
+            set_coords_to_cylindric_shift(&next_pos, &thing->mappos, speed, angle, 0);
+            next_pos.z.val = get_floor_height_under_thing_at(thing, &thing->mappos);
+            thing->mappos.z.val = next_pos.z.val;
+            cannot_move = creature_cannot_move_directly_to(thing, &next_pos);
+            thing->mappos.z.val = bkp_z;
+            if (cannot_move)
+            {
+                thing->mappos = bkp_pos;
+                return 0;
+            }
+            *pos1 = wall_pushed_pos;
+            thing->mappos = bkp_pos;
+            return 1;
+        }
+    }
+    if (arid->hug_side == 2)
+    {
+        angle = ((angle_to_quadrant(hug_angle) + 1) & 3) << 9;
+        speed = arid->move_speed;
+        bkp_z = thing->mappos.z.val;
+        set_coords_to_cylindric_shift(&next_pos, &thing->mappos, speed, angle, 0);
+        next_pos.z.val = get_floor_height_under_thing_at(thing, &thing->mappos);
+        thing->mappos.z.val = next_pos.z.val;
+        cannot_move = creature_cannot_move_directly_to(thing, &next_pos);
+        thing->mappos.z.val = bkp_z;
+        if (cannot_move)
+        {
+            bkp_pos = thing->mappos;
+            thing->mappos = wall_pushed_pos;
+            thing->mappos.z.val = get_thing_height_at(thing, &thing->mappos);
+
+            angle = ((angle_to_quadrant(hug_angle) + 1) & 3) << 9;
+            speed = arid->move_speed;
+            bkp_z = thing->mappos.z.val;
+            set_coords_to_cylindric_shift(&next_pos, &thing->mappos, speed, angle, 0);
+            next_pos.z.val = get_floor_height_under_thing_at(thing, &thing->mappos);
+            thing->mappos.z.val = next_pos.z.val;
+            cannot_move = creature_cannot_move_directly_to(thing, &next_pos);
+            thing->mappos.z.val = bkp_z;
+            if (cannot_move)
+            {
+                thing->mappos = bkp_pos;
+                return 0;
+            }
+            *pos1 = wall_pushed_pos;
+            thing->mappos = bkp_pos;
+            return 1;
+        }
+    }
+    return 0;
 }
 
 TbBool ariadne_creature_on_circular_hug(const struct Thing *thing, const struct Ariadne *arid)
@@ -2998,7 +3133,7 @@ AriadneReturn ariadne_update_state_wallhug(struct Thing *thing, struct Ariadne *
     NAVIDBG(18,"Route for %s index %d from %3d,%3d to %3d,%3d", thing_model_name(thing),(int)thing->index,
         (int)thing->mappos.x.val, (int)thing->mappos.y.val, (int)arid->current_waypoint_pos.x.val, (int)arid->current_waypoint_pos.y.val);
     distance = get_2d_distance(&thing->mappos, &arid->current_waypoint_pos);
-    if ((distance - arid->field_62) > 1024)
+    if ((distance - arid->field_62) > 4*COORD_PER_STL)
     {
         struct Coord3d pos;
         arid->pos_12.x.val = thing->mappos.x.val;

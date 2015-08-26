@@ -630,8 +630,8 @@ void process_spells_affected_by_effect_elements(struct Thing *thing)
         while (pos.z.val < cor_z_max + thing->mappos.z.val)
         {
             angle = (abs(dturn + dtadd) & 7) << 8;
-            shift_x =  (radius * LbSinL(angle) >> 8) >> 8;
-            shift_y = -(radius * LbCosL(angle) >> 8) >> 8;
+            shift_x = distance_with_angle_to_coord_x(radius, angle);
+            shift_y = distance_with_angle_to_coord_y(radius, angle);
             pos.x.val = thing->mappos.x.val + shift_x;
             pos.y.val = thing->mappos.y.val + shift_y;
             effeltng = create_thing(&pos, TCls_EffectElem, 16, thing->owner, -1);
@@ -665,8 +665,8 @@ void process_spells_affected_by_effect_elements(struct Thing *thing)
         for (i=0; i < 16; i++)
         {
             angle = (abs(i) & 0xF) << 7;
-            shift_x =  (radius * LbSinL(angle) >> 8) >> 8;
-            shift_y = -(radius * LbCosL(angle) >> 8) >> 8;
+            shift_x = distance_with_angle_to_coord_x(radius, angle);
+            shift_y = distance_with_angle_to_coord_y(radius, angle);
             pos.x.val = thing->mappos.x.val + shift_x;
             pos.y.val = thing->mappos.y.val + shift_y;
             effeltng = create_thing(&pos, TCls_EffectElem, 0x11u, thing->owner, -1);

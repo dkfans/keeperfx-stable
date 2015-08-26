@@ -583,8 +583,10 @@ void smooth_screen_area(unsigned char *scrbuf, long x, long y, long w, long h, l
 void make_camera_deviations(struct PlayerInfo *player,struct Dungeon *dungeon)
 {
     long x,y;
-    x = player->acamera->mappos.x.val;
-    y = player->acamera->mappos.y.val;
+    struct Camera *cam;
+    cam = player->acamera;
+    x = cam->mappos.x.val;
+    y = cam->mappos.y.val;
     if (dungeon->camera_deviate_quake != 0)
     {
       x += UNSYNC_RANDOM(80) - 40;
@@ -592,8 +594,8 @@ void make_camera_deviations(struct PlayerInfo *player,struct Dungeon *dungeon)
     }
     if (dungeon->camera_deviate_jump != 0)
     {
-      x += ( (dungeon->camera_deviate_jump * LbSinL(player->acamera->orient_a) >> 8) >> 8);
-      y += (-(dungeon->camera_deviate_jump * LbCosL(player->acamera->orient_a) >> 8) >> 8);
+      x += distance_with_angle_to_coord_x(dungeon->camera_deviate_jump, cam->orient_a);
+      y += distance_with_angle_to_coord_y(dungeon->camera_deviate_jump, cam->orient_a);
     }
     if ((dungeon->camera_deviate_quake != 0) || (dungeon->camera_deviate_jump != 0))
     {
@@ -615,8 +617,8 @@ void make_camera_deviations(struct PlayerInfo *player,struct Dungeon *dungeon)
         y = 65535;
       }
       // setting deviated position
-      player->acamera->mappos.x.val = x;
-      player->acamera->mappos.y.val = y;
+      cam->mappos.x.val = x;
+      cam->mappos.y.val = y;
     }
 }
 
