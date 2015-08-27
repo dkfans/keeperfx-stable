@@ -1080,7 +1080,7 @@ short imp_drops_gold(struct Thing *spdigtng)
         if (!thing_is_invalid(gldtng))
             spdigtng->creature.gold_carried -= gldtng->valuable.gold_stored;
     }
-    thing_play_sample(spdigtng, UNSYNC_RANDOM(3) + 32, NORMAL_PITCH, 0, 3, 0, 2, FULL_LOUDNESS);
+    thing_play_sample(spdigtng, 32+UNSYNC_RANDOM(3), NORMAL_PITCH, 0, 3, 0, 2, FULL_LOUDNESS);
     if ((spdigtng->creature.gold_carried != 0) && (room->used_capacity < room->total_capacity))
     {
         if (setup_head_for_empty_treasure_space(spdigtng, room)) {

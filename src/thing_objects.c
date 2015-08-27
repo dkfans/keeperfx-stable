@@ -1072,8 +1072,8 @@ long food_moves(struct Thing *objtng)
         long dangle;
         dangle = get_angle_difference(objtng->move_angle_xy, objtng->food.word_18);
         sangle = get_angle_sign(objtng->move_angle_xy, objtng->food.word_18);
-        if (dangle > 62)
-            dangle = 62;
+        if (dangle > (LbFPMath_PI/16)*31/32)
+            dangle = (LbFPMath_PI/16)*31/32;
         objtng->move_angle_xy = (objtng->move_angle_xy + dangle * sangle) & LbFPMath_AngleMask;
         if (get_angle_difference(objtng->move_angle_xy, objtng->food.word_18) < 284)
         {
@@ -1087,7 +1087,7 @@ long food_moves(struct Thing *objtng)
         if (objtng->snd_emitter_id == 0)
         {
             if (snd_smplidx > 0) {
-              thing_play_sample(objtng, snd_smplidx, 100, 0, 3u, 0, 1, 256);
+              thing_play_sample(objtng, snd_smplidx, NORMAL_PITCH, 0, 3, 0, 1, FULL_LOUDNESS);
               return 1;
             }
             if (UNSYNC_RANDOM(0x50) == 0)
@@ -1097,7 +1097,7 @@ long food_moves(struct Thing *objtng)
         }
     }
     if (snd_smplidx > 0) {
-        thing_play_sample(objtng, snd_smplidx, 100, 0, 3u, 0, 1, 256);
+        thing_play_sample(objtng, snd_smplidx, NORMAL_PITCH, 0, 3, 0, 1, FULL_LOUDNESS);
         return 1;
     }
     return 1;
@@ -1154,10 +1154,10 @@ long food_grows(struct Thing *objtng)
         delete_thing_structure(objtng, 0);
         nobjtng = create_object(&pos, 10, tngowner, -1);
         if (!thing_is_invalid(nobjtng)) {
-            nobjtng->move_angle_xy = ACTION_RANDOM(0x800);
+            nobjtng->move_angle_xy = ACTION_RANDOM(2*LbFPMath_PI);
             nobjtng->food.byte_15 = ACTION_RANDOM(0x6FF);
             nobjtng->food.byte_16 = 0;
-          thing_play_sample(nobjtng, 80 + UNSYNC_RANDOM(3), 100, 0, 3u, 0, 1, 256);
+          thing_play_sample(nobjtng, 80 + UNSYNC_RANDOM(3), NORMAL_PITCH, 0, 3, 0, 1, FULL_LOUDNESS);
           if (!is_neutral_thing(nobjtng)) {
               struct Dungeon *dungeon;
               dungeon = get_dungeon(nobjtng->owner);

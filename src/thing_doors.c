@@ -146,7 +146,7 @@ long destroy_door(struct Thing *doortng)
     struct Thing *efftng;
     efftng = create_effect(&pos, TngEff_Unknown49, plyr_idx);
     if (!thing_is_invalid(efftng)) {
-        thing_play_sample(efftng, 72 + UNSYNC_RANDOM(4), NORMAL_PITCH, 0, 3, 0, 3, FULL_LOUDNESS);
+        thing_play_sample(efftng, 72+UNSYNC_RANDOM(4), NORMAL_PITCH, 0, 3, 0, 3, FULL_LOUDNESS);
     }
     if (plyr_idx != game.neutral_player_num)
     {

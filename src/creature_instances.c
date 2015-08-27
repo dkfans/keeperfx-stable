@@ -576,7 +576,7 @@ long instf_dig(struct Thing *creatng, long *param)
     {
         if (!slab_kind_is_indestructible(slb->kind))
             slb->health -= dig_damage;
-        thing_play_sample(creatng, 63 + UNSYNC_RANDOM(6), NORMAL_PITCH, 0, 3, 0, 2, FULL_LOUDNESS);
+        thing_play_sample(creatng, 63+UNSYNC_RANDOM(6), NORMAL_PITCH, 0, 3, 0, 2, FULL_LOUDNESS);
         create_effect(&creatng->mappos, TngEff_Unknown25, creatng->owner);
         if (taskkind == SDDigTask_MineGold)
         {
@@ -618,7 +618,7 @@ long instf_dig(struct Thing *creatng, long *param)
         }
     }
     check_map_explored(creatng, stl_x, stl_y);
-    thing_play_sample(creatng, 72 + UNSYNC_RANDOM(3), NORMAL_PITCH, 0, 3, 0, 4, FULL_LOUDNESS);
+    thing_play_sample(creatng, 72+UNSYNC_RANDOM(3), NORMAL_PITCH, 0, 3, 0, 4, FULL_LOUDNESS);
     return 1;
 }
 
@@ -696,7 +696,7 @@ long instf_attack_room_slab(struct Thing *creatng, long *param)
     {
         //TODO CONFIG damage made to room slabs is constant - doesn't look good
         slb->health -= 2;
-        thing_play_sample(creatng, 128 + UNSYNC_RANDOM(3), NORMAL_PITCH, 0, 3, 0, 2, FULL_LOUDNESS);
+        thing_play_sample(creatng, 128+UNSYNC_RANDOM(3), NORMAL_PITCH, 0, 3, 0, 2, FULL_LOUDNESS);
         return 1;
     }
     if (room->owner != game.neutral_player_num)

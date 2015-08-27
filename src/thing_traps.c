@@ -741,7 +741,7 @@ long remove_traps_around_subtile(MapSubtlCoord stl_x, MapSubtlCoord stl_y, long 
     return total;
 }
 
-void external_activate_trap_shot_at_angle(struct Thing *thing, long a2)
+void external_activate_trap_shot_at_angle(struct Thing *thing, long angle)
 {
     struct TrapStats *trapstat;
     trapstat = &trap_stats[thing->model];
@@ -757,7 +757,7 @@ void external_activate_trap_shot_at_angle(struct Thing *thing, long a2)
     struct ShotConfigStats *shotst;
     shotst = get_shot_model_stats(shotng->model);
     struct ComponentVector cvect;
-    shotng->move_angle_xy = a2;
+    shotng->move_angle_xy = angle;
     shotng->move_angle_z = 0;
     angles_to_vector(shotng->move_angle_xy, 0, shotst->old->speed, &cvect);
     shotng->veloc_push_add.x.val += cvect.x;

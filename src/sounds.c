@@ -158,7 +158,7 @@ void play_thing_walking(struct Thing *thing)
             }
             thing_play_sample(thing, smpl_idx, smpl_delay, 0, 3, 3, 1, loudness);
             if ((thing->movement_flags & TMvF_IsOnWater) != 0) {
-                thing_play_sample(thing, 21 + SOUND_RANDOM(4), 90 + SOUND_RANDOM(20), 0, 3, 3, 1, FULL_LOUDNESS);
+                thing_play_sample(thing, 21+SOUND_RANDOM(4), 90+SOUND_RANDOM(20), 0, 3, 3, 1, FULL_LOUDNESS);
             }
         }
     }
