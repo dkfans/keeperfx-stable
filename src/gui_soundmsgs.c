@@ -36,7 +36,6 @@ DLLIMPORT struct MessageQueueEntry _DK_message_queue[MESSAGE_QUEUE_COUNT];
 #define message_queue _DK_message_queue
 DLLIMPORT unsigned long _DK_message_playing;
 #define message_playing _DK_message_playing
-DLLIMPORT struct SMessage _DK_messages[126];
 /******************************************************************************/
 enum SpeechPhraseIndex {
     SpchIdx_Invalid = 0,
@@ -149,7 +148,8 @@ enum SpeechPhraseIndex {
     SpchIdx_SenceAvatar,
     SpchIdx_AvatarBodyVanished,
     SpchIdx_GameFinalVictory,
-    SpchIdx_KeeperHarassment1,
+    //TODO SPEECH_FILE insert placefiller speeches here (~38, to 148) after next full release (when sfx v3 data files are released)
+    SpchIdx_KeeperHarassment1, // 110 (to be changed to 148)
     SpchIdx_KeeperHarassment2,
     SpchIdx_KeeperHarassment3,
     SpchIdx_KeeperHarassment4,
@@ -157,6 +157,7 @@ enum SpeechPhraseIndex {
     SpchIdx_KeeperHarassment6,
     SpchIdx_KeeperHarassment7,
     SpchIdx_KeeperHarassment8,
+    //TODO SPEECH_FILE insert placefiller speeches here (+8)
     SpchIdx_HeroHarassment1,
     SpchIdx_HeroHarassment2,
     SpchIdx_HeroHarassment3,
@@ -165,10 +166,11 @@ enum SpeechPhraseIndex {
     SpchIdx_HeroHarassment6,
     SpchIdx_HeroHarassment7,
     SpchIdx_HeroHarassment8,
+    //TODO SPEECH_FILE insert placefiller speeches here (+8)
 };
 
 /** Array used for converting speech phrase index into sample data. */
-Phrase phrases[] = {
+SoundSmplTblID phrases[] = {
     0,  1,  2,  3,  4,  5,  6,  7,  8, 9,  10, 11, 12, 13, 14, 15,
    16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
    32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
@@ -177,6 +179,7 @@ Phrase phrases[] = {
    80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95,
    96, 97, 98, 99,100,101,102,103,104,105,106,107,108,109,110,111,
   112,113,114,115,116,117,118,119,120,121,122,123,124,125,
+  //TODO SPEECH_FILE add new entries when placefiller speeches are added, after next full release (when sfx v3 data files are released)
 };
 
 struct SMessage messages[] = {
@@ -309,6 +312,20 @@ struct SMessage messages[] = {
 };
 
 /******************************************************************************/
+/** Returns speech sample for given phrase index.
+ *
+ * @param phr_idx
+ * @return The speech sample number; on error, returns 0;
+ */
+SoundSmplTblID get_phrase_sample(SpeechPhrase phr_idx)
+{
+    if ((phr_idx < 0) || (phr_idx >= sizeof(phrases)/sizeof(phrases[0]))) {
+        WARNDBG(3,"Speech %d out of range",(int)phr_idx);
+        phr_idx = 0;
+    }
+    return phrases[phr_idx];
+}
+
 /**
  * Plays an in-game message.
  *
@@ -322,7 +339,7 @@ struct SMessage messages[] = {
 TbBool output_message(long msg_idx, long delay, TbBool queue)
 {
     struct SMessage *smsg;
-    long i;
+    SoundSmplTblID smptbl_id;
     SYNCDBG(5,"Message %ld, delay %ld, queue %s",msg_idx, delay, queue?"on":"off");
     smsg = &messages[msg_idx];
     if (!message_can_be_played(msg_idx))
@@ -332,13 +349,13 @@ TbBool output_message(long msg_idx, long delay, TbBool queue)
     }
     if (!speech_sample_playing())
     {
-      i = get_phrase_sample(get_phrase_for_message(msg_idx));
-      if (i == 0)
+      smptbl_id = get_phrase_sample(get_phrase_for_message(msg_idx));
+      if (smptbl_id == 0)
       {
           SYNCDBG(8,"No phrase %d sample, skipping",(int)msg_idx);
           return false;
       }
-      if (play_speech_sample(i))
+      if (play_speech_sample(smptbl_id))
       {
           message_playing = msg_idx;
           smsg->end_time = (long)game.play_gameturn + delay;
@@ -462,7 +479,7 @@ TbBool add_message_to_queue(long msg_idx, long delay)
 }
 
 /** Returns a random speech phrase for given message */
-long get_phrase_for_message(long msg_idx)
+SpeechPhrase get_phrase_for_message(long msg_idx)
 {
   struct SMessage *smsg;
   long i;
@@ -471,18 +488,6 @@ long get_phrase_for_message(long msg_idx)
       return -1;
   i = UNSYNC_RANDOM(smsg->count);
   return smsg->start_idx + i;
-}
-
-/** Returns speech sample for given phrase index.
- *
- * @param phr_idx
- * @return The speech sample number; on error, trturns 0;
- */
-long get_phrase_sample(long phr_idx)
-{
-    if ((phr_idx < 0) || (phr_idx >= sizeof(phrases)/sizeof(phrases[0])))
-        phr_idx = 0;
-    return phrases[phr_idx];
 }
 
 void clear_messages(void)
@@ -496,11 +501,6 @@ void clear_messages(void)
     for (i=0; i < sizeof(messages)/sizeof(messages[0]); i++)
     {
         messages[i].end_time = 0;
-    }
-    // Remove when won't be needed anymore
-    for (i=0; i < sizeof(_DK_messages)/sizeof(_DK_messages[0]); i++)
-    {
-        _DK_messages[i].end_time = 0;
     }
 }
 

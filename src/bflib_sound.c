@@ -1086,6 +1086,17 @@ long play_speech_sample(SoundSmplTblID smptbl_id)
     return true;
 }
 
+TbBool stop_any_speech_sample(void)
+{
+    if (SpeechEmitter != 0)
+    {
+        S3DDestroySoundEmitterAndSamples(SpeechEmitter);
+        SpeechEmitter = 0;
+        return true;
+    }
+    return false;
+}
+
 long start_emitter_playing(struct SoundEmitter *emit, SoundSmplTblID smptbl_id, SoundBankID bank_id, long smpitch, SoundVolume loudness, long fild1D, long ctype, unsigned char flags, long fild0)
 {
     struct S3DSample *sample;

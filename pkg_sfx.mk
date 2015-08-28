@@ -92,7 +92,7 @@ define define_campaign_speeches_rule
 pkg/campgns/$(1)_$(2): sfx/campgns/$(1)_$(2)/filelist.txt
 	-$(ECHO) 'Copying campaign SFX: $$@'
 	@$(MKDIR) "$$@"
-	tail -n +2 "$$<" | cut -f1 | xargs -d '\n' -I {} $(CP) "$$(<D)/{}" "$$@/"
+	tail -n +2 "$$<" | cut -f1 | sort -u | xargs -d '\n' -I {} $(CP) "$$(<D)/{}" "$$@/"
 	-$(ECHO) 'Finished copying: $$@'
 	-$(ECHO) ' '
 
@@ -100,18 +100,33 @@ endef
 
 $(foreach campaign,$(sort $(CAMPAIGNS)),$(foreach lng,$(sort $(LANGS)),$(eval $(call define_campaign_speeches_rule,$(campaign),$(lng)))))
 
-convert-sfx: $(patsubst %,convert-speech-sfx-%,$(NGSPEECHBANKS)) $(patsubst %,convert-campaign-sfx-%,$(LANDVIEWSPEECH))
+convert-sfx: convert-ingame-sounds-sfx $(patsubst %,convert-speech-sfx-%,$(NGSPEECHBANKS)) $(patsubst %,convert-campaign-sfx-%,$(LANDVIEWSPEECH))
+
+convert-ingame-sounds-sfx: sfx/sound/filelist.txt
+	-$(ECHO) 'Converting ingame sound samples in list: $<'
+	tail -n +2 "$<" | cut -f1 | sort -u | xargs -d '\n' -I {} \
+	sox "$(<D)_design/{}" -c 1 -b 16 -r 22050 -e signed-integer "$(<D)/{}"
+#   now special cases - re-convert some files with a bit different settings
+	echo -ne "keeper_spells/possess.wav\n" | xargs -d '\n' -I {} \
+	sox "$(<D)_design/{}" -c 2 -b 16 -r 22050 -e signed-integer "$(<D)/{}"
+	echo -ne "traps/lgtnball.wav\ngui/tabhit.wav\n" | xargs -d '\n' -I {} \
+	sox "$(<D)_design/{}" -c 1 -b 16 -r 44100 -e signed-integer "$(<D)/{}"
+	-$(ECHO) 'Finished converting list: $<'
+	-$(ECHO) ' '
 
 convert-speech-sfx-%: sfx/%/filelist.txt
 	-$(ECHO) 'Converting speech samples in list: $<'
-	tail -n +2 "$<" | cut -f1 | xargs -d '\n' -I {} sox "$(<D)/design/{}" -c 1 -b 8 -r 22050 -e unsigned-integer "$(<D)/{}" compand 0.02,0.20 5:-40,-40,-35,-20,-10 -6 -90 0.1 gain -n -0.1
+	@$(MKDIR) "$(<D)/heroes" "$(<D)/keepers" "$(<D)/mentor"
+	tail -n +2 "$<" | cut -f1 | sort -u | xargs -d '\n' -I {} \
+	sox "$(<D)_design/{}" -c 1 -b 8 -r 22050 -e unsigned-integer "$(<D)/{}" compand 0.02,0.20 5:-40,-40,-35,-20,-10 -6 -90 0.1 gain -n -0.1
 #	best would be "compand 0.02,0.20 5:-60,-40,-10 -6 -90 0.1", modification is to skip noise
 	-$(ECHO) 'Finished converting list: $<'
 	-$(ECHO) ' '
 
 convert-campaign-sfx-%: sfx/campgns/%/filelist.txt
 	-$(ECHO) 'Converting campaign speeches in list: $<'
-	tail -n +2 "$<" | cut -f1 | xargs -d '\n' -I {} sox "$(<D)/design/{}" -c 1 -r 22050 -e ms-adpcm "$(<D)/{}" compand 0.02,0.20 5:-40,-40,-35,-20,-10 -6 -90 0.1 gain -n -0.1
+	tail -n +2 "$<" | cut -f1 | sort -u | xargs -d '\n' -I {} \
+	sox "$(<D)_design/{}" -c 1 -r 22050 -e ms-adpcm "$(<D)/{}" compand 0.02,0.20 5:-40,-40,-35,-20,-10 -6 -90 0.1 gain -n -0.1
 #	best would be "compand 0.02,0.20 5:-60,-40,-10 -6 -90 0.1", modification is to skip noise
 	-$(ECHO) 'Finished converting list: $<'
 	-$(ECHO) ' '

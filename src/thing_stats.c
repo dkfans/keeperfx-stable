@@ -1008,7 +1008,7 @@ const char *creature_statistic_text(const struct Thing *creatng, CreatureLiveSta
         text = loc_text;
         break;
     case CrLStat_BestDamage:
-        //TODO compute damage of best attack
+        //TODO STATS compute damage of best attack
         text = lbEmptyString;
         break;
     default:

@@ -664,11 +664,7 @@ TbBool ambient_sound_stop(void)
 void sound_reinit_after_load(void)
 {
     stop_all_things_playing_samples();
-    if (SpeechEmitter != 0)
-    {
-        S3DDestroySoundEmitterAndSamples(SpeechEmitter);
-        SpeechEmitter = 0;
-    }
+    stop_any_speech_sample();
     if (Non3DEmitter != 0)
     {
         S3DDestroySoundEmitterAndSamples(Non3DEmitter);

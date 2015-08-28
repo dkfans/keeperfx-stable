@@ -168,7 +168,7 @@ enum TbSpeechMessages {
 #define SMsg_NoRouteToPrison SMsg_None
 #define SMsg_NoRouteToGraveyard SMsg_None
 
-typedef unsigned long Phrase;
+typedef unsigned long SpeechPhrase;
 
 enum OutputMessageKinds {
     OMsg_None = 0,
@@ -180,9 +180,9 @@ enum OutputMessageKinds {
 typedef unsigned int OutputMessageKind;
 
 struct SMessage {
-      long start_idx;
-      long count;
-      long end_time;
+    SpeechPhrase start_idx;
+    long count;
+    long end_time;
 };
 
 struct MessageQueueEntry { // sizeof = 9
@@ -197,8 +197,7 @@ TbBool output_message(long msg_idx, long delay, TbBool queue);
 TbBool message_already_in_queue(long msg_idx);
 TbBool add_message_to_queue(long msg_idx, long delay);
 TbBool message_queue_empty(void);
-long get_phrase_for_message(long msg_idx);
-long get_phrase_sample(long phr_idx);
+SpeechPhrase get_phrase_for_message(long msg_idx);
 TbBool message_can_be_played(long msg_idx);
 void clear_messages(void);
 void init_messages_turns(long delay);

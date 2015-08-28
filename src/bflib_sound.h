@@ -184,8 +184,11 @@ short sound_emitter_in_use(SoundEmitterID eidx);
 long get_best_sound_heap_size(long mem_size);
 struct SampleInfo *play_sample_using_heap(unsigned long a1, short a2, unsigned long a3, unsigned long a4, unsigned long a5, char a6, unsigned char a7, SoundBankID bank_id);
 void stop_sample_using_heap(SoundEmitterID emit_id, SoundSmplTblID smptbl_id, SoundBankID bank_id);
+
 long speech_sample_playing(void);
 long play_speech_sample(SoundSmplTblID smptbl_id);
+TbBool stop_any_speech_sample(void);
+
 void close_sound_heap(void);
 void close_sound_bank(SoundBankID bank_id);
 long stop_emitter_samples(struct SoundEmitter *emit);

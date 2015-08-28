@@ -22,6 +22,7 @@
 #include "bflib_basics.h"
 
 #include "bflib_math.h"
+#include "bflib_planar.h"
 #include "thing_list.h"
 #include "thing_creature.h"
 #include "thing_physics.h"
