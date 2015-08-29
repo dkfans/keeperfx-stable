@@ -453,7 +453,7 @@ struct Thing *create_object(const struct Coord3d *pos, unsigned short model, uns
     }
     set_thing_draw(thing, i, objdat->anim_speed, objdat->sprite_size_max, 0, k, objdat->field_11);
     set_flag_byte(&thing->field_4F, TF4F_Unknown02, objconf->field_5);
-    set_flag_byte(&thing->field_4F, TF4F_Unknown01, objdat->field_3 & 0x01);
+    set_flag_byte(&thing->field_4F, TF4F_DoNotDraw, objdat->field_3 & 0x01);
     set_flag_byte(&thing->field_4F, TF4F_Unknown10, objdat->field_F & 0x01);
     set_flag_byte(&thing->field_4F, TF4F_Unknown20, objdat->field_F & 0x02);
     thing->active_state = objdat->initial_state;
@@ -1645,7 +1645,7 @@ TngUpdateRet object_update_armour(struct Thing *objtng)
     thing = thing_get(objtng->word_13);
     if (thing_is_picked_up(thing))
     {
-        objtng->field_4F |= TF4F_Unknown01;
+        objtng->field_4F |= TF4F_DoNotDraw;
         return 1;
     }
     long cvect_len;
@@ -1689,7 +1689,7 @@ TngUpdateRet object_update_armour(struct Thing *objtng)
     objtng->veloc_push_add.x.val += cvect.x;
     objtng->veloc_push_add.y.val += cvect.y;
     objtng->veloc_push_add.z.val += cvect.z;
-    objtng->field_4F &= ~TF4F_Unknown01;
+    objtng->field_4F &= ~TF4F_DoNotDraw;
     return 1;
 }
 

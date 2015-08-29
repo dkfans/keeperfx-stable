@@ -954,7 +954,8 @@ void leave_creature_as_controller(struct PlayerInfo *player, struct Thing *thing
     clear_selected_thing(player);
     set_player_mode(player, PVT_DungeonTop);
     thing->alloc_flags &= ~TAlF_IsControlled;
-    thing->field_4F &= ~TF4F_Unknown01;
+    thing->state_flags &= ~TF1_IsPlayerCamera;
+    thing->field_4F &= ~TF4F_DoNotDraw;
     player->allocflags &= ~PlaF_Unknown8;
     set_engine_view(player, player->view_mode_restore);
     i = player->acamera->orient_a;
@@ -1001,7 +1002,8 @@ void leave_creature_as_passenger(struct PlayerInfo *player, struct Thing *thing)
     return;
   }
   set_player_mode(player, PVT_DungeonTop);
-  thing->field_4F &= ~TF4F_Unknown01;
+  thing->state_flags &= ~TF1_IsPlayerCamera;
+  thing->field_4F &= ~TF4F_DoNotDraw;
   player->allocflags &= ~PlaF_Unknown8;
   set_engine_view(player, player->view_mode_restore);
   i = player->acamera->orient_a;
@@ -1108,6 +1110,32 @@ TbBool is_thing_some_way_controlled(const struct Thing *thing)
         return false;
     player = get_player(thing->owner);
     return (player->controlled_thing_idx == thing->index);
+}
+
+TbBool is_thing_used_as_player_camera(const struct Thing *thing, PlayerNumber plyr_idx)
+{
+    struct PlayerInfo *player;
+    player = get_player(plyr_idx);
+    if ((player->view_type == PVT_CreatureContrl) || (player->view_type == PVT_CreaturePasngr))
+    {
+        return (player->controlled_thing_idx == thing->index);
+    }
+    return false;
+}
+
+TbBool is_thing_used_as_any_player_camera(const struct Thing *thing)
+{
+    if ((thing->state_flags & TF1_IsPlayerCamera) == 0) {
+        return false;
+    }
+    PlayerNumber plyr_idx;
+    for (plyr_idx=0; plyr_idx < PLAYERS_COUNT; plyr_idx++)
+    {
+        if (is_thing_used_as_player_camera(thing, plyr_idx)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 TbBool set_selected_thing_f(struct PlayerInfo *player, struct Thing *thing, const char *func_name)

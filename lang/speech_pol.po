@@ -21,7 +21,7 @@ msgstr ""
 "Project-Id-Version: Speeches for KeeperFX\n"
 "Report-Msgid-Bugs-To: https://code.google.com/p/keeperfx/issues/list\n"
 "POT-Creation-Date: 2012-09-02 01:12+0200\n"
-"PO-Revision-Date: 2014-06-27 19:59+0100\n"
+"PO-Revision-Date: 2015-12-21 14:50+0100\n"
 "Last-Translator: Tomasz Lis <listom@gmail.com>\n"
 "Language-Team: KeeperFX Team <code.google.com>\n"
 "Language: pl_PL\n"
@@ -596,82 +596,82 @@ msgid ""
 "the new lord of shadows."
 msgstr "Jesteś zwycięzcą! Witaj, nowy władco!"
 
-#: speech:109
+#: speech:148
 msgctxt "Enemy Keeper Harassment"
 msgid "Your efforts are futile!"
 msgstr "Twoje wysiłki są daremne!"
 
-#: speech:110
+#: speech:149
 msgctxt "Enemy Keeper Harassment"
 msgid "My dungeon is the finest You shall ever see!"
 msgstr "Nie zobaczysz piękniejszego lochu niż mój!"
 
-#: speech:111
+#: speech:150
 msgctxt "Enemy Keeper Harassment"
 msgid "My minions will leave your dungeon a crumbling ruin!"
 msgstr "Moi słudzy zmienią twój loch z zwietrzałą ruinę."
 
-#: speech:112
+#: speech:151
 msgctxt "Enemy Keeper Harassment"
 msgid "You entrails will decorate the darkest alchow of my domain!"
 msgstr "Twoje wnętrzności udekorują me dominium!"
 
-#: speech:113
+#: speech:152
 msgctxt "Enemy Keeper Harassment"
 msgid "Your corpse shall se my minions yet, keeper!"
-msgstr "Twe ciało będzie ciało dla mych sług, strażniku!"
+msgstr "Twe ciało będzie strawą dla mych sług, strażniku!"
 
-#: speech:114
+#: speech:153
 msgctxt "Enemy Keeper Harassment"
 msgid "Prepare for oblivion, Keeper!"
 msgstr "Czeka cię niebyt, strażniku!"
 
-#: speech:115
+#: speech:154
 msgctxt "Enemy Keeper Harassment"
 msgid "Pathetic creature, I shall crush you in an instant!"
 msgstr "Patetyczny stworze, zniszczę się w mgnieniu oka!"
 
-#: speech:116
+#: speech:155
 msgctxt "Enemy Keeper Harassment"
 msgid "Ho ho ho ho!"
 msgstr "Ha ha ha ha!"
 
-#: speech:117
+#: speech:164
 msgctxt "Hero Talk Upon Entering"
 msgid "Your dark days are numbered, evil one!"
 msgstr "Twe mroczne dni są policzone, demonie!"
 
-#: speech:118
+#: speech:165
 msgctxt "Hero Talk Upon Entering"
 msgid "We come to rid the world of your evil!"
 msgstr "Przyszliśmy by uwolnić od ciebie świat!"
 
-#: speech:119
+#: speech:166
 msgctxt "Hero Talk Upon Entering"
 msgid "We shall send you back to the pits, vile one!"
-msgstr "Poslemy cię z powrotem do piachu, głupcze!"
+msgstr "Poślemy cię z powrotem do piachu, głupcze!"
 
-#: speech:120
+#: speech:167
 msgctxt "Hero Talk Upon Entering"
 msgid "Your reign shall end before this day is done!"
 msgstr "Twe panowanie skończy się nim minie dzień!"
 
-#: speech:121
+#: speech:168
 msgctxt "Hero Talk Upon Entering"
 msgid "We shall cast you back into the shadows, keeper!"
 msgstr "Odeślemy cię do krainy cieni, strażniku!"
 
-#: speech:122
+#: speech:169
 msgctxt "Hero Talk Upon Entering"
 msgid "Leave us to live our lives in peace!"
 msgstr "Odejdź, chcemy żyć w pokoju!"
 
-#: speech:123
+#: speech:170
 msgctxt "Hero Talk Upon Entering"
 msgid "In the name of all that is good, we shall defeat you!"
 msgstr "W imie wszystkiego co dobre, pokonamy cię!"
 
-#: speech:124
+#: speech:171
 msgctxt "Hero Talk Upon Entering"
 msgid "We shall not tolerate your evil presence any longer!"
 msgstr "Nie zniesiemy dłużej twej demonicznej obecności!"

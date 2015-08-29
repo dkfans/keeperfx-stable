@@ -122,7 +122,7 @@ short cleanup_torturing(struct Thing *creatng)
         thing = thing_get(cctrl->word_A6);
         if (thing_exists(thing)) {
             thing->word_13 = 0;
-            thing->field_4F &= ~TF4F_Unknown01;
+            thing->field_4F &= ~TF4F_DoNotDraw;
         }
         cctrl->word_A6 = 0;
     }
@@ -224,7 +224,7 @@ long process_torture_visuals(struct Thing *creatng, struct Room *room, CreatureJ
             set_creature_instance(creatng, CrInst_TORTURED, 1, 0, 0);
         }
         if (thing_exists(sectng)) {
-            sectng->field_4F |= TF4F_Unknown01;
+            sectng->field_4F |= TF4F_DoNotDraw;
         } else {
             ERRORLOG("No device for torture");
         }

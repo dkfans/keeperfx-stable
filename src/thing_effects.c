@@ -541,7 +541,7 @@ struct Thing *create_effect_element(const struct Coord3d *pos, unsigned short ee
         set_flag_byte(&thing->field_4F,TF4F_Unknown40,eestat->field_D);
     } else
     {
-        set_flag_byte(&thing->field_4F,TF4F_Unknown01,true);
+        set_flag_byte(&thing->field_4F,TF4F_DoNotDraw,true);
     }
 
     thing->field_20 = eestat->field_18;
@@ -1220,7 +1220,7 @@ struct Thing *create_effect(const struct Coord3d *pos, ThingModel effmodel, Play
     thing->field_20 = 0;
     thing->field_23 = 0;
     thing->field_24 = 0;
-    thing->field_4F |= TF4F_Unknown01;
+    thing->field_4F |= TF4F_DoNotDraw;
     thing->health = ieffect->start_health;
     if (ieffect->ilght.field_0 != 0)
     {

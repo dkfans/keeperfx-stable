@@ -316,7 +316,8 @@ TbBool control_creature_as_controller(struct PlayerInfo *player, struct Thing *t
     if (cam != NULL)
       player->view_mode_restore = cam->view_mode;
     thing->alloc_flags |= TAlF_IsControlled;
-    thing->field_4F |= TF4F_Unknown01;
+    thing->state_flags |= TF1_IsPlayerCamera;
+    thing->field_4F |= TF4F_DoNotDraw;
     set_start_state(thing);
     set_player_mode(player, PVT_CreatureContrl);
     if (thing_is_creature(thing))
@@ -363,8 +364,7 @@ TbBool control_creature_as_passenger(struct PlayerInfo *player, struct Thing *th
     }
     if (!thing_can_be_controlled_as_passenger(thing))
     {
-        ERRORLOG("The %s can't be controlled as passenger",
-            thing_model_name(thing));
+        ERRORLOG("The %s index %d cannot be controlled as passenger", thing_model_name(thing),(int)thing->index);
         return false;
     }
     if (is_my_player(player))
@@ -377,7 +377,8 @@ TbBool control_creature_as_passenger(struct PlayerInfo *player, struct Thing *th
     if (cam != NULL)
       player->view_mode_restore = cam->view_mode;
     set_player_mode(player, PVT_CreaturePasngr);
-    thing->field_4F |= TF4F_Unknown01;
+    thing->state_flags |= TF1_IsPlayerCamera;
+    thing->field_4F |= TF4F_DoNotDraw;
     return true;
 }
 
@@ -454,8 +455,11 @@ void draw_swipe_graphic(void)
             n = (int)cctrl->inst_turn * (5 << 8) / cctrl->inst_total_turns;
             allwidth = 0;
             i = abs(n) >> 8;
-            if (i >= SWIPE_SPRITE_FRAMES)
-                i = SWIPE_SPRITE_FRAMES-1;
+            if ((swipe_sprites == NULL) || (i >= SWIPE_SPRITE_FRAMES)) {
+                ERRORLOG("Index outranged or swipes not initialized");
+                lbDisplay.DrawFlags = 0;
+                return;
+            }
             sprlist = &swipe_sprites[SWIPE_SPRITES_X*SWIPE_SPRITES_Y*i];
             startspr = &sprlist[1];
             endspr = &sprlist[1];

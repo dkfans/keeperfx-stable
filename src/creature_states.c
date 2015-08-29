@@ -1611,7 +1611,7 @@ short creature_change_from_chicken(struct Thing *creatng)
         cctrl->countdown_282--;
     if (cctrl->countdown_282 > 0)
     { // Changing under way - gradually modify size of the creature
-        creatng->field_4F |= TF4F_Unknown01;
+        creatng->field_4F |= TF4F_DoNotDraw;
         creatng->field_50 |= 0x01;
         struct Thing *efftng;
         efftng = create_effect_element(&creatng->mappos, 0x3Bu, creatng->owner);
@@ -1628,7 +1628,7 @@ short creature_change_from_chicken(struct Thing *creatng)
         return 0;
     } else
     {
-        creatng->field_4F &= ~TF4F_Unknown01;
+        creatng->field_4F &= ~TF4F_DoNotDraw;
         cctrl->stateblock_flags &= ~CCSpl_ChickenRel;
         cctrl->spell_flags &= ~CSAfF_Chicken;
         set_creature_size_stuff(creatng);
@@ -1648,7 +1648,7 @@ short creature_change_to_chicken(struct Thing *creatng)
     if (cctrl->countdown_282 > 0)
     {
       creatng->field_50 |= 0x01;
-      creatng->field_4F |= TF4F_Unknown01;
+      creatng->field_4F |= TF4F_DoNotDraw;
       struct Thing *efftng;
       efftng = create_effect_element(&creatng->mappos, 59, creatng->owner);
       if (!thing_is_invalid(efftng))
@@ -1662,7 +1662,7 @@ short creature_change_to_chicken(struct Thing *creatng)
       return 0;
     }
     cctrl->spell_flags |= CSAfF_Chicken;
-    creatng->field_4F &= ~TF4F_Unknown01;
+    creatng->field_4F &= ~TF4F_DoNotDraw;
     set_creature_size_stuff(creatng);
     creatng->state_flags &= ~TF1_Unkn10;
     creatng->active_state = CrSt_CreaturePretendChickenSetupMove;
@@ -3164,14 +3164,14 @@ long setup_head_for_empty_treasure_space(struct Thing *thing, struct Room *room)
 void place_thing_in_creature_controlled_limbo(struct Thing *thing)
 {
     remove_thing_from_mapwho(thing);
-    thing->field_4F |= TF4F_Unknown01;
+    thing->field_4F |= TF4F_DoNotDraw;
     thing->state_flags |= TF1_InCtrldLimbo;
 }
 
 void remove_thing_from_creature_controlled_limbo(struct Thing *thing)
 {
     thing->state_flags &= ~TF1_InCtrldLimbo;
-    thing->field_4F &= ~TF4F_Unknown01;
+    thing->field_4F &= ~TF4F_DoNotDraw;
     place_thing_in_mapwho(thing);
 }
 

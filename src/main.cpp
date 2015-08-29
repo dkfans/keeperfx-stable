@@ -2931,7 +2931,7 @@ long update_cave_in(struct Thing *thing)
 {
     //return _DK_update_cave_in(thing);
     thing->health--;
-    thing->field_4F |= TF4F_Unknown01;
+    thing->field_4F |= TF4F_DoNotDraw;
     if (thing->health < 1)
     {
         delete_thing_structure(thing, 0);

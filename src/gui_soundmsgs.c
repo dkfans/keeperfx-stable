@@ -157,7 +157,7 @@ enum SpeechPhraseIndex {
     SpchIdx_KeeperHarassment6,
     SpchIdx_KeeperHarassment7,
     SpchIdx_KeeperHarassment8,
-    //TODO SPEECH_FILE insert placefiller speeches here (+8)
+    //TODO SPEECH_FILE insert placefiller speeches here (+8, first to 164)
     SpchIdx_HeroHarassment1,
     SpchIdx_HeroHarassment2,
     SpchIdx_HeroHarassment3,

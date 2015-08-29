@@ -586,82 +586,82 @@ msgctxt "In-game mentor"
 msgid "You are victorious, your darkness pervades througout the kingdom. All hail the new lord of shadows."
 msgstr ""
 
-#: speech:109
+#: speech:148
 msgctxt "Enemy Keeper Harassment"
 msgid "Your efforts are futile!"
 msgstr ""
 
-#: speech:110
+#: speech:149
 msgctxt "Enemy Keeper Harassment"
 msgid "My dungeon is the finest You shall ever see!"
 msgstr ""
 
-#: speech:111
+#: speech:150
 msgctxt "Enemy Keeper Harassment"
 msgid "My minions will leave your dungeon a crumbling ruin!"
 msgstr ""
 
-#: speech:112
+#: speech:151
 msgctxt "Enemy Keeper Harassment"
 msgid "You entrails will decorate the darkest alchow of my domain!"
 msgstr ""
 
-#: speech:113
+#: speech:152
 msgctxt "Enemy Keeper Harassment"
 msgid "Your corpse shall se my minions yet, keeper!"
 msgstr ""
 
-#: speech:114
+#: speech:153
 msgctxt "Enemy Keeper Harassment"
 msgid "Prepare for oblivion, Keeper!"
 msgstr ""
 
-#: speech:115
+#: speech:154
 msgctxt "Enemy Keeper Harassment"
 msgid "Pathetic creature, I shall crush you in an instant!"
 msgstr ""
 
-#: speech:116
+#: speech:155
 msgctxt "Enemy Keeper Harassment"
 msgid "Ho ho ho ho!"
 msgstr ""
 
-#: speech:117
+#: speech:164
 msgctxt "Hero Talk Upon Entering"
 msgid "Your dark days are numbered, evil one!"
 msgstr ""
 
-#: speech:118
+#: speech:165
 msgctxt "Hero Talk Upon Entering"
 msgid "We come to rid the world of your evil!"
 msgstr ""
 
-#: speech:119
+#: speech:166
 msgctxt "Hero Talk Upon Entering"
 msgid "We shall send you back to the pits, vile one!"
 msgstr ""
 
-#: speech:120
+#: speech:167
 msgctxt "Hero Talk Upon Entering"
 msgid "Your reign shall end before this day is done!"
 msgstr ""
 
-#: speech:121
+#: speech:168
 msgctxt "Hero Talk Upon Entering"
 msgid "We shall cast you back into the shadows, keeper!"
 msgstr ""
 
-#: speech:122
+#: speech:169
 msgctxt "Hero Talk Upon Entering"
 msgid "Leave us to live our lives in peace!"
 msgstr ""
 
-#: speech:123
+#: speech:170
 msgctxt "Hero Talk Upon Entering"
 msgid "In the name of all that is good, we shall defeat you!"
 msgstr ""
 
-#: speech:124
+#: speech:171
 msgctxt "Hero Talk Upon Entering"
 msgid "We shall not tolerate your evil presence any longer!"
 msgstr ""

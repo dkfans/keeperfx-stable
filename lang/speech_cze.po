@@ -21,7 +21,7 @@ msgstr ""
 "Project-Id-Version: Speeches for KeeperFX\n"
 "Report-Msgid-Bugs-To: https://code.google.com/p/keeperfx/issues/list\n"
 "POT-Creation-Date: 2012-09-02 01:12+0200\n"
-"PO-Revision-Date: 2014-08-08 21:40+0100\n"
+"PO-Revision-Date: 2015-12-21 14:54+0100\n"
 "Last-Translator: Tomasz Lis <listom@gmail.com>\n"
 "Language-Team: KeeperFX Team <code.google.com>\n"
 "Language: cs_CZ\n"
@@ -593,82 +593,82 @@ msgstr ""
 "Zvítězil jsi, tvá temnota prostupuje skrze království. Všichni oslavujte "
 "nového pána stínů."
 
-#: speech:109
+#: speech:148
 msgctxt "Enemy Keeper Harassment"
 msgid "Your efforts are futile!"
 msgstr "Tvé snahy jsou marné!"
 
-#: speech:110
+#: speech:149
 msgctxt "Enemy Keeper Harassment"
 msgid "My dungeon is the finest You shall ever see!"
 msgstr "Má kobka je nejlepší jakou kdy uvidíš!"
 
-#: speech:111
+#: speech:150
 msgctxt "Enemy Keeper Harassment"
 msgid "My minions will leave your dungeon a crumbling ruin!"
 msgstr "Mí přisluhovači zanechají z tvé kobky rozpadající zříceninu!"
 
-#: speech:112
+#: speech:151
 msgctxt "Enemy Keeper Harassment"
 msgid "You entrails will decorate the darkest alchow of my domain!"
 msgstr "Tvé vnitřnosti budou zdobit nejtmavší alchow mé domény!"
 
-#: speech:113
+#: speech:152
 msgctxt "Enemy Keeper Harassment"
 msgid "Your corpse shall se my minions yet, keeper!"
 msgstr "Tvé tělo ještě potká mé přisluhovače, Správče!"
 
-#: speech:114
+#: speech:153
 msgctxt "Enemy Keeper Harassment"
 msgid "Prepare for oblivion, Keeper!"
 msgstr "Připrav se na zapomnění, Správče!"
 
-#: speech:115
+#: speech:154
 msgctxt "Enemy Keeper Harassment"
 msgid "Pathetic creature, I shall crush you in an instant!"
 msgstr "Ubohé stvoření, rozdrtím tě v mžiku!"
 
-#: speech:116
+#: speech:155
 msgctxt "Enemy Keeper Harassment"
 msgid "Ho ho ho ho!"
 msgstr "Ho ho ho ho!"
 
-#: speech:117
+#: speech:164
 msgctxt "Hero Talk Upon Entering"
 msgid "Your dark days are numbered, evil one!"
 msgstr "Zlochu, tvé dny temna jsou u konce!"
 
-#: speech:118
+#: speech:165
 msgctxt "Hero Talk Upon Entering"
 msgid "We come to rid the world of your evil!"
 msgstr "Zbavíme se tvého světa zla!"
 
-#: speech:119
+#: speech:166
 msgctxt "Hero Talk Upon Entering"
 msgid "We shall send you back to the pits, vile one!"
 msgstr "Odporný, zaženeme tě zpátky do děr!"
 
-#: speech:120
+#: speech:167
 msgctxt "Hero Talk Upon Entering"
 msgid "Your reign shall end before this day is done!"
 msgstr "Tvá vláda skončí dříve než bude tento den u konce!"
 
-#: speech:121
+#: speech:168
 msgctxt "Hero Talk Upon Entering"
 msgid "We shall cast you back into the shadows, keeper!"
 msgstr "Uvrhneme tě zpátky do stínů, správče!"
 
-#: speech:122
+#: speech:169
 msgctxt "Hero Talk Upon Entering"
 msgid "Leave us to live our lives in peace!"
 msgstr "Nechte nás žít naše životy v míru!"
 
-#: speech:123
+#: speech:170
 msgctxt "Hero Talk Upon Entering"
 msgid "In the name of all that is good, we shall defeat you!"
 msgstr "Ve jménu všeho, co je dobré , tě porazíme!"
 
-#: speech:124
+#: speech:171
 msgctxt "Hero Talk Upon Entering"
 msgid "We shall not tolerate your evil presence any longer!"
 msgstr "Nebudeme už tolerovat tvou ďábelskou přítomnost!"

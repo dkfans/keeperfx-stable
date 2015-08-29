@@ -25,6 +25,7 @@
 #include "config_creature.h"
 #include "creature_instances.h"
 #include "creature_states.h"
+#include "player_instances.h"
 #include "engine_lenses.h"
 #include "engine_arrays.h"
 #include "gui_draw.h"
@@ -355,14 +356,14 @@ TbBool update_creature_anim_td(struct Thing *thing, long speed, long td_idx)
 void update_creature_graphic_field_4F(struct Thing *thing)
 {
     // Clear related flags
-    thing->field_4F &= ~TF4F_Unknown01;
+    thing->field_4F &= ~TF4F_DoNotDraw;
     thing->field_4F &= ~TF4F_Unknown10;
     thing->field_4F &= ~TF4F_Unknown20;
     thing->field_4F &= ~TF4F_Unknown40;
     // Now set only those that should be
-    if (((thing->alloc_flags & TAlF_IsControlled) != 0) && is_my_player_number(thing->owner))
+    if (((thing->state_flags & TF1_IsPlayerCamera) != 0) && is_thing_used_as_player_camera(thing, my_player_number))
     {
-        thing->field_4F |= TF4F_Unknown01;
+        thing->field_4F |= TF4F_DoNotDraw;
     } else
     if (creatures[thing->model].field_7)
     {
@@ -377,7 +378,7 @@ void update_creature_graphic_field_4F(struct Thing *thing)
           thing->field_4F |= TF4F_Unknown20;
       } else
       {
-          thing->field_4F |= TF4F_Unknown01;
+          thing->field_4F |= TF4F_DoNotDraw;
       }
     }
 }
@@ -398,7 +399,7 @@ void update_creature_graphic_anim(struct Thing *thing)
     } else
     if ((thing->active_state == CrSt_CreatureHeroEntering) && (cctrl->countdown_282 >= 0))
     {
-      thing->field_4F |= TF4F_Unknown01;
+      thing->field_4F |= TF4F_DoNotDraw;
     } else
     if (!creature_affected_by_spell(thing, SplK_Chicken))
     {

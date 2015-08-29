@@ -6198,7 +6198,7 @@ void do_map_who(short tnglist_idx)
         }
         i = thing->next_on_mapblk;
         // Per thing code start
-        if ((thing->field_4F & TF4F_Unknown01) == 0)
+        if ((thing->field_4F & TF4F_DoNotDraw) == 0)
         {
             do_map_who_for_thing(thing);
         }
@@ -6215,7 +6215,7 @@ void do_map_who(short tnglist_idx)
 void draw_frontview_thing_on_element(struct Thing *thing, struct Map *map, struct Camera *cam)
 {
     long cx,cy,cz;
-    if ((thing->field_4F & TF4F_Unknown01) != 0)
+    if ((thing->field_4F & TF4F_DoNotDraw) != 0)
         return;
     switch (thing->field_50 >> 2)
     {

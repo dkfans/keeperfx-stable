@@ -199,7 +199,8 @@ struct Thing *create_and_control_creature_as_controller(struct PlayerInfo *playe
     set_selected_creature(player, thing);
     player->view_mode_restore = cam->view_mode;
     thing->alloc_flags |= TAlF_IsControlled;
-    thing->field_4F |= TF4F_Unknown01;
+    thing->state_flags |= TF1_IsPlayerCamera;
+    thing->field_4F |= TF4F_DoNotDraw;
     cctrl = creature_control_get_from_thing(thing);
     cctrl->flgfield_2 |= TF2_Spectator;
     cctrl->max_speed = calculate_correct_creature_maxspeed(thing);
@@ -207,9 +208,7 @@ struct Thing *create_and_control_creature_as_controller(struct PlayerInfo *playe
     set_start_state(thing);
     // Preparing light object
     LbMemorySet(&ilght, 0, sizeof(struct InitLight));
-    ilght.mappos.x.val = thing->mappos.x.val;
-    ilght.mappos.y.val = thing->mappos.y.val;
-    ilght.mappos.z.val = thing->mappos.z.val;
+    ilght.mappos = thing->mappos;
     ilght.field_2 = 36;
     ilght.field_3 = 1;
     ilght.is_dynamic = 1;

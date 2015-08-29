@@ -32,6 +32,7 @@
 #include "thing_physics.h"
 #include "thing_effects.h"
 #include "power_process.h"
+#include "player_states.h"
 #include "game_legacy.h"
 
 #include "keeperfx.hpp"
@@ -892,6 +893,10 @@ TbBool parse_magic_power_blocks(char *buf, long len, const char *config_textname
       for (i=0; i < arr_size; i++) {
           object_conf.object_to_power_artifact[i] = 0;
       }
+      // Reset array for player state to power link
+      for (i=0; i < PLAYER_STATES_COUNT; i++) {
+          player_state_to_power_kind[i] = 0;
+      }
   }
   arr_size = magic_conf.power_types_count;
   // Load the file
@@ -1151,6 +1156,27 @@ TbBool parse_magic_power_blocks(char *buf, long len, const char *config_textname
               k = get_id(player_state_commands, word_buf);
               if (k >= 0) {
                   powerst->work_state = k;
+                  if (k > 0) {
+                      player_state_to_power_kind[k] = i;
+                      // Spread some powers to other related states (ie cheat versions)
+                      switch (k)
+                      {
+                      case PSt_CtrlDirect:
+                          player_state_to_power_kind[PSt_FreeCtrlDirect] = i;
+                          player_state_to_power_kind[PSt_CtrlPassngr] = i;
+                          player_state_to_power_kind[PSt_FreeCtrlPassngr] = i;
+                          break;
+                      case PSt_DestroyWalls:
+                          player_state_to_power_kind[PSt_FreeDestroyWalls] = i;
+                          break;
+                      case PSt_CastDisease:
+                          player_state_to_power_kind[PSt_FreeCastDisease] = i;
+                          break;
+                      case PSt_TurnChicken:
+                          player_state_to_power_kind[PSt_FreeTurnChicken] = i;
+                          break;
+                      }
+                  }
                   n++;
               }
           }

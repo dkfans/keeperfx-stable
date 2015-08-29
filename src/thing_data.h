@@ -47,6 +47,8 @@ enum ThingFlags1 {
     TF1_PushOnce       = 0x08,
     TF1_Unkn10         = 0x10,
     TF1_DoFootsteps    = 0x20,
+    /** Set if a player camera is bound to the creature view. */
+    TF1_IsPlayerCamera = 0x40,
 };
 
 enum ThingFlags2 {
@@ -55,7 +57,7 @@ enum ThingFlags2 {
 };
 
 enum ThingFlags4F {
-    TF4F_Unknown01     = 0x01,
+    TF4F_DoNotDraw     = 0x01,
     TF4F_Unknown02     = 0x02,
     TF4F_Unknown04     = 0x04,
     TF4F_Unknown08     = 0x08,
@@ -208,6 +210,7 @@ unsigned char field_49;
     char field_4A;
 unsigned short field_4B;
 unsigned short field_4D;
+    /** Unsynchronized draw flags. These can be different for each player in a network game. */
     unsigned char field_4F;
     unsigned char field_50;
 unsigned char field_51;
