@@ -35,6 +35,7 @@ DLLIMPORT short _DK_td_iso[TD_ISO_POINTS];
 #define td_iso _DK_td_iso
 DLLIMPORT short _DK_iso_td[TD_ISO_POINTS];
 #define iso_td _DK_iso_td
+/** For each base block (floor) texture index, contains a corresponding ceiling texture index. */
 unsigned short floor_to_ceiling_map[FLOOR_TO_CEILING_MAP_LEN];
 
 /******************************************************************************/

@@ -21,11 +21,13 @@
 
 #include "globals.h"
 #include "bflib_basics.h"
+#include <assert.h>
 
 #include "thing_data.h"
 #include "thing_stats.h"
 #include "thing_creature.h"
 #include "thing_list.h"
+#include "thing_navigate.h"
 #include "creature_control.h"
 #include "config_creature.h"
 #include "config_terrain.h"
@@ -39,10 +41,10 @@
 extern "C" {
 #endif
 /******************************************************************************/
-DLLIMPORT void _DK_slide_thing_against_wall_at(struct Thing *thing, struct Coord3d *pos, long a3);
-DLLIMPORT void _DK_bounce_thing_off_wall_at(struct Thing *thing, struct Coord3d *pos, long a3);
-DLLIMPORT long _DK_get_thing_height_at(const struct Thing *thing, const struct Coord3d *pos);
-DLLIMPORT long _DK_get_thing_height_at_with_radius(const struct Thing *thing, const struct Coord3d *pos, unsigned long a3);
+DLLIMPORT void _DK_slide_thing_against_wall_at(struct Thing *thing, struct Coord3d *wallpos, long a3);
+DLLIMPORT void _DK_bounce_thing_off_wall_at(struct Thing *thing, struct Coord3d *wallpos, long a3);
+DLLIMPORT long _DK_get_thing_height_at(const struct Thing *thing, const struct Coord3d *wallpos);
+DLLIMPORT long _DK_get_thing_height_at_with_radius(const struct Thing *thing, const struct Coord3d *wallpos, unsigned long a3);
 /******************************************************************************/
 
 
@@ -63,14 +65,191 @@ TbBool thing_touching_flight_altitude(const struct Thing *thing)
         && (thing->mappos.z.val <= floor_height + 19*NORMAL_FLYING_ALTITUDE/17);
 }
 
-void slide_thing_against_wall_at(struct Thing *thing, struct Coord3d *pos, long a3)
+MapCoord push_thingz_against_wall_at(const struct Thing *thing, const struct Coord3d *wallpos)
 {
-    _DK_slide_thing_against_wall_at(thing, pos, a3); return;
+    MapCoord ceiling_height;
+    MapCoord wall_val;
+    ceiling_height = get_ceiling_height_above_thing_at(thing, wallpos);
+    MapCoordDelta clipbox_size;
+    clipbox_size = thing->clipbox_size_yz;
+    wall_val = (short)wallpos->z.val; // treat as signed - we cannot allow move below ground to send us into space
+    if (wall_val + clipbox_size >= ceiling_height - 1) {
+        return ceiling_height - clipbox_size - 1;
+    }
+    if (wall_val == thing->mappos.z.val) {
+        return thing->mappos.z.val;
+    }
+    if (wall_val > thing->mappos.z.val) {
+        return ((wall_val + clipbox_size) & ~COORD_PER_STL_MASK) - clipbox_size - 1;
+    }
+    return ((wall_val) & ~COORD_PER_STL_MASK) + COORD_PER_STL;
 }
 
-void bounce_thing_off_wall_at(struct Thing *thing, struct Coord3d *pos, long a3)
+MapCoord push_thingx_against_wall_at(const struct Thing *thing, const struct Coord3d *wallpos)
 {
-    _DK_bounce_thing_off_wall_at(thing, pos, a3); return;
+    MapCoordDelta clipbox_size;
+    MapCoord wall_val;
+    clipbox_size = thing_nav_sizexy(thing) / 2;
+    wall_val = wallpos->x.val;
+    if (wall_val == thing->mappos.x.val) {
+        return thing->mappos.x.val;
+    } else
+    if (wall_val > thing->mappos.x.val) {
+        return ((wall_val + clipbox_size) & ~COORD_PER_STL_MASK) - clipbox_size - 1;
+    }
+    return ((wall_val - clipbox_size) & ~COORD_PER_STL_MASK) + clipbox_size + COORD_PER_STL;
+}
+
+MapCoord push_thingy_against_wall_at(const struct Thing *thing, const struct Coord3d *wallpos)
+{
+    MapCoordDelta clipbox_size;
+    MapCoord wall_val;
+    clipbox_size = thing_nav_sizexy(thing) / 2;
+    wall_val = wallpos->y.val;
+    if (wall_val == thing->mappos.y.val) {
+        return thing->mappos.y.val;
+    } else
+    if (wall_val > thing->mappos.y.val) {
+        return ((wall_val + clipbox_size) & ~COORD_PER_STL_MASK) - clipbox_size - 1;
+    }
+    return ((wall_val - clipbox_size) & ~COORD_PER_STL_MASK) + clipbox_size + COORD_PER_STL;
+}
+
+/**
+ * Performs sliding a thing off wall.
+ * Returns new position of the thing, does not modify it inside (no change to velocity - no bounce).
+ * @param thing The thing to slide off wall.
+ * @param wallpos Wall position.
+ * @param blocked_flags Blocked axes flags.
+ */
+void slide_thing_against_wall_at(struct Thing *thing, struct Coord3d *wallpos, unsigned long blocked_flags)
+{
+    //_DK_slide_thing_against_wall_at(thing, wallpos, blocked_flags); return;
+    MapCoord next_cor_x, next_cor_y, next_cor_z;
+    switch (blocked_flags)
+    {
+    case SlbBloF_WalledX:
+        next_cor_x = push_thingx_against_wall_at(thing, wallpos);
+        wallpos->x.val = next_cor_x;
+        break;
+    case SlbBloF_WalledY:
+        next_cor_y = push_thingy_against_wall_at(thing, wallpos);
+        wallpos->y.val = next_cor_y;
+        break;
+    case SlbBloF_WalledX|SlbBloF_WalledY:
+        next_cor_x = push_thingx_against_wall_at(thing, wallpos);
+        next_cor_y = push_thingy_against_wall_at(thing, wallpos);
+        wallpos->x.val = next_cor_x;
+        wallpos->y.val = next_cor_y;
+        break;
+    case SlbBloF_WalledZ:
+        next_cor_z = push_thingz_against_wall_at(thing, wallpos);
+        wallpos->z.val = next_cor_z;
+        break;
+    case SlbBloF_WalledX|SlbBloF_WalledZ:
+        next_cor_x = push_thingx_against_wall_at(thing, wallpos);
+        next_cor_z = push_thingz_against_wall_at(thing, wallpos);
+        wallpos->x.val = next_cor_x;
+        wallpos->z.val = next_cor_z;
+        break;
+    case SlbBloF_WalledY|SlbBloF_WalledZ:
+        next_cor_y = push_thingy_against_wall_at(thing, wallpos);
+        next_cor_z = push_thingz_against_wall_at(thing, wallpos);
+        wallpos->y.val = next_cor_y;
+        wallpos->z.val = next_cor_z;
+        break;
+    case SlbBloF_WalledX|SlbBloF_WalledY|SlbBloF_WalledZ:
+        next_cor_x = push_thingx_against_wall_at(thing, wallpos);
+        next_cor_y = push_thingy_against_wall_at(thing, wallpos);
+        next_cor_z = push_thingz_against_wall_at(thing, wallpos);
+        wallpos->x.val = next_cor_x;
+        wallpos->y.val = next_cor_y;
+        wallpos->z.val = next_cor_z;
+        break;
+    default:
+        ERRORDBG(7,"Bad blocked flags");
+        break;
+    }
+}
+
+/**
+ * Performs bouncing a thing off wall.
+ * Modifies velocity within the thing, and returns its new position.
+ * @param thing The thing to bounce off wall.
+ * @param wallpos Wall position.
+ * @param blocked_flags Blocked axes flags.
+ */
+void bounce_thing_off_wall_at(struct Thing *thing, struct Coord3d *wallpos, unsigned long blocked_flags)
+{
+    //_DK_bounce_thing_off_wall_at(thing, wallpos, blocked_flags); return;
+    assert(-127/128 == 0); // Some compilers will treat this as -1 (this is not standardized); we need rounding towards 0
+    MapCoordDelta prev_veloc_x, prev_veloc_y, prev_veloc_z;
+    long elastic_mod, pass_mod;
+    prev_veloc_x = thing->veloc_base.x.val;
+    prev_veloc_y = thing->veloc_base.y.val;
+    prev_veloc_z = thing->veloc_base.z.val;
+    switch (blocked_flags)
+    {
+    case SlbBloF_WalledX:
+        wallpos->x.val = thing->mappos.x.val;
+        elastic_mod = thing->field_22;
+        pass_mod = 256 - (long)thing->field_23;
+        thing->veloc_base.x.val = -(prev_veloc_x * elastic_mod / 128);
+        thing->veloc_base.y.val = (pass_mod * thing->veloc_base.y.val / 256);
+        thing->veloc_base.z.val = (pass_mod * thing->veloc_base.z.val / 256);
+        break;
+    case SlbBloF_WalledY:
+        wallpos->y.val = thing->mappos.y.val;
+        elastic_mod = thing->field_22;
+        pass_mod = 256 - (long)thing->field_23;
+        thing->veloc_base.y.val = -(prev_veloc_y * elastic_mod / 128);
+        thing->veloc_base.x.val = (pass_mod * thing->veloc_base.x.val / 256);
+        thing->veloc_base.z.val = (pass_mod * thing->veloc_base.z.val / 256);
+        break;
+    case SlbBloF_WalledX|SlbBloF_WalledY:
+        wallpos->x.val = thing->mappos.x.val;
+        wallpos->y.val = thing->mappos.y.val;
+        elastic_mod = thing->field_22;
+        thing->veloc_base.x.val = -(elastic_mod * prev_veloc_x / 128);
+        thing->veloc_base.y.val = -(elastic_mod * prev_veloc_y / 128);
+        break;
+    case SlbBloF_WalledZ:
+        wallpos->z.val = thing->mappos.z.val;
+        elastic_mod = thing->field_22;
+        pass_mod = 256 - (long)thing->field_23;
+        thing->veloc_base.z.val = -(prev_veloc_z * elastic_mod / 128);
+        thing->veloc_base.x.val = (pass_mod * thing->veloc_base.x.val / 256);
+        thing->veloc_base.y.val = (pass_mod * thing->veloc_base.y.val / 256);
+        break;
+    case SlbBloF_WalledX|SlbBloF_WalledZ:
+        wallpos->z.val = thing->mappos.z.val;
+        wallpos->x.val = thing->mappos.x.val;
+        elastic_mod = thing->field_22;
+        thing->veloc_base.x.val = -(elastic_mod * prev_veloc_x / 128);
+        thing->veloc_base.z.val = -(elastic_mod * prev_veloc_z / 128);
+        break;
+    case SlbBloF_WalledY|SlbBloF_WalledZ:
+        wallpos->y.val = thing->mappos.y.val;
+        wallpos->z.val = thing->mappos.z.val;
+        elastic_mod = thing->field_22;
+        pass_mod = 256 - (long)thing->field_23;
+        thing->veloc_base.y.val = -(elastic_mod * prev_veloc_y / 128);
+        thing->veloc_base.z.val = -(elastic_mod * prev_veloc_z / 128);
+        thing->veloc_base.x.val = prev_veloc_x * pass_mod / 256;
+        break;
+    case SlbBloF_WalledX|SlbBloF_WalledY|SlbBloF_WalledZ:
+        wallpos->x.val = thing->mappos.x.val;
+        wallpos->y.val = thing->mappos.y.val;
+        wallpos->z.val = thing->mappos.z.val;
+        elastic_mod = thing->field_22;
+        thing->veloc_base.x.val = -(elastic_mod * prev_veloc_x / 128);
+        thing->veloc_base.y.val = -(elastic_mod * prev_veloc_y / 128);
+        thing->veloc_base.z.val = -(elastic_mod * prev_veloc_z / 128);
+        break;
+    default:
+        ERRORDBG(7,"Bad blocked flags");
+        break;
+    }
 }
 
 void remove_relevant_forces_from_thing_after_slide(struct Thing *thing, struct Coord3d *pos, long a3)

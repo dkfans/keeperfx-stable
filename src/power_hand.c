@@ -729,7 +729,7 @@ void drop_gold_coins(const struct Coord3d *pos, long value, long plyr_idx)
 {
     struct Coord3d locpos;
     int i;
-    locpos.z.val = get_ceiling_height_at(pos) - ACTION_RANDOM(128);
+    locpos.z.val = get_ceiling_height_at(pos) - ACTION_RANDOM(COORD_PER_STL/2);
     for (i = 0; i < 8; i++)
     {
         if (i > 0)

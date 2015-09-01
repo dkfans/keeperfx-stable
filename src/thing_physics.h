@@ -58,8 +58,8 @@ TbBool things_collide_while_first_moves_to(const struct Thing *firstng, const st
 TbBool cross_x_boundary_first(const struct Coord3d *pos1, const struct Coord3d *pos2);
 TbBool cross_y_boundary_first(const struct Coord3d *pos1, const struct Coord3d *pos2);
 
-void slide_thing_against_wall_at(struct Thing *thing, struct Coord3d *pos, long a3);
-void bounce_thing_off_wall_at(struct Thing *thing, struct Coord3d *pos, long a3);
+void slide_thing_against_wall_at(struct Thing *thing, struct Coord3d *wallpos, unsigned long blocked_flags);
+void bounce_thing_off_wall_at(struct Thing *thing, struct Coord3d *wallpos, unsigned long blocked_flags);
 TbBool get_thing_next_position(struct Coord3d *pos, const struct Thing *thing);
 void remove_relevant_forces_from_thing_after_slide(struct Thing *thing, struct Coord3d *pos, long a3);
 void apply_transitive_velocity_to_thing(struct Thing *thing, struct ComponentVector *veloc);

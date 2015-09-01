@@ -2013,14 +2013,14 @@ void create_map_volume_box(long x, long y, long z)
     create_line_const_xz(box_xe, box_ze, box_ys, box_ye);
 }
 
-void do_a_trig_gourad_tr(struct EngineCoord *ep1, struct EngineCoord *ep2, struct EngineCoord *ep3, short a4, long a5)
+void do_a_trig_gourad_tr(struct EngineCoord *ep1, struct EngineCoord *ep2, struct EngineCoord *ep3, short textr_idx, long a5)
 {
-    _DK_do_a_trig_gourad_tr(ep1, ep2, ep3, a4, a5);
+    _DK_do_a_trig_gourad_tr(ep1, ep2, ep3, textr_idx, a5);
 }
 
-void do_a_trig_gourad_bl(struct EngineCoord *ep1, struct EngineCoord *ep2, struct EngineCoord *ep3, short a4, long a5)
+void do_a_trig_gourad_bl(struct EngineCoord *ep1, struct EngineCoord *ep2, struct EngineCoord *ep3, short textr_idx, long a5)
 {
-    _DK_do_a_trig_gourad_bl(ep1, ep2, ep3, a4, a5);
+    _DK_do_a_trig_gourad_bl(ep1, ep2, ep3, textr_idx, a5);
 }
 
 TbBool add_light_to_nearest_list(struct NearestLights *nlgt, long *nlgt_dist, const struct Light *lgt, long dist)
