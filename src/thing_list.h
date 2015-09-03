@@ -220,7 +220,8 @@ long do_to_things_with_param_around_map_block(const struct Coord3d *center_pos, 
 // Final routines to select thing on/near given map position
 struct Thing *get_creature_near_but_not_specdigger(MapCoord pos_x, MapCoord pos_y, PlayerNumber plyr_idx);
 struct Thing *get_creature_near_who_is_enemy_of_and_not_specdigger(MapCoord pos_x, MapCoord pos_y, PlayerNumber plyr_idx);
-struct Thing *get_creature_near_to_be_keeper_power_target(MapCoord pos_x, MapCoord pos_y, PowerKind pwmodel, PlayerNumber plyr_idx);
+struct Thing *get_thing_near_to_be_keeper_power_target(MapCoord pos_x, MapCoord pos_y, PowerKind pwkind, PlayerNumber plyr_idx, unsigned long flags);
+struct Thing *get_thing_near_to_be_keeper_power_target_fullchk(MapCoord pos_x, MapCoord pos_y, PowerKind pwkind, PlayerNumber plyr_idx, unsigned long flags);
 struct Thing *get_nearest_thing_for_slap(PlayerNumber plyr_idx, MapCoord pos_x, MapCoord pos_y);
 struct Thing *get_creature_near_and_owned_by(MapCoord pos_x, MapCoord pos_y, PlayerNumber plyr_idx);
 struct Thing *get_creature_in_range_and_owned_by_or_allied_with(MapCoord pos_x, MapCoord pos_y, MapSubtlDelta distance_stl, PlayerNumber plyr_idx);

@@ -138,7 +138,7 @@ DLLIMPORT void _DK_set_first_creature(struct Thing *creatng);
 DLLIMPORT void _DK_remove_first_creature(struct Thing *creatng);
 DLLIMPORT struct Thing *_DK_get_creature_near(unsigned short pos_x, unsigned short pos_y);
 DLLIMPORT struct Thing *_DK_get_creature_near_with_filter(unsigned short pos_x, unsigned short pos_y, Thing_Filter filter, long no_effects);
-DLLIMPORT struct Thing *_DK_get_creature_near_for_controlling(unsigned char a1, long reason, long targtng_idx);
+DLLIMPORT struct Thing *_DK_get_creature_near_for_controlling(unsigned char a1, long a2, long a3);
 DLLIMPORT void _DK_anger_apply_anger_to_creature(struct Thing *creatng, long anger, long reason, long targtng_idx);
 DLLIMPORT long _DK_creature_available_for_combat_this_turn(struct Thing *creatng);
 DLLIMPORT struct Thing *_DK_get_enemy_dungeon_heart_creature_can_see(struct Thing *creatng);
@@ -3133,9 +3133,12 @@ struct Thing *get_creature_near_with_filter(unsigned short pos_x, unsigned short
     return _DK_get_creature_near_with_filter(pos_x, pos_y, filter, param);
 }
 
-struct Thing *get_creature_near_for_controlling(unsigned char a1, long a2, long a3)
+struct Thing *get_creature_near_for_controlling(PlayerNumber plyr_idx, MapCoord pos_x, MapCoord pos_y)
 {
-  return _DK_get_creature_near_for_controlling(a1, a2, a3);
+    //return _DK_get_creature_near_for_controlling(a1, a2, a3);
+    struct Thing *thing;
+    thing = get_thing_near_to_be_keeper_power_target_fullchk(pos_x, pos_y, player_state_to_power_kind[PSt_CtrlDirect], plyr_idx, CastChk_Default);
+    return thing;
 }
 
 void set_first_creature(struct Thing *thing)

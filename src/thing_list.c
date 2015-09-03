@@ -446,17 +446,45 @@ long near_map_block_thing_filter_is_thing_of_class_and_model_owned_by(const stru
  * @param param Parameters exchanged between filter calls.
  * @param maximizer Previous value which made a thing pass the filter.
  */
+long near_map_block_thing_filter_can_be_keeper_power_target_simp(const struct Thing *thing, MaxTngFilterParam param, long maximizer)
+{
+    if ((param->class_id == -1) || (thing->class_id == param->class_id))
+    {
+        if (can_cast_power_on_thing(param->plyr_idx, thing, param->model_id, param->num3))
+        {
+            // Prepare reference Coord3d struct for distance computation
+            struct Coord3d refpos;
+            refpos.x.val = param->num1;
+            refpos.y.val = param->num2;
+            refpos.z.val = 0;
+            // This function should return max value when the distance is minimal, so:
+            return LONG_MAX-get_2d_distance(&thing->mappos, &refpos);
+        }
+    }
+    // If conditions are not met, return -1 to be sure thing will not be returned.
+    return -1;
+}
+
+/**
+ * Filter function.
+ * @param thing The thing being checked.
+ * @param param Parameters exchanged between filter calls.
+ * @param maximizer Previous value which made a thing pass the filter.
+ */
 long near_map_block_thing_filter_can_be_keeper_power_target(const struct Thing *thing, MaxTngFilterParam param, long maximizer)
 {
-    if (can_cast_power_on_thing(param->plyr_idx, thing, param->num3))
+    if ((param->class_id == -1) || (thing->class_id == param->class_id))
     {
-        // Prepare reference Coord3d struct for distance computation
-        struct Coord3d refpos;
-        refpos.x.val = param->num1;
-        refpos.y.val = param->num2;
-        refpos.z.val = 0;
-        // This function should return max value when the distance is minimal, so:
-        return LONG_MAX-get_2d_distance(&thing->mappos, &refpos);
+        if (can_cast_spell(param->plyr_idx, param->model_id,
+          coord_subtile(param->num1), coord_subtile(param->num2), thing, param->num3)) {
+            // Prepare reference Coord3d struct for distance computation
+            struct Coord3d refpos;
+            refpos.x.val = param->num1;
+            refpos.y.val = param->num2;
+            refpos.z.val = 0;
+            // This function should return max value when the distance is minimal, so:
+            return LONG_MAX-get_2d_distance(&thing->mappos, &refpos);
+        }
     }
     // If conditions are not met, return -1 to be sure thing will not be returned.
     return -1;
@@ -3289,24 +3317,71 @@ struct Thing *get_creature_in_range_of_model_owned_and_controlled_by(MapCoord po
     return get_thing_spiral_near_map_block_with_filter(pos_x, pos_y, distance_stl*distance_stl, filter, &param);
 }
 
-/** Finds thing on revealed subtiles around given position, on which given player can cast given spell.
+/** Finds thing on revealed subtiles around given position, on which given player can cast given keeper power.
  *
  * @param pos_x Position to search around X coord.
  * @param pos_y Position to search around Y coord.
- * @param pwmode Keeper power to be casted.
+ * @param pwkind Keeper power to be casted.
  * @param plyr_idx Player whose revealed subtiles around will be searched.
- * @return The creature thing pointer, or invalid thing pointer if not found.
+ * @return The closest matching thing pointer, or invalid thing pointer if not found.
  */
-struct Thing *get_creature_near_to_be_keeper_power_target(MapCoord pos_x, MapCoord pos_y, PowerKind pwmodel, PlayerNumber plyr_idx)
+struct Thing *get_thing_near_to_be_keeper_power_target(MapCoord pos_x, MapCoord pos_y, PowerKind pwkind, PlayerNumber plyr_idx, unsigned long flags)
+{
+    // Fill force allow flags, like in can_cast_spell()
+    unsigned long force_allow_flags;
+    force_allow_flags = PwCast_None;
+    if ((flags & CastChk_CheatVer) != 0)
+    {
+        const struct PowerConfigStats *powerst;
+        powerst = get_power_model_stats(pwkind);
+        // If at least one flag set, enable all similar, ie for other players
+        if ((powerst->can_cast_flags & PwCast_AllCrtrs) != 0)
+            force_allow_flags |= PwCast_AllCrtrs;
+        if ((powerst->can_cast_flags & PwCast_AllFood) != 0)
+            force_allow_flags |= PwCast_AllFood;
+        if ((powerst->can_cast_flags & PwCast_AllGold) != 0)
+            force_allow_flags |= PwCast_AllGold;
+        if ((powerst->can_cast_flags & PwCast_AllGround) != 0)
+            force_allow_flags |= PwCast_AllGround;
+        if ((powerst->can_cast_flags & PwCast_AllTall) != 0)
+            force_allow_flags |= PwCast_AllTall;
+    }
+    Thing_Maximizer_Filter filter;
+    struct CompoundTngFilterParam param;
+    SYNCDBG(19,"Starting");
+    filter = near_map_block_thing_filter_can_be_keeper_power_target_simp;
+    param.class_id = -1;
+    param.model_id = pwkind;
+    param.plyr_idx = plyr_idx;
+    param.num1 = pos_x;
+    param.num2 = pos_y;
+    param.num3 = force_allow_flags;
+    return get_thing_near_revealed_map_block_with_filter(pos_x, pos_y, filter, &param);
+}
+
+/** Finds thing on revealed subtiles around given position, on which player can cast given keeper power.
+ * Full check version - shouldn't be used unless proven to be required.
+ * Use get_thing_near_to_be_keeper_power_target() instead.
+ *
+ * @param pos_x Position to search around X coord.
+ * @param pos_y Position to search around Y coord.
+ * @param plyr_idx Player whose revealed subtiles around will be searched.
+ * @param pwkind Keeper power to be casted.
+ * @return The closest matching thing pointer, or invalid thing pointer if not found.
+ * @see get_thing_near_to_be_keeper_power_target()
+ */
+struct Thing *get_thing_near_to_be_keeper_power_target_fullchk(MapCoord pos_x, MapCoord pos_y, PowerKind pwkind, PlayerNumber plyr_idx, unsigned long flags)
 {
     Thing_Maximizer_Filter filter;
     struct CompoundTngFilterParam param;
     SYNCDBG(19,"Starting");
     filter = near_map_block_thing_filter_can_be_keeper_power_target;
+    param.class_id = -1;
+    param.model_id = pwkind;
     param.plyr_idx = plyr_idx;
     param.num1 = pos_x;
     param.num2 = pos_y;
-    param.num3 = pwmodel;
+    param.num3 = flags;
     return get_thing_near_revealed_map_block_with_filter(pos_x, pos_y, filter, &param);
 }
 

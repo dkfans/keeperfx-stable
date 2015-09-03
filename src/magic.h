@@ -37,6 +37,7 @@ enum CastCheckFlags {
     CastChk_Default = 0, /*< Default all flags. */
     CastChk_Final = 0x0001, /*< Final check - should be only a formality, as there were checks before. */
     CastChk_SkipThing = 0x0002, /*< While checking, skip the conditions related to specific thing. */
+    CastChk_CheatVer = 0x0004, /*< Extend the castability and reduce requirements, as this is a cheat version of a spell. */
 };
 
 enum PowerModFlags {
@@ -50,7 +51,7 @@ TbBool can_cast_spell_f(PlayerNumber plyr_idx, PowerKind pwmodel, MapSubtlCoord 
 #define can_cast_spell(plyr_idx, pwmodel, stl_x, stl_y, thing, flags) can_cast_spell_f(plyr_idx, pwmodel, stl_x, stl_y, thing, flags, __func__)
 TbBool can_cast_power_at_xy(PlayerNumber plyr_idx, PowerKind pwmodel,
     MapSubtlCoord stl_x, MapSubtlCoord stl_y, unsigned long allow_flags);
-TbBool can_cast_power_on_thing(PlayerNumber plyr_idx, const struct Thing *thing, PowerKind pwkind);
+TbBool can_cast_power_on_thing(PlayerNumber plyr_idx, const struct Thing *thing, PowerKind pwkind, unsigned long allow_flags);
 
 GoldAmount compute_power_price(PlayerNumber plyr_idx, PowerKind pwkind, long pwlevel);
 GoldAmount compute_lowest_power_price(PlayerNumber plyr_idx, PowerKind pwkind, long pwlevel);

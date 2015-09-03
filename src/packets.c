@@ -963,8 +963,9 @@ TbBool process_dungeon_control_packet_clicks(long plyr_idx)
         }
         break;
     case PSt_Slap:
+        pwkind = player_state_to_power_kind[player->work_state];
         influence_own_creatures = 1;
-        thing = get_creature_near_to_be_keeper_power_target(x, y, PwrK_SLAP, plyr_idx);
+        thing = get_thing_near_to_be_keeper_power_target(x, y, pwkind, plyr_idx, CastChk_Default);
         if (thing_is_invalid(thing)) {
             player->thing_under_hand = 0;
         } else {
@@ -972,7 +973,7 @@ TbBool process_dungeon_control_packet_clicks(long plyr_idx)
         }
         if (((pckt->control_flags & PCtr_LBtnRelease) != 0) && ((pckt->control_flags & PCtr_MapCoordsValid) != 0))
         {
-            magic_use_available_power_on_thing(plyr_idx, PwrK_SLAP, 0, stl_x, stl_y, thing);
+            magic_use_available_power_on_thing(plyr_idx, pwkind, 0, stl_x, stl_y, thing);
             unset_packet_control(pckt, PCtr_LBtnRelease);
         }
         break;
@@ -1006,31 +1007,53 @@ TbBool process_dungeon_control_packet_clicks(long plyr_idx)
         }
         break;
     case PSt_CtrlDirect:
-    case PSt_FreeCtrlDirect:
+        pwkind = player_state_to_power_kind[player->work_state];
         influence_own_creatures = 1;
-        if (player->work_state == PSt_CtrlDirect)
-            thing = get_creature_near_for_controlling(plyr_idx, x, y);
+        thing = get_thing_near_to_be_keeper_power_target(x, y, pwkind, plyr_idx, CastChk_Default);
+        if (thing_is_invalid(thing))
+            player->thing_under_hand = 0;
         else
-            thing = get_creature_near_for_controlling(plyr_idx, x, y); // TODO CHEATS Change to allow controlling any owner
+            player->thing_under_hand = thing->index;
+        if ((pckt->control_flags & PCtr_LBtnRelease) != 0)
+        {
+            if (player->thing_under_hand > 0)
+            {
+                magic_use_available_power_on_thing(plyr_idx, pwkind, 0, stl_x, stl_y, thing);
+                unset_packet_control(pckt, PCtr_LBtnRelease);
+            }
+        }
+        if ((pckt->control_flags & PCtr_RBtnRelease) != 0)
+        {
+            if (player->instance_num != PI_DirctCtrl)
+            {
+                set_player_state(player, player->continue_work_state, 0);
+                unset_packet_control(pckt, PCtr_RBtnRelease);
+            }
+        }
+        break;
+    case PSt_FreeCtrlDirect:
+        pwkind = player_state_to_power_kind[player->work_state];
+        influence_own_creatures = 1;
+        thing = get_thing_near_to_be_keeper_power_target(x, y, pwkind, plyr_idx, CastChk_CheatVer);
         if (thing_is_invalid(thing))
           player->thing_under_hand = 0;
         else
           player->thing_under_hand = thing->index;
         if ((pckt->control_flags & PCtr_LBtnRelease) != 0)
         {
-          if (player->thing_under_hand > 0)
-          {
-              magic_use_available_power_on_thing(plyr_idx, PwrK_POSSESS, 0, stl_x, stl_y, thing);
-              unset_packet_control(pckt, PCtr_LBtnRelease);
-          }
+            if (player->thing_under_hand > 0)
+            {
+                magic_use_power_possess_thing(plyr_idx, thing, PwMod_CastForFree);
+                unset_packet_control(pckt, PCtr_LBtnRelease);
+            }
         }
         if ((pckt->control_flags & PCtr_RBtnRelease) != 0)
         {
-          if (player->instance_num != PI_DirctCtrl)
-          {
-            set_player_state(player, player->continue_work_state, 0);
-            unset_packet_control(pckt, PCtr_RBtnRelease);
-          }
+            if (player->instance_num != PI_DirctCtrl)
+            {
+                set_player_state(player, player->continue_work_state, 0);
+                unset_packet_control(pckt, PCtr_RBtnRelease);
+            }
         }
         break;
     case PSt_CreatrQuery:
@@ -1174,7 +1197,7 @@ TbBool process_dungeon_control_packet_clicks(long plyr_idx)
     case PSt_Heal:
         influence_own_creatures = true;
         pwkind = player_state_to_power_kind[player->work_state];
-        thing = get_creature_near_to_be_keeper_power_target(x, y, pwkind, plyr_idx);
+        thing = get_thing_near_to_be_keeper_power_target(x, y, pwkind, plyr_idx, CastChk_Default);
         if (thing_is_invalid(thing))
         {
             player->thing_under_hand = 0;
@@ -1203,7 +1226,7 @@ TbBool process_dungeon_control_packet_clicks(long plyr_idx)
         break;
     case PSt_CastDisease:
         pwkind = player_state_to_power_kind[player->work_state];
-        thing = get_creature_near_to_be_keeper_power_target(x, y, pwkind, plyr_idx);
+        thing = get_thing_near_to_be_keeper_power_target(x, y, pwkind, plyr_idx, CastChk_Default);
         if (thing_is_invalid(thing))
         {
             player->thing_under_hand = 0;
@@ -1220,7 +1243,7 @@ TbBool process_dungeon_control_packet_clicks(long plyr_idx)
     case PSt_TurnChicken:
         influence_own_creatures = true;
         pwkind = player_state_to_power_kind[player->work_state];
-        thing = get_creature_near_to_be_keeper_power_target(x, y, pwkind, plyr_idx);
+        thing = get_thing_near_to_be_keeper_power_target(x, y, pwkind, plyr_idx, CastChk_Default);
         if (thing_is_invalid(thing))
         {
             player->thing_under_hand = 0;
@@ -1245,7 +1268,7 @@ TbBool process_dungeon_control_packet_clicks(long plyr_idx)
     case PSt_FreeTurnChicken:
     case PSt_FreeCastDisease:
         pwkind = player_state_to_power_kind[player->work_state];
-        thing = get_creature_near_to_be_keeper_power_target(x, y, pwkind, plyr_idx);
+        thing = get_thing_near_to_be_keeper_power_target(x, y, pwkind, plyr_idx, CastChk_CheatVer);
         if (thing_is_invalid(thing))
         {
             player->thing_under_hand = 0;
