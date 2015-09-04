@@ -148,23 +148,34 @@ void slide_thing_against_wall_at(struct Thing *thing, struct Coord3d *wallpos, u
         break;
     case SlbBloF_WalledX|SlbBloF_WalledZ:
         next_cor_x = push_thingx_against_wall_at(thing, wallpos);
-        next_cor_z = push_thingz_against_wall_at(thing, wallpos);
         wallpos->x.val = next_cor_x;
-        wallpos->z.val = next_cor_z;
+        // Treat the height dimension a bit different for creatures - see explanation below
+        if (!thing_is_creature(thing) || thing_in_wall_at(thing, wallpos)) {
+            next_cor_z = push_thingz_against_wall_at(thing, wallpos);
+            wallpos->z.val = next_cor_z;
+        }
         break;
     case SlbBloF_WalledY|SlbBloF_WalledZ:
         next_cor_y = push_thingy_against_wall_at(thing, wallpos);
-        next_cor_z = push_thingz_against_wall_at(thing, wallpos);
         wallpos->y.val = next_cor_y;
-        wallpos->z.val = next_cor_z;
+        // Treat the height dimension a bit different for creatures - see explanation below
+        if (!thing_is_creature(thing) || thing_in_wall_at(thing, wallpos)) {
+            next_cor_z = push_thingz_against_wall_at(thing, wallpos);
+            wallpos->z.val = next_cor_z;
+        }
         break;
     case SlbBloF_WalledX|SlbBloF_WalledY|SlbBloF_WalledZ:
         next_cor_x = push_thingx_against_wall_at(thing, wallpos);
         next_cor_y = push_thingy_against_wall_at(thing, wallpos);
-        next_cor_z = push_thingz_against_wall_at(thing, wallpos);
         wallpos->x.val = next_cor_x;
         wallpos->y.val = next_cor_y;
-        wallpos->z.val = next_cor_z;
+        // Treat the height dimension a bit different for creatures - remove movement only if XY removal did not help;
+        // Creatures are kind of 'special case' here, because they are following a traced path when moving;
+        // To follow the path, creatures may need to adjust height while continuously trying to move into wall
+        if (!thing_is_creature(thing) || thing_in_wall_at(thing, wallpos)) {
+            next_cor_z = push_thingz_against_wall_at(thing, wallpos);
+            wallpos->z.val = next_cor_z;
+        }
         break;
     default:
         ERRORDBG(7,"Bad blocked flags");

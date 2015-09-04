@@ -572,46 +572,46 @@ long get_thing_blocked_flags_at(struct Thing *thing, struct Coord3d *pos)
     locpos.x.val = pos->x.val;
     locpos.y.val = thing->mappos.y.val;
     locpos.z.val = thing->mappos.z.val;
-    if ( thing_in_wall_at(thing, &locpos) )
+    if (thing_in_wall_at(thing, &locpos))
         flags |= SlbBloF_WalledX;
     locpos.x.val = thing->mappos.x.val;
     locpos.y.val = pos->y.val;
     locpos.z.val = thing->mappos.z.val;
-    if ( thing_in_wall_at(thing, &locpos) )
+    if (thing_in_wall_at(thing, &locpos))
         flags |= SlbBloF_WalledY;
     locpos.x.val = thing->mappos.x.val;
     locpos.y.val = thing->mappos.y.val;
     locpos.z.val = pos->z.val;
-    if ( thing_in_wall_at(thing, &locpos) )
+    if (thing_in_wall_at(thing, &locpos))
         flags |= SlbBloF_WalledZ;
-    switch ( flags )
+    switch (flags)
     {
     case SlbBloF_None:
         locpos.x.val = pos->x.val;
         locpos.y.val = pos->y.val;
         locpos.z.val = pos->z.val;
-        if ( thing_in_wall_at(thing, &locpos) )
+        if (thing_in_wall_at(thing, &locpos))
             flags = SlbBloF_WalledX | SlbBloF_WalledY | SlbBloF_WalledZ;
         break;
     case SlbBloF_WalledX:
         locpos.x.val = thing->mappos.x.val;
         locpos.y.val = pos->y.val;
         locpos.z.val = pos->z.val;
-        if ( thing_in_wall_at(thing, &locpos) )
+        if (thing_in_wall_at(thing, &locpos))
             flags = SlbBloF_WalledX | SlbBloF_WalledY | SlbBloF_WalledZ;
         break;
     case SlbBloF_WalledY:
         locpos.x.val = pos->x.val;
         locpos.y.val = thing->mappos.y.val;
         locpos.z.val = pos->z.val;
-        if ( thing_in_wall_at(thing, &locpos) )
+        if (thing_in_wall_at(thing, &locpos))
             flags = SlbBloF_WalledX | SlbBloF_WalledY | SlbBloF_WalledZ;
         break;
     case SlbBloF_WalledZ:
         locpos.x.val = pos->x.val;
         locpos.y.val = pos->y.val;
         locpos.z.val = thing->mappos.z.val;
-        if ( thing_in_wall_at(thing, &locpos) )
+        if (thing_in_wall_at(thing, &locpos))
             flags = SlbBloF_WalledX | SlbBloF_WalledY | SlbBloF_WalledZ;
         break;
     }

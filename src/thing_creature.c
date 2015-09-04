@@ -1994,24 +1994,24 @@ long move_creature(struct Thing *thing)
     }
     if ((velo_x != 0) || (velo_y != 0) || (velo_z != 0))
     {
-        if (velo_x < -256) {
-            velo_x = -256;
-        } else if (velo_x > 256) {
-            velo_x = 256;
+        if (velo_x < -MAX_VELOCITY) {
+            velo_x = -MAX_VELOCITY;
+        } else if (velo_x > MAX_VELOCITY) {
+            velo_x = MAX_VELOCITY;
         }
-        if (velo_y < -256) {
-            velo_y = -256;
-        } else if (velo_y > 256) {
-            velo_y = 256;
+        if (velo_y < -MAX_VELOCITY) {
+            velo_y = -MAX_VELOCITY;
+        } else if (velo_y > MAX_VELOCITY) {
+            velo_y = MAX_VELOCITY;
         }
-        if (velo_z < -256) {
-            velo_z = -256;
-        } else if (velo_z > 256) {
-            velo_z = 256;
+        if (velo_z < -MAX_VELOCITY) {
+            velo_z = -MAX_VELOCITY;
+        } else if (velo_z > MAX_VELOCITY) {
+            velo_z = MAX_VELOCITY;
         }
-        nxpos.x.val = velo_x + tngpos->x.val;
-        nxpos.y.val = velo_y + tngpos->y.val;
-        nxpos.z.val = velo_z + tngpos->z.val;
+        nxpos.x.val = tngpos->x.val + velo_x;
+        nxpos.y.val = tngpos->y.val + velo_y;
+        nxpos.z.val = tngpos->z.val + velo_z;
         if ((thing->movement_flags & TMvF_Flying) != 0)
         {
             if (thing_in_wall_at(thing, &nxpos) && !creature_can_pass_throgh_wall_at(thing, &nxpos))
@@ -4594,7 +4594,8 @@ TbBool update_flight_altitude_towards_typical(struct Thing *thing)
     MapCoord floor_height, ceiling_height;
     get_floor_and_ceiling_height_under_thing_at(thing, &nxpos, &floor_height, &ceiling_height);
     thing_curr_alt = thing->mappos.z.val;
-    SYNCDBG(16,"The height for %s index %d owner %d must fit between %d and %d, now is %d",thing_model_name(thing),(int)thing->index,(int)thing->owner,(int)floor_height,(int)ceiling_height,(int)thing_curr_alt);
+    SYNCDBG(16,"The height for %s index %d owner %d must fit between %d and %d on subtile (%d,%d), now is %d",thing_model_name(thing),(int)thing->index,(int)thing->owner,
+        (int)floor_height,(int)ceiling_height,(int)coord_subtile(nxpos.x.val),(int)coord_subtile(nxpos.y.val),(int)thing_curr_alt);
     MoveSpeed max_speed;
     max_speed = cctrl->max_speed / 8;
     if (max_speed < 1)
