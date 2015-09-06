@@ -107,7 +107,7 @@ msgstr ""
 
 #: speech:16
 msgctxt "In-game mentor"
-msgid "You are losing teritory."
+msgid "You are losing territory."
 msgstr ""
 
 #: speech:17
@@ -137,7 +137,7 @@ msgstr ""
 
 #: speech:22
 msgctxt "In-game mentor"
-msgid "Food is scarse, enlarge your Hatchery."
+msgid "Food is scarce, enlarge your Hatchery."
 msgstr ""
 
 #: speech:23
@@ -302,7 +302,7 @@ msgstr ""
 
 #: speech:55
 msgctxt "In-game mentor"
-msgid "A prisonner have died and returned as a Skeleton."
+msgid "A prisoner have died and returned as a Skeleton."
 msgstr ""
 
 #: speech:56
@@ -312,7 +312,7 @@ msgstr ""
 
 #: speech:57
 msgctxt "In-game mentor"
-msgid "Your prisonners are escaping!"
+msgid "Your prisoners are escaping!"
 msgstr ""
 
 #: speech:58
@@ -327,7 +327,7 @@ msgstr ""
 
 #: speech:60
 msgctxt "In-game mentor"
-msgid "Your prisonners are starving to death."
+msgid "Your prisoners are starving to death."
 msgstr ""
 
 #: speech:61
@@ -377,7 +377,7 @@ msgstr ""
 #. Message when bad sacrifice recipe finished
 #: speech:69
 msgctxt "In-game mentor"
-msgid "The Gods have punished your unwothy offering."
+msgid "The Gods have punished your unworthy offering."
 msgstr ""
 
 #. Message when dropping gold into Temple water
@@ -389,7 +389,7 @@ msgstr ""
 #. Message when Dungeon Special found on level
 #: speech:71
 msgctxt "In-game mentor"
-msgid "Your creatures have discovered a misterious magic box."
+msgid "Your creatures have discovered a mysterious magic box."
 msgstr ""
 
 #. Message when spellbook found on level
@@ -418,7 +418,7 @@ msgstr ""
 #. Message when digging has revealed a cavern
 #: speech:76
 msgctxt "In-game mentor"
-msgid "You have thalowed into a new area."
+msgid "You have tunneled into a new area."
 msgstr ""
 
 #: speech:77
@@ -573,7 +573,7 @@ msgstr ""
 
 #: speech:107
 msgctxt "In-game mentor"
-msgid "Master, I sence the presence of the Avatar!"
+msgid "Master, I sense the presence of the Avatar!"
 msgstr ""
 
 #: speech:108
@@ -583,7 +583,7 @@ msgstr ""
 
 #: speech:109
 msgctxt "In-game mentor"
-msgid "You are victorious, your darkness pervades througout the kingdom. All hail the new lord of shadows."
+msgid "You are victorious, your darkness pervades throughout the kingdom. All hail the new lord of shadows."
 msgstr ""
 
 #: speech:148
@@ -603,12 +603,12 @@ msgstr ""
 
 #: speech:151
 msgctxt "Enemy Keeper Harassment"
-msgid "You entrails will decorate the darkest alchow of my domain!"
+msgid "You entrails will decorate the darkest alchove of my domain!"
 msgstr ""
 
 #: speech:152
 msgctxt "Enemy Keeper Harassment"
-msgid "Your corpse shall se my minions yet, keeper!"
+msgid "Your corpse shall feed my minions yet, keeper!"
 msgstr ""
 
 #: speech:153

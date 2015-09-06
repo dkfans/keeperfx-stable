@@ -21,7 +21,7 @@ msgstr ""
 "Project-Id-Version: Speeches for KeeperFX\n"
 "Report-Msgid-Bugs-To: https://code.google.com/p/keeperfx/issues/list\n"
 "POT-Creation-Date: 2012-09-02 01:12+0200\n"
-"PO-Revision-Date: 2015-12-22 02:40+0100\n"
+"PO-Revision-Date: 2015-12-23 12:00+0100\n"
 "Last-Translator: Tomasz Lis <listom@gmail.com>\n"
 "Language-Team: KeeperFX Team <code.google.com>\n"
 "Language: pl_PL\n"
@@ -108,7 +108,7 @@ msgstr "wróg niszczy komnaty!"
 
 #: speech:16
 msgctxt "In-game mentor"
-msgid "You are losing teritory."
+msgid "You are losing territory."
 msgstr "Tracisz terytorium."
 
 #: speech:17
@@ -138,7 +138,7 @@ msgstr "Bitwa zakończona."
 
 #: speech:22
 msgctxt "In-game mentor"
-msgid "Food is scarse, enlarge your Hatchery."
+msgid "Food is scarce, enlarge your Hatchery."
 msgstr "Brak żywności, powiększ Kurnik."
 
 #: speech:23
@@ -304,7 +304,7 @@ msgstr "Wróg został przekrztałcony na twoje podobieństwo."
 
 #: speech:55
 msgctxt "In-game mentor"
-msgid "A prisonner have died and returned as a Skeleton."
+msgid "A prisoner have died and returned as a Skeleton."
 msgstr "Więzień zmarł i odrodził się jako Szkieletor."
 
 #: speech:56
@@ -314,7 +314,7 @@ msgstr "Ofiara tortur zmarła i powróciła jako Duch."
 
 #: speech:57
 msgctxt "In-game mentor"
-msgid "Your prisonners are escaping!"
+msgid "Your prisoners are escaping!"
 msgstr "Więźniowie uciekają!"
 
 #: speech:58
@@ -330,7 +330,7 @@ msgstr "Uwolniłeś stwory z więzienia!"
 #: speech:60
 #, fuzzy
 msgctxt "In-game mentor"
-msgid "Your prisonners are starving to death."
+msgid "Your prisoners are starving to death."
 msgstr "Więźniowie zostali zagłodzeni na śmierć."
 
 #: speech:61
@@ -382,7 +382,7 @@ msgstr "Twoja ofiara rozzłościła bogów!"
 #: speech:69
 #, fuzzy
 msgctxt "In-game mentor"
-msgid "The Gods have punished your unwothy offering."
+msgid "The Gods have punished your unworthy offering."
 msgstr "Bogowie odrzucili twoją bezwartościową daninę."
 
 #. Message when dropping gold into Temple water
@@ -395,7 +395,7 @@ msgstr "Idzie ku gorszemu, strażniku."
 #. Message when Dungeon Special found on level
 #: speech:71
 msgctxt "In-game mentor"
-msgid "Your creatures have discovered a misterious magic box."
+msgid "Your creatures have discovered a mysterious magic box."
 msgstr "Stwory odkryły tajemniczą magiczną skrzynię."
 
 #. Message when spellbook found on level
@@ -424,7 +424,7 @@ msgstr "Nowe stwory zamieszkały w twoim lochu."
 #. Message when digging has revealed a cavern
 #: speech:76
 msgctxt "In-game mentor"
-msgid "You have thalowed into a new area."
+msgid "You have tunneled into a new area."
 msgstr "Przebiłeś się do nowego obszaru."
 
 #: speech:77
@@ -580,7 +580,7 @@ msgstr "Podbiłeś to królestwo."
 
 #: speech:107
 msgctxt "In-game mentor"
-msgid "Master, I sence the presence of the Avatar!"
+msgid "Master, I sense the presence of the Avatar!"
 msgstr "Panie, wyczuwam obecność Awatara!"
 
 #: speech:108
@@ -592,7 +592,7 @@ msgstr "Czary, czy co? Ciało Awatara zniknęło!"
 #, fuzzy
 msgctxt "In-game mentor"
 msgid ""
-"You are victorious, your darkness pervades througout the kingdom. All hail "
+"You are victorious, your darkness pervades throughout the kingdom. All hail "
 "the new lord of shadows."
 msgstr "Jesteś zwycięzcą! Witaj, nowy władco!"
 
@@ -613,12 +613,12 @@ msgstr "Moi słudzy zmienią twój loch z zwietrzałą ruinę."
 
 #: speech:151
 msgctxt "Enemy Keeper Harassment"
-msgid "You entrails will decorate the darkest alchow of my domain!"
+msgid "You entrails will decorate the darkest alchove of my domain!"
 msgstr "Twoje wnętrzności udekorują me dominium!"
 
 #: speech:152
 msgctxt "Enemy Keeper Harassment"
-msgid "Your corpse shall se my minions yet, keeper!"
+msgid "Your corpse shall feed my minions yet, keeper!"
 msgstr "Twe ciało będzie strawą dla mych sług, strażniku!"
 
 #: speech:153
