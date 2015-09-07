@@ -87,7 +87,7 @@ msgstr ""
 
 #: speech:12
 msgctxt "In-game mentor"
-msgid "Your minions are winning the battle."
+msgid "Your minions are winning a battle."
 msgstr ""
 
 #: speech:13
@@ -177,7 +177,7 @@ msgstr ""
 
 #: speech:30
 msgctxt "In-game mentor"
-msgid "Your Scavenge Room is too small."
+msgid "Your Scavenger Room is too small."
 msgstr ""
 
 #: speech:31
@@ -212,7 +212,7 @@ msgstr ""
 
 #: speech:37
 msgctxt "In-game mentor"
-msgid "An Entrance have been claimed."
+msgid "An Entrance has been claimed."
 msgstr ""
 
 #: speech:38
@@ -257,7 +257,7 @@ msgstr ""
 
 #: speech:46
 msgctxt "In-game mentor"
-msgid "There is nothing new to research."
+msgid "There is nothing left to research."
 msgstr ""
 
 #: speech:47
@@ -302,7 +302,7 @@ msgstr ""
 
 #: speech:55
 msgctxt "In-game mentor"
-msgid "A prisoner have died and returned as a Skeleton."
+msgid "A prisoner has died and risen as a Skeleton."
 msgstr ""
 
 #: speech:56
@@ -317,7 +317,7 @@ msgstr ""
 
 #: speech:58
 msgctxt "In-game mentor"
-msgid "A Vampire has risen on your Graveyard."
+msgid "A Vampire has risen in your Graveyard."
 msgstr ""
 
 #: speech:59
@@ -337,7 +337,7 @@ msgstr ""
 
 #: speech:62
 msgctxt "In-game mentor"
-msgid "One of your minions is being scavenged!"
+msgid "One of your minions has been scavenged!"
 msgstr ""
 
 #: speech:63
@@ -523,7 +523,7 @@ msgstr ""
 
 #: speech:97
 msgctxt "In-game mentor random funny message"
-msgid "Hello."
+msgid "Hello?"
 msgstr ""
 
 #: speech:98
@@ -593,7 +593,7 @@ msgstr ""
 
 #: speech:149
 msgctxt "Enemy Keeper Harassment"
-msgid "My dungeon is the finest You shall ever see!"
+msgid "My dungeon is the finest you shall ever see!"
 msgstr ""
 
 #: speech:150
