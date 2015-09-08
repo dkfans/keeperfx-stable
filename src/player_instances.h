@@ -89,13 +89,17 @@ void set_player_instance(struct PlayerInfo *player, long ninum, TbBool force);
 void process_player_instance(struct PlayerInfo *player);
 void process_player_instances(void);
 
+TbBool control_creature_as_controller(struct PlayerInfo *player, struct Thing *thing);
+TbBool control_creature_as_passenger(struct PlayerInfo *player, struct Thing *thing);
 void leave_creature_as_passenger(struct PlayerInfo *player, struct Thing *thing);
 void leave_creature_as_controller(struct PlayerInfo *player, struct Thing *thing);
+
 #define set_selected_creature(player,thing) set_selected_creature_f(player, thing, __func__)
 TbBool set_selected_creature_f(struct PlayerInfo *player, struct Thing *thing, const char *func_name);
 #define set_selected_thing(player,thing) set_selected_thing_f(player, thing, __func__)
 TbBool set_selected_thing_f(struct PlayerInfo *player, struct Thing *thing, const char *func_name);
 TbBool clear_selected_thing(struct PlayerInfo *player);
+
 TbBool is_thing_directly_controlled(const struct Thing *thing);
 TbBool is_thing_passenger_controlled(const struct Thing *thing);
 TbBool is_thing_query_controlled(const struct Thing *thing);

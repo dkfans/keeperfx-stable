@@ -100,20 +100,20 @@ struct GuiButtonInit sound_menu_buttons[] = {
 };
 
 struct GuiMenu options_menu =
- { GMnu_OPTIONS,      0, 1, options_menu_buttons,       POS_GAMECTR,POS_GAMECTR,308, 120, gui_pretty_background,       0, NULL,    NULL,                    0, 1, 0,};
+ { GMnu_OPTIONS,      0, 1, options_menu_buttons,       POS_GAMECTR,POS_GAMECTR, 308, 120, gui_pretty_background,       0, NULL,    NULL,                    0, 1, 0,};
 struct GuiMenu instance_menu =
- { GMnu_INSTANCE,     0, 1, instance_menu_buttons,      POS_GAMECTR,POS_GAMECTR,318, 120, gui_pretty_background,       0, NULL,    NULL,                    0, 1, 0,};
+ { GMnu_INSTANCE,     0, 1, instance_menu_buttons,      POS_GAMECTR,POS_GAMECTR, 318, 120, gui_pretty_background,       0, NULL,    NULL,                    0, 1, 0,};
 struct GuiMenu quit_menu =
- { GMnu_QUIT,         0, 1, quit_menu_buttons,          POS_GAMECTR,POS_GAMECTR,264, 116, gui_pretty_background,       0, NULL,    NULL,                    0, 1, 0,};
+ { GMnu_QUIT,         0, 1, quit_menu_buttons,          POS_GAMECTR,POS_GAMECTR, 264, 116, gui_pretty_background,       0, NULL,    NULL,                    0, 1, 0,};
 struct GuiMenu error_box =
- { GMnu_ERROR_BOX,    0, 1, error_box_buttons,          POS_GAMECTR,POS_GAMECTR,280, 180, gui_pretty_background,       0, NULL,    NULL,                    0, 1, 0,};
+ { GMnu_ERROR_BOX,    0, 1, error_box_buttons,          POS_GAMECTR,POS_GAMECTR, 280, 180, gui_pretty_background,       0, NULL,    NULL,                    0, 1, 0,};
 struct GuiMenu autopilot_menu =
- { GMnu_AUTOPILOT,    0, 4, autopilot_menu_buttons,     POS_GAMECTR,POS_GAMECTR,224, 120, gui_pretty_background,       0, NULL,    NULL,                    0, 1, 0,};
+ { GMnu_AUTOPILOT,    0, 4, autopilot_menu_buttons,     POS_GAMECTR,POS_GAMECTR, 224, 120, gui_pretty_background,       0, NULL,    NULL,                    0, 1, 0,};
 
 struct GuiMenu video_menu =
- { GMnu_VIDEO, 0, 4, video_menu_buttons,         POS_GAMECTR,POS_GAMECTR,160, 170, gui_pretty_background,       0, NULL,    init_video_menu,         0, 1, 0,};
+ { GMnu_VIDEO, 0, 4, video_menu_buttons,                POS_GAMECTR,POS_GAMECTR, 160, 170, gui_pretty_background,       0, NULL,    init_video_menu,         0, 1, 0,};
 struct GuiMenu sound_menu =
- { GMnu_SOUND, 0, 4, sound_menu_buttons,         POS_GAMECTR,POS_GAMECTR,280, 170, gui_pretty_background,       0, NULL,    init_audio_menu,         0, 1, 0,};
+ { GMnu_SOUND, 0, 4, sound_menu_buttons,                POS_GAMECTR,POS_GAMECTR, 280, 170, gui_pretty_background,       0, NULL,    init_audio_menu,         0, 1, 0,};
 /******************************************************************************/
 #ifdef __cplusplus
 }

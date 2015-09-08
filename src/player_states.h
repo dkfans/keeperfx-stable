@@ -45,9 +45,11 @@ enum PlayerStates {
     PSt_Slap,
     PSt_CtrlPassngr, // 10
     PSt_CtrlDirect,
+    /** Selecting a creature for creature info; player can choose a creature with mouse click. */
     PSt_CreatrQuery,
     PSt_OrderCreatr,
     PSt_MkBadCreatr,
+    /** Creature info being shown for selected creature, and camera following the creature. */
     PSt_CreatrInfo, // 15
     PSt_PlaceTrap,
     PSt_Lightning,

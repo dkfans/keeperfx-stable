@@ -160,7 +160,6 @@ DLLIMPORT void _DK_update_creature_count(struct Thing *creatng);
 DLLIMPORT long _DK_process_creature_state(struct Thing *creatng);
 DLLIMPORT long _DK_move_creature(struct Thing *creatng);
 DLLIMPORT void _DK_init_creature_level(struct Thing *creatng, long nlev);
-DLLIMPORT long _DK_check_for_first_person_barrack_party(struct Thing *creatng);
 DLLIMPORT void _DK_terminate_thing_spell_effect(struct Thing *creatng, long reason);
 DLLIMPORT void _DK_creature_increase_level(struct Thing *creatng);
 DLLIMPORT void _DK_thing_death_flesh_explosion(struct Thing *creatng);
@@ -224,162 +223,6 @@ TbBool creatre_is_for_dungeon_diggers_list(const struct Thing *creatng)
     if (is_hero_thing(creatng))
         return false;
     return  (creatng->model == get_players_special_digger_model(creatng->owner));
-}
-
-/**
- * Creates a barracks party, when creature being possessed is barracking.
- * @param grthing
- * @return Amount of creatures in the party, including the leader.
- */
-long check_for_first_person_barrack_party(struct Thing *grthing)
-{
-    //return _DK_check_for_first_person_barrack_party(grthing);
-    if (!thing_is_creature(grthing))
-    {
-        SYNCDBG(2,"The %s cannot lead a barracks party", thing_model_name(grthing));
-        return 0;
-    }
-    struct Room *room;
-    room = get_room_thing_is_on(grthing);
-    if (!room_still_valid_as_type_for_thing(room, RoK_BARRACKS, grthing))
-    {
-        SYNCDBG(2,"Room %s owned by player %d does not allow the %s index %d owner %d to lead a party",room_code_name(room->kind),(int)room->owner,thing_model_name(grthing),(int)grthing->index,(int)grthing->owner);
-        return 0;
-    }
-    struct CreatureControl *cctrl;
-    struct Thing *thing;
-    unsigned long k;
-    long i, n;
-    n = 0;
-    i = room->creatures_list;
-    k = 0;
-    while (i != 0)
-    {
-        thing = thing_get(i);
-        TRACE_THING(thing);
-        cctrl = creature_control_get_from_thing(thing);
-        if (!creature_control_exists(cctrl))
-        {
-            ERRORLOG("Jump to invalid creature %d detected",(int)i);
-            break;
-        }
-        i = cctrl->next_in_room;
-        // Per creature code
-        if (thing->index != grthing->index) {
-            if (n == 0) {
-                add_creature_to_group_as_leader(grthing, thing);
-                n++;
-            } else {
-                add_creature_to_group(thing, grthing);
-            }
-            n++;
-        }
-        // Per creature code ends
-        k++;
-        if (k > THINGS_COUNT)
-        {
-          ERRORLOG("Infinite loop detected when sweeping creatures list");
-          break;
-        }
-    }
-    return n;
-}
-
-TbBool control_creature_as_controller(struct PlayerInfo *player, struct Thing *thing)
-{
-    struct CreatureStats *crstat;
-    struct CreatureControl *cctrl;
-    struct InitLight ilght;
-    struct Camera *cam;
-    //return _DK_control_creature_as_controller(player, thing);
-    if (((thing->owner != player->id_number) && (player->work_state != PSt_FreeCtrlDirect))
-      || !thing_can_be_controlled_as_controller(thing))
-    {
-      if (!control_creature_as_passenger(player, thing))
-        return false;
-      cam = player->acamera;
-      crstat = creature_stats_get(get_players_special_digger_model(player->id_number));
-      cam->mappos.z.val += crstat->eye_height;
-      return true;
-    }
-    cctrl = creature_control_get_from_thing(thing);
-    cctrl->moveto_pos.x.val = 0;
-    cctrl->moveto_pos.y.val = 0;
-    cctrl->moveto_pos.z.val = 0;
-    if (is_my_player(player))
-    {
-      toggle_status_menu(0);
-      turn_off_roaming_menus();
-    }
-    set_selected_creature(player, thing);
-    cam = player->acamera;
-    if (cam != NULL)
-      player->view_mode_restore = cam->view_mode;
-    thing->alloc_flags |= TAlF_IsControlled;
-    thing->state_flags |= TF1_IsPlayerCamera;
-    thing->field_4F |= TF4F_DoNotDraw;
-    set_start_state(thing);
-    set_player_mode(player, PVT_CreatureContrl);
-    if (thing_is_creature(thing))
-    {
-        cctrl->max_speed = calculate_correct_creature_maxspeed(thing);
-        check_for_first_person_barrack_party(thing);
-        if (creature_is_group_member(thing)) {
-            make_group_member_leader(thing);
-        }
-    }
-    LbMemorySet(&ilght, 0, sizeof(struct InitLight));
-    ilght.mappos.x.val = thing->mappos.x.val;
-    ilght.mappos.y.val = thing->mappos.y.val;
-    ilght.mappos.z.val = thing->mappos.z.val;
-    ilght.field_3 = 1;
-    ilght.field_2 = 36;
-    ilght.field_0 = 2560;
-    ilght.is_dynamic = 1;
-    thing->light_id = light_create_light(&ilght);
-    if (thing->light_id != 0) {
-        light_set_light_never_cache(thing->light_id);
-    } else {
-      ERRORLOG("Cannot allocate light to new controlled thing");
-    }
-    if (is_my_player_number(thing->owner))
-    {
-      if (thing->class_id == TCls_Creature)
-      {
-        crstat = creature_stats_get_from_thing(thing);
-        setup_eye_lens(crstat->eye_effect);
-      }
-    }
-    return true;
-}
-
-TbBool control_creature_as_passenger(struct PlayerInfo *player, struct Thing *thing)
-{
-    struct Camera *cam;
-    //return _DK_control_creature_as_passenger(player, thing);
-    if ((thing->owner != player->id_number) && (player->work_state != PSt_FreeCtrlPassngr))
-    {
-        ERRORLOG("Player %d cannot control as passenger thing owned by player %d",(int)player->id_number,(int)thing->owner);
-        return false;
-    }
-    if (!thing_can_be_controlled_as_passenger(thing))
-    {
-        ERRORLOG("The %s index %d cannot be controlled as passenger", thing_model_name(thing),(int)thing->index);
-        return false;
-    }
-    if (is_my_player(player))
-    {
-        toggle_status_menu(0);
-        turn_off_roaming_menus();
-    }
-    set_selected_thing(player, thing);
-    cam = player->acamera;
-    if (cam != NULL)
-      player->view_mode_restore = cam->view_mode;
-    set_player_mode(player, PVT_CreaturePasngr);
-    thing->state_flags |= TF1_IsPlayerCamera;
-    thing->field_4F |= TF4F_DoNotDraw;
-    return true;
 }
 
 void free_swipe_graphic(void)
@@ -3302,10 +3145,7 @@ void change_creature_owner(struct Thing *creatng, PlayerNumber nowner)
     SYNCDBG(6,"Starting for %s, owner %d to %d",thing_model_name(creatng),(int)creatng->owner,(int)nowner);
     //_DK_change_creature_owner(thing, nowner); return;
     // Remove the creature from old owner
-    if (creatng->light_id != 0) {
-        light_delete_light(creatng->light_id);
-        creatng->light_id = 0;
-    }
+    delete_thing_light(creatng);
     cleanup_creature_state_and_interactions(creatng);
     remove_creature_lair(creatng);
     if ((creatng->alloc_flags & TAlF_InDungeonList) != 0) {

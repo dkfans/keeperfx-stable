@@ -229,6 +229,57 @@ struct PlayerInfo *get_player_thing_is_controlled_by(const struct Thing *thing)
     return get_player(thing->owner);
 }
 
+int create_thing_light_f(struct Thing *thing, short par_f0, unsigned char par_f2, unsigned char par_f3, const char *func_name)
+{
+    struct InitLight ilght;
+    LbMemorySet(&ilght, 0, sizeof(struct InitLight));
+    ilght.field_0 = par_f0;
+    ilght.field_2 = par_f2;
+    ilght.field_3 = par_f3;
+    ilght.is_dynamic = 1;
+    ilght.mappos = thing->mappos;
+    thing->light_id = light_create_light(&ilght);
+    if (thing->light_id != 0)
+    {
+        if (thing_is_creature(thing)) {
+            light_set_light_never_cache(thing->light_id);
+        }
+    } else
+    {
+        // Being out of free lights is quite common - so info instead of warning here
+        SYNCDBG(4,"%s: Cannot allocate dynamic light to %s index %d",func_name,thing_model_name(thing),(int)thing->index);
+    }
+    return thing->light_id;
+}
+
+int create_thing_light_with_init_f(struct Thing *thing, const struct InitLight *ilght_base, const char *func_name)
+{
+    struct InitLight ilght;
+    LbMemoryCopy(&ilght, ilght_base, sizeof(struct InitLight));
+    ilght.mappos = thing->mappos;
+    thing->light_id = light_create_light(&ilght);
+    if (thing->light_id != 0)
+    {
+        if (thing_is_creature(thing)) {
+            light_set_light_never_cache(thing->light_id);
+        }
+    } else
+    {
+        // Being out of free lights is quite common - so info instead of warning here
+        SYNCDBG(4,"%s: Cannot allocate light to %s index %d",func_name,thing_model_name(thing),(int)thing->index);
+    }
+    return thing->light_id;
+}
+
+void delete_thing_light(struct Thing *thing)
+{
+    if (thing->light_id != 0)
+    {
+        light_delete_light(thing->light_id);
+        thing->light_id = 0;
+    }
+}
+
 void set_thing_draw(struct Thing *thing, long anim, long speed, long scale, char a5, char start_frame, unsigned char draw_class)
 {
     unsigned long i;

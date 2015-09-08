@@ -117,10 +117,7 @@ short creature_arrived_at_prison(struct Thing *creatng)
     if (creature_affected_by_spell(creatng, SplK_Invisibility)) {
         terminate_thing_spell_effect(creatng, SplK_Invisibility);
     }
-    if (creatng->light_id != 0) {
-        light_delete_light(creatng->light_id);
-        creatng->light_id = 0;
-    }
+    delete_thing_light(creatng);
     return 1;
 
 }

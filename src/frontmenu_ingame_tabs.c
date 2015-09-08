@@ -38,6 +38,7 @@
 #include "creature_instances.h"
 #include "config_strings.h"
 #include "config_creature.h"
+#include "config_crtrstates.h"
 #include "config_magic.h"
 #include "config_trapdoor.h"
 #include "config_terrain.h"
@@ -1240,6 +1241,11 @@ void draw_name_box(long x, long y, int width, struct Thing *thing)
         const char *text;
         text = creature_own_name(thing);
         draw_centred_string64k(text, x + 63*width/140, y + 2*width/140, 120, 120*width/140);
+#if 0
+        // DEBUG code to show actual state below creature name in info panel
+        text = creature_state_code_name(get_creature_state_besides_interruptions(thing));
+        draw_centred_string64k(text, x + 63*width/140, y + 16*width/140, 160, 138*width/140);
+#endif
     }
 }
 
@@ -1252,7 +1258,10 @@ void gui_creature_query_background1(struct GuiMenu *gmnu)
     player = get_my_player();
     struct Thing *ctrltng;
     ctrltng = thing_get(player->controlled_thing_idx);
-    draw_name_box(gmnu->pos_x + 4*units_per_px/16, gmnu->pos_y + 262*units_per_px/16, gmnu->width, ctrltng);
+    int nambox_x, nambox_y;
+    nambox_x = gmnu->pos_x +   4*units_per_px/16;
+    nambox_y = gmnu->pos_y + 262*units_per_px/16;
+    draw_name_box(nambox_x, nambox_y, gmnu->width, ctrltng);
     int portrt_x, portrt_y;
     portrt_x = gmnu->pos_x + (  4*units_per_px + 8)/16;
     portrt_y = gmnu->pos_y + (188*units_per_px + 8)/16;

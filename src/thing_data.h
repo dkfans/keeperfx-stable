@@ -89,6 +89,7 @@ enum ThingMovementFlags {
 #pragma pack(1)
 
 struct Room;
+struct InitLight;
 
 struct Thing {
     unsigned char alloc_flags;
@@ -255,6 +256,12 @@ long thing_get_index(const struct Thing *thing);
 
 TbBool thing_is_dragged_or_pulled(const struct Thing *thing);
 struct PlayerInfo *get_player_thing_is_controlled_by(const struct Thing *thing);
+
+#define create_thing_light(thing, par_f0, par_f2, par_f3) create_thing_light_f(thing, par_f0, par_f2, par_f3, __func__)
+int create_thing_light_f(struct Thing *thing, short par_f0, unsigned char par_f2, unsigned char par_f3, const char *func_name);
+#define create_thing_light_with_init(thing, ilght_base) create_thing_light_with_init_f(thing, ilght_base, __func__)
+int create_thing_light_with_init_f(struct Thing *thing, const struct InitLight *ilght_base, const char *func_name);
+void delete_thing_light(struct Thing *thing);
 
 void set_thing_draw(struct Thing *thing, long anim, long speed, long scale, char a5, char start_frame, unsigned char a7);
 /******************************************************************************/

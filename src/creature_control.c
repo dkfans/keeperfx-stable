@@ -181,7 +181,6 @@ struct Thing *create_and_control_creature_as_controller(struct PlayerInfo *playe
     struct Dungeon *dungeon;
     struct Thing *thing;
     const struct Camera *cam;
-    struct InitLight ilght;
     SYNCDBG(6,"Request for model %ld at (%d,%d,%d)",crmodel,(int)pos->x.val,(int)pos->y.val,(int)pos->z.val);
     thing = create_creature(pos, crmodel, player->id_number);
     if (thing_is_invalid(thing))
@@ -207,20 +206,7 @@ struct Thing *create_and_control_creature_as_controller(struct PlayerInfo *playe
     set_player_mode(player, PVT_CreatureContrl);
     set_start_state(thing);
     // Preparing light object
-    LbMemorySet(&ilght, 0, sizeof(struct InitLight));
-    ilght.mappos = thing->mappos;
-    ilght.field_2 = 36;
-    ilght.field_3 = 1;
-    ilght.is_dynamic = 1;
-    ilght.field_0 = 2560;
-    thing->light_id = light_create_light(&ilght);
-    if (thing->light_id != 0)
-    {
-        light_set_light_never_cache(thing->light_id);
-    } else
-    {
-        ERRORLOG("Cannot allocate light to new hero");
-    }
+    create_thing_light(thing, 2560, 36, 1);
     if (is_my_player_number(thing->owner))
     {
         if (thing->class_id == TCls_Creature)

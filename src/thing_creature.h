@@ -93,9 +93,8 @@ void set_creature_level(struct Thing *thing, long nlvl);
 void init_creature_level(struct Thing *thing, long nlev);
 long get_creature_speed(const struct Thing *thing);
 
-TbBool control_creature_as_controller(struct PlayerInfo *player, struct Thing *thing);
-TbBool control_creature_as_passenger(struct PlayerInfo *player, struct Thing *thing);
-void leave_creature_as_controller(struct PlayerInfo *player, struct Thing *thing);
+TbBool thing_can_be_controlled_as_controller(struct Thing *thing);
+TbBool thing_can_be_controlled_as_passenger(struct Thing *thing);
 long get_human_controlled_creature_target(struct Thing *thing, long a2);
 struct Thing *get_creature_near_for_controlling(PlayerNumber plyr_idx, MapCoord pos_x, MapCoord pos_y);
 

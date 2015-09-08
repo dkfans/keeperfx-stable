@@ -118,6 +118,7 @@ MapCoord push_thingy_against_wall_at(const struct Thing *thing, const struct Coo
 /**
  * Performs sliding a thing off wall.
  * Returns new position of the thing, does not modify it inside (no change to velocity - no bounce).
+ * The fact that walls are always cubes placed in line with XY axes, makes this function a lot easier.
  * @param thing The thing to slide off wall.
  * @param wallpos Wall position.
  * @param blocked_flags Blocked axes flags.

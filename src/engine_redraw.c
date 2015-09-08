@@ -21,6 +21,7 @@
 #include "globals.h"
 #include "bflib_basics.h"
 #include "bflib_math.h"
+#include "bflib_planar.h"
 #include "bflib_memory.h"
 #include "bflib_sprfnt.h"
 #include "bflib_sound.h"

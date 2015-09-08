@@ -759,8 +759,26 @@ long check_place_to_pretty_excluding(struct Thing *creatng, MapSlabCoord slb_x, 
     return 1;
 }
 
+TbBool move_imp_to_uncrowded_reinforce_access_point(struct Thing *creatng)
+{
+    struct CreatureControl *cctrl;
+    cctrl = creature_control_get_from_thing(creatng);
+    MapSubtlCoord mvstl_x, mvstl_y;
+    if (!check_out_uncrowded_reinforce_position(creatng, cctrl->digger.working_stl, &mvstl_x, &mvstl_y))
+    {
+        return false;
+    }
+    if (!setup_person_move_to_position(creatng, mvstl_x, mvstl_y, NavRtF_Default))
+    {
+        return false;
+    }
+    creatng->continue_state = CrSt_ImpArrivesAtReinforce;
+    return true;
+}
+
 long check_out_unreinforced_place(struct Thing *thing)
 {
+    //note: uses move_imp_to_uncrowded_reinforce_access_point()
     return _DK_check_out_unreinforced_place(thing);
 }
 
@@ -1908,7 +1926,7 @@ int get_nearest_small_around_side_of_slab(MapCoord dstcor_x, MapCoord dstcor_y, 
     return 0;
 }
 
-long check_out_uncrowded_reinforce_position(struct Thing *thing, SubtlCodedCoords stl_num, long *retstl_x, long *retstl_y)
+long check_out_uncrowded_reinforce_position(struct Thing *thing, SubtlCodedCoords stl_num, MapSubtlCoord *retstl_x, MapSubtlCoord *retstl_y)
 {
     MapSubtlCoord basestl_x,basestl_y;
     basestl_x = stl_num_decode_x(stl_num);

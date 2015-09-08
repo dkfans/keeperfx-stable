@@ -35,6 +35,7 @@ struct Thing;
 /******************************************************************************/
 short at_barrack_room(struct Thing *thing);
 short barracking(struct Thing *creatng);
+long check_for_first_person_barrack_party(struct Thing *grthing);
 /******************************************************************************/
 #ifdef __cplusplus
 }

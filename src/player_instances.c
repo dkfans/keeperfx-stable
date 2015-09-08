@@ -26,12 +26,14 @@
 
 #include "creature_control.h"
 #include "creature_states.h"
+#include "creature_states_barck.h"
 #include "creature_graphics.h"
 #include "creature_instances.h"
 #include "config_creature.h"
 #include "config_crtrstates.h"
 #include "thing_stats.h"
 #include "light_data.h"
+#include "lens_api.h"
 #include "thing_effects.h"
 #include "thing_navigate.h"
 #include "thing_traps.h"
@@ -931,6 +933,89 @@ void process_player_instances(void)
     SYNCDBG(9,"Finished");
 }
 
+TbBool control_creature_as_controller(struct PlayerInfo *player, struct Thing *thing)
+{
+    struct CreatureStats *crstat;
+    struct CreatureControl *cctrl;
+    struct Camera *cam;
+    //return _DK_control_creature_as_controller(player, thing);
+    if (((thing->owner != player->id_number) && (player->work_state != PSt_FreeCtrlDirect))
+      || !thing_can_be_controlled_as_controller(thing))
+    {
+      if (!control_creature_as_passenger(player, thing))
+        return false;
+      cam = player->acamera;
+      crstat = creature_stats_get(get_players_special_digger_model(player->id_number));
+      cam->mappos.z.val += crstat->eye_height;
+      return true;
+    }
+    cctrl = creature_control_get_from_thing(thing);
+    cctrl->moveto_pos.x.val = 0;
+    cctrl->moveto_pos.y.val = 0;
+    cctrl->moveto_pos.z.val = 0;
+    if (is_my_player(player))
+    {
+      toggle_status_menu(0);
+      turn_off_roaming_menus();
+    }
+    set_selected_creature(player, thing);
+    cam = player->acamera;
+    if (cam != NULL)
+      player->view_mode_restore = cam->view_mode;
+    thing->alloc_flags |= TAlF_IsControlled;
+    thing->state_flags |= TF1_IsPlayerCamera;
+    thing->field_4F |= TF4F_DoNotDraw;
+    set_start_state(thing);
+    set_player_mode(player, PVT_CreatureContrl);
+    if (thing_is_creature(thing))
+    {
+        cctrl->max_speed = calculate_correct_creature_maxspeed(thing);
+        check_for_first_person_barrack_party(thing);
+        if (creature_is_group_member(thing)) {
+            make_group_member_leader(thing);
+        }
+    }
+    create_thing_light(thing, 2560, 36, 1);
+    if (is_my_player_number(thing->owner))
+    {
+      if (thing->class_id == TCls_Creature)
+      {
+        crstat = creature_stats_get_from_thing(thing);
+        setup_eye_lens(crstat->eye_effect);
+      }
+    }
+    return true;
+}
+
+TbBool control_creature_as_passenger(struct PlayerInfo *player, struct Thing *thing)
+{
+    struct Camera *cam;
+    //return _DK_control_creature_as_passenger(player, thing);
+    if ((thing->owner != player->id_number) && (player->work_state != PSt_FreeCtrlPassngr))
+    {
+        ERRORLOG("Player %d cannot control as passenger thing owned by player %d",(int)player->id_number,(int)thing->owner);
+        return false;
+    }
+    if (!thing_can_be_controlled_as_passenger(thing))
+    {
+        ERRORLOG("The %s index %d cannot be controlled as passenger", thing_model_name(thing),(int)thing->index);
+        return false;
+    }
+    if (is_my_player(player))
+    {
+        toggle_status_menu(0);
+        turn_off_roaming_menus();
+    }
+    set_selected_thing(player, thing);
+    cam = player->acamera;
+    if (cam != NULL)
+      player->view_mode_restore = cam->view_mode;
+    set_player_mode(player, PVT_CreaturePasngr);
+    thing->state_flags |= TF1_IsPlayerCamera;
+    thing->field_4F |= TF4F_DoNotDraw;
+    return true;
+}
+
 void leave_creature_as_controller(struct PlayerInfo *player, struct Thing *thing)
 {
     struct CreatureControl *cctrl;
@@ -944,10 +1029,7 @@ void leave_creature_as_controller(struct PlayerInfo *player, struct Thing *thing
         set_player_mode(player, PVT_DungeonTop);
         player->allocflags &= ~PlaF_Unknown8;
         set_engine_view(player, player->view_mode_restore);
-        player->cameras[CamIV_Isometric].mappos.x.val = subtile_coord_center(map_subtiles_x/2);
-        player->cameras[CamIV_Isometric].mappos.y.val = subtile_coord_center(map_subtiles_y/2);
-        player->cameras[CamIV_FrontView].mappos.x.val = subtile_coord_center(map_subtiles_x/2);
-        player->cameras[CamIV_FrontView].mappos.y.val = subtile_coord_center(map_subtiles_y/2);
+        set_player_cameras_position(player, subtile_coord_center(map_subtiles_x/2), subtile_coord_center(map_subtiles_y/2));
         clear_selected_thing(player);
         return;
     }
@@ -961,10 +1043,8 @@ void leave_creature_as_controller(struct PlayerInfo *player, struct Thing *thing
     i = player->acamera->orient_a;
     crstat = creature_stats_get_from_thing(thing);
     k = thing->mappos.z.val + crstat->eye_height;
-    player->cameras[CamIV_Isometric].mappos.x.val = thing->mappos.x.val + distance_with_angle_to_coord_x(k,i);
-    player->cameras[CamIV_Isometric].mappos.y.val = thing->mappos.y.val + distance_with_angle_to_coord_y(k,i);
-    player->cameras[CamIV_FrontView].mappos.x.val = thing->mappos.x.val + distance_with_angle_to_coord_x(k,i);
-    player->cameras[CamIV_FrontView].mappos.y.val = thing->mappos.y.val + distance_with_angle_to_coord_y(k,i);
+    set_player_cameras_position(player, thing->mappos.x.val + distance_with_angle_to_coord_x(k,i),
+                                        thing->mappos.y.val + distance_with_angle_to_coord_y(k,i));
     if (thing->class_id == TCls_Creature)
     {
         set_start_state(thing);
@@ -976,10 +1056,7 @@ void leave_creature_as_controller(struct PlayerInfo *player, struct Thing *thing
           disband_creatures_group(thing);
         }
     }
-    if (thing->light_id != 0) {
-        light_delete_light(thing->light_id);
-        thing->light_id = 0;
-    }
+    delete_thing_light(thing);
 }
 
 void leave_creature_as_passenger(struct PlayerInfo *player, struct Thing *thing)
@@ -994,10 +1071,7 @@ void leave_creature_as_passenger(struct PlayerInfo *player, struct Thing *thing)
     set_player_mode(player, PVT_DungeonTop);
     player->allocflags &= ~PlaF_Unknown8;
     set_engine_view(player, player->view_mode_restore);
-    player->cameras[CamIV_Isometric].mappos.x.val = subtile_coord_center(map_subtiles_x/2);
-    player->cameras[CamIV_Isometric].mappos.y.val = subtile_coord_center(map_subtiles_y/2);
-    player->cameras[CamIV_FrontView].mappos.x.val = subtile_coord_center(map_subtiles_x/2);
-    player->cameras[CamIV_FrontView].mappos.y.val = subtile_coord_center(map_subtiles_y/2);
+    set_player_cameras_position(player, subtile_coord_center(map_subtiles_x/2), subtile_coord_center(map_subtiles_y/2));
     clear_selected_thing(player);
     return;
   }
@@ -1009,10 +1083,8 @@ void leave_creature_as_passenger(struct PlayerInfo *player, struct Thing *thing)
   i = player->acamera->orient_a;
   crstat = creature_stats_get_from_thing(thing);
   k = thing->mappos.z.val + crstat->eye_height;
-  player->cameras[CamIV_Isometric].mappos.x.val = thing->mappos.x.val + distance_with_angle_to_coord_x(k,i);
-  player->cameras[CamIV_Isometric].mappos.y.val = thing->mappos.y.val + distance_with_angle_to_coord_y(k,i);
-  player->cameras[CamIV_FrontView].mappos.x.val = thing->mappos.x.val + distance_with_angle_to_coord_x(k,i);
-  player->cameras[CamIV_FrontView].mappos.y.val = thing->mappos.y.val + distance_with_angle_to_coord_y(k,i);
+  set_player_cameras_position(player, thing->mappos.x.val + distance_with_angle_to_coord_x(k,i),
+                                      thing->mappos.y.val + distance_with_angle_to_coord_y(k,i));
   clear_selected_thing(player);
 }
 

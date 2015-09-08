@@ -601,8 +601,6 @@ long check_out_unreinforced_drop_place(struct Thing *thing)
     struct CreatureControl *cctrl;
     MapSubtlCoord stl_x,stl_y;
     MapSlabCoord slb_x,slb_y;
-    long stl_num;
-    long pos_x,pos_y;
     long i,n;
     stl_x = thing->mappos.x.stl.num;
     stl_y = thing->mappos.y.stl.num;
@@ -614,16 +612,17 @@ long check_out_unreinforced_drop_place(struct Thing *thing)
         slb_y = subtile_slab_fast(stl_y) + (long)small_around[n].delta_y;
         if ( check_place_to_reinforce(thing, slb_x, slb_y) > 0 )
         {
+            SubtlCodedCoords stl_num;
+            MapSubtlCoord mvstl_x,mvstl_y;
             stl_num = get_subtile_number_at_slab_center(slb_x, slb_y);
-            if (check_out_uncrowded_reinforce_position(thing, stl_num, &pos_x, &pos_y))
+            if (check_out_uncrowded_reinforce_position(thing, stl_num, &mvstl_x, &mvstl_y))
             {
-                if ( setup_person_move_to_position(thing, pos_x, pos_y, NavRtF_Default) )
+                if (setup_person_move_to_position(thing, mvstl_x, mvstl_y, NavRtF_Default))
                 {
-
                     thing->continue_state = CrSt_ImpArrivesAtReinforce;
                     cctrl->digger.working_stl = stl_num;
                     cctrl->digger.byte_93 = 0;
-                    SYNCDBG(8,"Assigned reinforce at (%d,%d) to %s index %d",(int)pos_x,(int)pos_y,thing_model_name(thing),(int)thing->index);
+                    SYNCDBG(8,"Assigned reinforce at (%d,%d) to %s index %d",(int)mvstl_x,(int)mvstl_y,thing_model_name(thing),(int)thing->index);
                     return 1;
                 }
             }

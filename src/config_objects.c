@@ -484,77 +484,93 @@ int get_required_room_capacity_for_object(RoomRole room_role, ThingModel objmode
 void init_objects(void)
 {
     long i;
-    game.objects_config[1].ilght.field_0 = 0;
-    game.objects_config[1].ilght.field_2 = 0x00;
-    game.objects_config[1].ilght.field_3 = 0;
     game.objects_config[1].health = 100;
     game.objects_config[1].field_4 = 20;
     game.objects_config[1].field_5 = 0;
+    game.objects_config[1].ilght.field_0 = 0;
+    game.objects_config[1].ilght.field_2 = 0x00;
+    game.objects_config[1].ilght.field_3 = 0;
+
     game.objects_config[2].health = 100;
     game.objects_config[2].field_4 = 0;
     game.objects_config[2].field_5 = 1;
-    game.objects_config[2].ilght.is_dynamic = 0;
-    game.objects_config[2].field_8 = 1;
-    game.objects_config[49].health = 100;
-    game.objects_config[49].field_4 = 0;
-    game.objects_config[49].field_5 = 1;
-    game.objects_config[49].ilght.is_dynamic = 0;
-    game.objects_config[49].field_8 = 1;
-    game.objects_config[3].health = 100;
-    game.objects_config[3].field_4 = 20;
-    game.objects_config[4].health = 100;
-    game.objects_config[4].field_4 = 20;
-    game.objects_config[4].field_5 = 1;
-    game.objects_config[4].ilght.is_dynamic = 0;
-    game.objects_config[4].field_8 = 1;
-    game.objects_config[5].health = 1;
     game.objects_config[2].ilght.field_0 = 0x0600;
     game.objects_config[2].ilght.field_2 = 0x32;
     game.objects_config[2].ilght.field_3 = 5;
+    game.objects_config[2].ilght.is_dynamic = 0;
+    game.objects_config[2].field_8 = 1;
+
+    game.objects_config[49].health = 100;
+    game.objects_config[49].field_4 = 0;
+    game.objects_config[49].field_5 = 1;
+    game.objects_config[49].ilght.field_0 = 0x0A00u;
+    game.objects_config[49].ilght.field_2 = 0x28;
+    game.objects_config[49].ilght.field_3 = 5;
+    game.objects_config[49].ilght.is_dynamic = 0;
+    game.objects_config[49].field_8 = 1;
+
+    game.objects_config[3].health = 100;
+    game.objects_config[3].field_4 = 20;
+
+    game.objects_config[4].health = 100;
+    game.objects_config[4].field_4 = 20;
+    game.objects_config[4].field_5 = 1;
+    game.objects_config[4].ilght.field_0 = 0x0700u;
+    game.objects_config[4].ilght.field_2 = 0x2F;
+    game.objects_config[4].ilght.field_3 = 5;
+    game.objects_config[4].ilght.is_dynamic = 0;
+    game.objects_config[4].field_8 = 1;
+
+    game.objects_config[5].health = 1;
     game.objects_config[5].field_4 = 20;
     game.objects_config[5].field_5 = 0;
+    game.objects_config[5].ilght.field_0 = 0x0E00u;
+    game.objects_config[5].ilght.field_2 = 0x24;
+    game.objects_config[5].ilght.field_3 = 5;
     game.objects_config[5].ilght.is_dynamic = 1;
     game.objects_config[5].is_heart = 1;
     game.objects_config[5].field_8 = 1;
+
     game.objects_config[6].field_4 = 8;
     game.objects_config[6].health = 50;
+
     game.objects_config[7].health = 100;
     game.objects_config[7].field_4 = 0;
     game.objects_config[7].field_5 = 1;
     game.objects_config[7].field_8 = 1;
+
     game.objects_config[8].health = 100;
     game.objects_config[8].field_4 = 20;
     game.objects_config[8].field_5 = 1;
+
     game.objects_config[10].health = 1000;
     game.objects_config[10].field_4 = 9;
+
     game.objects_config[28].health = 100;
-    game.objects_config[49].ilght.field_0 = 0x0A00u;
-    game.objects_config[49].ilght.field_2 = 0x28;
-    game.objects_config[49].ilght.field_3 = 5;
-    game.objects_config[4].ilght.field_0 = 0x0700u;
-    game.objects_config[4].ilght.field_2 = 0x2F;
-    game.objects_config[4].ilght.field_3 = 5;
-    game.objects_config[5].ilght.field_0 = 0x0E00u;
-    game.objects_config[5].ilght.field_2 = 0x24;
-    game.objects_config[5].ilght.field_3 = 5;
     game.objects_config[28].field_4 = 0;
     game.objects_config[28].field_5 = 1;
+    game.objects_config[28].ilght.field_0 = 0x0600u;
+    game.objects_config[28].ilght.field_2 = 0x2E;
+    game.objects_config[28].ilght.field_3 = 5;
     game.objects_config[28].ilght.is_dynamic = 0;
     game.objects_config[28].field_8 = 1;
+
+    game.objects_config[11].field_4 = 10;
+    game.objects_config[11].field_5 = 0;
     game.objects_config[11].ilght.field_0 = 0x0400u;
     game.objects_config[11].ilght.field_2 = 0x3E;
     game.objects_config[11].ilght.field_3 = 0;
-    game.objects_config[11].field_4 = 10;
-    game.objects_config[11].field_5 = 0;
     game.objects_config[11].ilght.is_dynamic = 0;
     game.objects_config[11].field_8 = 1;
+
+    game.objects_config[12].field_4 = 10;
+    game.objects_config[12].field_5 = 0;
     game.objects_config[12].ilght.field_0 = 0x0400u;
     game.objects_config[12].ilght.field_2 = 0x3E;
     game.objects_config[12].ilght.field_3 = 0;
-    game.objects_config[12].field_4 = 10;
-    game.objects_config[12].field_5 = 0;
     game.objects_config[12].ilght.is_dynamic = 0;
     game.objects_config[12].field_8 = 1;
+
     game.objects_config[13].field_4 = 10;
     game.objects_config[13].field_5 = 0;
     game.objects_config[13].ilght.field_0 = 0x0400u;
@@ -562,13 +578,15 @@ void init_objects(void)
     game.objects_config[13].ilght.field_3 = 0;
     game.objects_config[13].ilght.is_dynamic = 0;
     game.objects_config[13].field_8 = 1;
+
+    game.objects_config[14].field_4 = 10;
+    game.objects_config[14].field_5 = 0;
     game.objects_config[14].ilght.field_0 = 0x0400u;
     game.objects_config[14].ilght.field_2 = 0x3E;
     game.objects_config[14].ilght.field_3 = 0;
-    game.objects_config[14].field_4 = 10;
-    game.objects_config[14].field_5 = 0;
     game.objects_config[14].ilght.is_dynamic = 0;
     game.objects_config[14].field_8 = 1;
+
     game.objects_config[15].field_4 = 10;
     game.objects_config[15].field_5 = 0;
     game.objects_config[15].ilght.field_0 = 0x0400u;
@@ -576,13 +594,15 @@ void init_objects(void)
     game.objects_config[15].ilght.field_3 = 0;
     game.objects_config[15].ilght.is_dynamic = 0;
     game.objects_config[15].field_8 = 1;
+
+    game.objects_config[16].field_4 = 10;
+    game.objects_config[16].field_5 = 0;
     game.objects_config[16].ilght.field_0 = 0x0400u;
     game.objects_config[16].ilght.field_2 = 0x3E;
     game.objects_config[16].ilght.field_3 = 0;
-    game.objects_config[16].field_4 = 10;
-    game.objects_config[16].field_5 = 0;
     game.objects_config[16].ilght.is_dynamic = 0;
     game.objects_config[16].field_8 = 1;
+
     game.objects_config[17].field_4 = 10;
     game.objects_config[17].field_5 = 0;
     game.objects_config[17].ilght.field_0 = 0x0400u;
@@ -590,131 +610,149 @@ void init_objects(void)
     game.objects_config[17].ilght.field_3 = 0;
     game.objects_config[17].ilght.is_dynamic = 0;
     game.objects_config[17].field_8 = 1;
+
     game.objects_config[43].field_4 = 8;
     game.objects_config[43].health = 50;
-    game.objects_config[28].ilght.field_0 = 0x0600u;
-    game.objects_config[28].ilght.field_2 = 0x2E;
-    game.objects_config[28].ilght.field_3 = 5;
+
     game.objects_config[18].field_4 = 10;
     game.objects_config[18].field_5 = 0;
     game.objects_config[18].ilght.field_0 = 0x0400u;
     game.objects_config[18].ilght.field_2 = 0x3E;
     game.objects_config[18].ilght.field_3 = 0;
     game.objects_config[18].ilght.is_dynamic = 0;
+    game.objects_config[18].field_8 = 1;
+
+    game.objects_config[19].field_4 = 10;
+    game.objects_config[19].field_5 = 0;
     game.objects_config[19].ilght.field_0 = 0x0400u;
     game.objects_config[19].ilght.field_2 = 0x3E;
     game.objects_config[19].ilght.field_3 = 0;
-    game.objects_config[18].field_8 = 1;
-    game.objects_config[19].field_4 = 10;
-    game.objects_config[19].field_5 = 0;
+    game.objects_config[19].ilght.is_dynamic = 0;
+    game.objects_config[19].field_8 = 1;
+
+    game.objects_config[20].field_4 = 10;
+    game.objects_config[20].field_5 = 0;
     game.objects_config[20].ilght.field_0 = 0x0400u;
     game.objects_config[20].ilght.field_2 = 0x3E;
     game.objects_config[20].ilght.field_3 = 0;
-    game.objects_config[19].ilght.is_dynamic = 0;
-    game.objects_config[19].field_8 = 1;
-    game.objects_config[20].field_4 = 10;
-    game.objects_config[20].field_5 = 0;
     game.objects_config[20].ilght.is_dynamic = 0;
+    game.objects_config[20].field_8 = 1;
+
+    game.objects_config[21].field_4 = 10;
+    game.objects_config[21].field_5 = 0;
     game.objects_config[21].ilght.field_0 = 0x0400u;
     game.objects_config[21].ilght.field_2 = 0x3E;
     game.objects_config[21].ilght.field_3 = 0;
-    game.objects_config[20].field_8 = 1;
-    game.objects_config[21].field_4 = 10;
-    game.objects_config[21].field_5 = 0;
+    game.objects_config[21].ilght.is_dynamic = 0;
+    game.objects_config[21].field_8 = 1;
+
+    game.objects_config[22].field_4 = 10;
+    game.objects_config[22].field_5 = 0;
     game.objects_config[22].ilght.field_0 = 0x0400u;
     game.objects_config[22].ilght.field_2 = 0x3E;
     game.objects_config[22].ilght.field_3 = 0;
-    game.objects_config[21].ilght.is_dynamic = 0;
-    game.objects_config[21].field_8 = 1;
-    game.objects_config[22].field_4 = 10;
-    game.objects_config[22].field_5 = 0;
     game.objects_config[22].ilght.is_dynamic = 0;
+    game.objects_config[22].field_8 = 1;
+
+    game.objects_config[23].field_4 = 10;
+    game.objects_config[23].field_5 = 0;
     game.objects_config[23].ilght.field_0 = 0x0400u;
     game.objects_config[23].ilght.field_2 = 0x3E;
     game.objects_config[23].ilght.field_3 = 0;
-    game.objects_config[22].field_8 = 1;
-    game.objects_config[23].field_4 = 10;
-    game.objects_config[23].field_5 = 0;
+    game.objects_config[23].ilght.is_dynamic = 0;
+    game.objects_config[23].field_8 = 1;
+
+    game.objects_config[45].field_4 = 10;
+    game.objects_config[45].field_5 = 0;
     game.objects_config[45].ilght.field_0 = 0x0400u;
     game.objects_config[45].ilght.field_2 = 0x3E;
     game.objects_config[45].ilght.field_3 = 0;
-    game.objects_config[23].ilght.is_dynamic = 0;
-    game.objects_config[23].field_8 = 1;
-    game.objects_config[45].field_4 = 10;
-    game.objects_config[45].field_5 = 0;
     game.objects_config[45].ilght.is_dynamic = 0;
+    game.objects_config[45].field_8 = 1;
+
+    game.objects_config[46].field_4 = 10;
+    game.objects_config[46].field_5 = 0;
     game.objects_config[46].ilght.field_0 = 0x0400u;
     game.objects_config[46].ilght.field_2 = 0x3E;
     game.objects_config[46].ilght.field_3 = 0;
-    game.objects_config[45].field_8 = 1;
-    game.objects_config[46].field_4 = 10;
-    game.objects_config[46].field_5 = 0;
+    game.objects_config[46].ilght.is_dynamic = 0;
+    game.objects_config[46].field_8 = 1;
+
+    game.objects_config[47].field_4 = 10;
+    game.objects_config[47].field_5 = 0;
     game.objects_config[47].ilght.field_0 = 0x0400u;
     game.objects_config[47].ilght.field_2 = 0x3E;
     game.objects_config[47].ilght.field_3 = 0;
-    game.objects_config[46].ilght.is_dynamic = 0;
-    game.objects_config[46].field_8 = 1;
-    game.objects_config[47].field_4 = 10;
-    game.objects_config[47].field_5 = 0;
     game.objects_config[47].ilght.is_dynamic = 0;
+    game.objects_config[47].field_8 = 1;
+
+    game.objects_config[134].field_4 = 10;
+    game.objects_config[134].field_5 = 0;
     game.objects_config[134].ilght.field_0 = 0x0400u;
     game.objects_config[134].ilght.field_2 = 0x3E;
     game.objects_config[134].ilght.field_3 = 0;
-    game.objects_config[47].field_8 = 1;
-    game.objects_config[134].field_4 = 10;
-    game.objects_config[134].field_5 = 0;
     game.objects_config[134].ilght.is_dynamic = 0;
+    game.objects_config[134].field_8 = 1;
+
+    game.objects_config[87].field_4 = 10;
+    game.objects_config[87].field_5 = 0;
     game.objects_config[87].ilght.field_0 = 0x0400u;
     game.objects_config[87].ilght.field_2 = 0x3E;
     game.objects_config[87].ilght.field_3 = 0;
-    game.objects_config[134].field_8 = 1;
-    game.objects_config[87].field_4 = 10;
-    game.objects_config[87].field_5 = 0;
+    game.objects_config[87].ilght.is_dynamic = 0;
+
+    game.objects_config[88].field_4 = 10;
+    game.objects_config[88].field_5 = 0;
     game.objects_config[88].ilght.field_0 = 0x0400u;
     game.objects_config[88].ilght.field_2 = 0x3E;
     game.objects_config[88].ilght.field_3 = 0;
-    game.objects_config[87].ilght.is_dynamic = 0;
-    game.objects_config[88].field_4 = 10;
-    game.objects_config[88].field_5 = 0;
+    game.objects_config[88].ilght.is_dynamic = 0;
+
+    game.objects_config[89].field_4 = 10;
+    game.objects_config[89].field_5 = 0;
     game.objects_config[89].ilght.field_0 = 0x0400u;
     game.objects_config[89].ilght.field_2 = 0x3E;
     game.objects_config[89].ilght.field_3 = 0;
-    game.objects_config[88].ilght.is_dynamic = 0;
-    game.objects_config[89].field_4 = 10;
-    game.objects_config[89].field_5 = 0;
+    game.objects_config[89].ilght.is_dynamic = 0;
+
+    game.objects_config[90].field_4 = 10;
+    game.objects_config[90].field_5 = 0;
     game.objects_config[90].ilght.field_0 = 0x0400u;
     game.objects_config[90].ilght.field_2 = 0x3E;
     game.objects_config[90].ilght.field_3 = 0;
-    game.objects_config[89].ilght.is_dynamic = 0;
-    game.objects_config[90].field_4 = 10;
-    game.objects_config[90].field_5 = 0;
+    game.objects_config[90].ilght.is_dynamic = 0;
+
+    game.objects_config[91].field_4 = 10;
+    game.objects_config[91].field_5 = 0;
     game.objects_config[91].ilght.field_0 = 0x0400u;
     game.objects_config[91].ilght.field_2 = 0x3E;
     game.objects_config[91].ilght.field_3 = 0;
-    game.objects_config[90].ilght.is_dynamic = 0;
-    game.objects_config[91].field_4 = 10;
-    game.objects_config[91].field_5 = 0;
+    game.objects_config[91].ilght.is_dynamic = 0;
+
+    game.objects_config[92].field_4 = 10;
+    game.objects_config[92].field_5 = 0;
     game.objects_config[92].ilght.field_0 = 0x0400u;
     game.objects_config[92].ilght.field_2 = 0x3E;
     game.objects_config[92].ilght.field_3 = 0;
-    game.objects_config[91].ilght.is_dynamic = 0;
-    game.objects_config[92].field_4 = 10;
-    game.objects_config[92].field_5 = 0;
+    game.objects_config[92].ilght.is_dynamic = 0;
+
+    game.objects_config[93].field_4 = 10;
+    game.objects_config[93].field_5 = 0;
     game.objects_config[93].ilght.field_0 = 0x0400u;
     game.objects_config[93].ilght.field_2 = 0x3E;
     game.objects_config[93].ilght.field_3 = 0;
-    game.objects_config[92].ilght.is_dynamic = 0;
-    game.objects_config[93].field_4 = 10;
-    game.objects_config[93].field_5 = 0;
+    game.objects_config[93].ilght.is_dynamic = 0;
+
+    game.objects_config[86].field_4 = 10;
+    game.objects_config[86].field_5 = 0;
     game.objects_config[86].ilght.field_0 = 0x0400u;
     game.objects_config[86].ilght.field_2 = 0x3E;
     game.objects_config[86].ilght.field_3 = 0;
-    game.objects_config[93].ilght.is_dynamic = 0;
-    game.objects_config[86].field_4 = 10;
-    game.objects_config[86].field_5 = 0;
     game.objects_config[86].ilght.is_dynamic = 0;
+
     game.objects_config[109].resistant_to_nonmagic = 1;
     game.objects_config[109].field_8 = 1;
+
     game.objects_config[94].field_8 = 1;
     game.objects_config[95].field_8 = 1;
     game.objects_config[96].field_8 = 1;

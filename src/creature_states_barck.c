@@ -76,4 +76,62 @@ short barracking(struct Thing *creatng)
     creatng->continue_state = get_continue_state_for_job(Job_BARRACK);
     return CrStRet_Modified;
 }
+
+/**
+ * Creates a barracks party, when creature being possessed is barracking.
+ * @param grthing
+ * @return Amount of creatures in the party, including the leader.
+ */
+long check_for_first_person_barrack_party(struct Thing *grthing)
+{
+    if (!thing_is_creature(grthing))
+    {
+        SYNCDBG(2,"The %s cannot lead a barracks party", thing_model_name(grthing));
+        return 0;
+    }
+    struct Room *room;
+    room = get_room_thing_is_on(grthing);
+    if (!room_still_valid_as_type_for_thing(room, RoK_BARRACKS, grthing))
+    {
+        SYNCDBG(2,"Room %s owned by player %d does not allow the %s index %d owner %d to lead a party",room_code_name(room->kind),(int)room->owner,thing_model_name(grthing),(int)grthing->index,(int)grthing->owner);
+        return 0;
+    }
+    struct CreatureControl *cctrl;
+    struct Thing *thing;
+    unsigned long k;
+    long i, n;
+    n = 0;
+    i = room->creatures_list;
+    k = 0;
+    while (i != 0)
+    {
+        thing = thing_get(i);
+        TRACE_THING(thing);
+        cctrl = creature_control_get_from_thing(thing);
+        if (!creature_control_exists(cctrl))
+        {
+            ERRORLOG("Jump to invalid creature %d detected",(int)i);
+            break;
+        }
+        i = cctrl->next_in_room;
+        // Per creature code
+        if (thing->index != grthing->index) {
+            if (n == 0) {
+                add_creature_to_group_as_leader(grthing, thing);
+                n++;
+            } else {
+                add_creature_to_group(thing, grthing);
+            }
+            n++;
+        }
+        // Per creature code ends
+        k++;
+        if (k > THINGS_COUNT)
+        {
+          ERRORLOG("Infinite loop detected when sweeping creatures list");
+          break;
+        }
+    }
+    return n;
+}
 /******************************************************************************/

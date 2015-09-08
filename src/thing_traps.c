@@ -644,17 +644,7 @@ struct Thing *create_trap(struct Coord3d *pos, ThingModel trpkind, PlayerNumber 
     thing->long_14 = game.play_gameturn;
     if (trapstat->field_1C != 0)
     {
-        ilght.mappos.x.val = thing->mappos.x.val;
-        ilght.mappos.y.val = thing->mappos.y.val;
-        ilght.mappos.z.val = thing->mappos.z.val;
-        ilght.field_0 = trapstat->field_1C;
-        ilght.field_2 = trapstat->field_1E;
-        ilght.is_dynamic = 1;
-        ilght.field_3 = trapstat->field_1F;
-        thing->light_id = light_create_light(&ilght);
-        if (thing->light_id <= 0) {
-            SYNCDBG(8,"Cannot allocate dynamic light to %s.",thing_model_name(thing));
-        }
+        create_thing_light(thing, trapstat->field_1C, trapstat->field_1E, trapstat->field_1F);
     }
     add_thing_to_its_class_list(thing);
     place_thing_in_mapwho(thing);

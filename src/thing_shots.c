@@ -1336,7 +1336,6 @@ TngUpdateRet update_shot(struct Thing *thing)
 struct Thing *create_shot(struct Coord3d *pos, unsigned short model, unsigned short owner)
 {
     struct ShotConfigStats *shotst;
-    struct InitLight ilght;
     struct Thing *thing;
     if ( !i_can_allocate_free_thing_structure(FTAF_FreeEffectIfNoSlots) )
     {
@@ -1376,17 +1375,7 @@ struct Thing *create_shot(struct Coord3d *pos, unsigned short model, unsigned sh
     thing->health = shotst->health;
     if (shotst->old->field_50)
     {
-        LbMemorySet(&ilght, 0, sizeof(struct InitLight));
-        memcpy(&ilght.mappos,&thing->mappos,sizeof(struct Coord3d));
-        ilght.field_0 = shotst->old->field_50;
-        ilght.field_2 = shotst->old->field_52;
-        ilght.is_dynamic = 1;
-        ilght.field_3 = shotst->old->field_53;
-        thing->light_id = light_create_light(&ilght);
-        if (thing->light_id == 0) {
-            // Being out of free lights is quite common - so info instead of warning here
-            SYNCDBG(8,"Cannot allocate dynamic light to %s.",thing_model_name(thing));
-        }
+        create_thing_light(thing, shotst->old->field_50, shotst->old->field_52, shotst->old->field_53);
     }
     place_thing_in_mapwho(thing);
     add_thing_to_its_class_list(thing);

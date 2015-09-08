@@ -401,7 +401,6 @@ DLLIMPORT struct Thing * _DK_find_base_thing_on_mapwho_excluding_self(struct Thi
 struct Thing *create_object(const struct Coord3d *pos, unsigned short model, unsigned short owner, long parent_idx)
 {
     struct Objects *objdat;
-    struct InitLight ilight;
     struct Thing *thing;
     long i,k;
 
@@ -459,18 +458,7 @@ struct Thing *create_object(const struct Coord3d *pos, unsigned short model, uns
     thing->active_state = objdat->initial_state;
     if (objconf->ilght.field_0 != 0)
     {
-        LbMemorySet(&ilight, 0, sizeof(struct InitLight));
-        LbMemoryCopy(&ilight.mappos, &thing->mappos, sizeof(struct Coord3d));
-        ilight.field_0 = objconf->ilght.field_0;
-        ilight.field_2 = objconf->ilght.field_2;
-        ilight.field_3 = objconf->ilght.field_3;
-        ilight.is_dynamic = objconf->ilght.is_dynamic;
-        thing->light_id = light_create_light(&ilight);
-        if (thing->light_id == 0) {
-            SYNCDBG(8,"Cannot allocate light to %s",thing_model_name(thing));
-        }
-    } else {
-        thing->light_id = 0;
+        create_thing_light_with_init(thing, &objconf->ilght);
     }
     switch (thing->model)
     {

@@ -2936,7 +2936,6 @@ void script_process_lose_game(PlayerNumber plyr_idx)
 struct Thing *create_thing_at_position_then_move_to_valid_and_add_light(struct Coord3d *pos, unsigned char tngclass, unsigned char tngmodel, unsigned char tngowner)
 {
     struct Thing *thing;
-    struct InitLight ilght;
     long light_rand;
     thing = create_thing(pos, tngclass, tngmodel, tngowner, -1);
     if (thing_is_invalid(thing))
@@ -2968,26 +2967,12 @@ struct Thing *create_thing_at_position_then_move_to_valid_and_add_light(struct C
     light_rand = ACTION_RANDOM(8);
     if (light_rand < 2)
     {
-        LbMemorySet(&ilght, 0, sizeof(struct InitLight));
-        ilght.mappos.x.val = thing->mappos.x.val;
-        ilght.mappos.y.val = thing->mappos.y.val;
-        ilght.mappos.z.val = thing->mappos.z.val;
         if (light_rand == 1)
         {
-            ilght.field_2 = 48;
-            ilght.field_3 = 5;
+            create_thing_light(thing, 2560, 48, 5);
         } else
         {
-            ilght.field_2 = 36;
-            ilght.field_3 = 1;
-        }
-        ilght.is_dynamic = 1;
-        ilght.field_0 = 2560;
-        thing->light_id = light_create_light(&ilght);
-        if (thing->light_id != 0) {
-            light_set_light_never_cache(thing->light_id);
-        } else {
-            ERRORLOG("Cannot allocate light to new hero");
+            create_thing_light(thing, 2560, 36, 1);
         }
     }
     return thing;

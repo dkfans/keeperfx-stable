@@ -1991,7 +1991,7 @@ TbBool process_players_global_packet_action(PlayerNumber plyr_idx)
       dump_first_held_thing_on_map(plyr_idx, pckt->actn_par1, pckt->actn_par2, 1);
       return 0;
   case PckA_Unknown092:
-      if (game.event[pckt->actn_par1].kind == 3)
+      if (game.event[pckt->actn_par1].kind == EvKind_Objective)
       {
         turn_off_event_box_if_necessary(plyr_idx, pckt->actn_par1);
       } else

@@ -475,7 +475,7 @@ TbBool frontend_font_string_draw(int scr_x, int scr_y, int dst_width, int dst_he
     h = LbTextLineHeight() * units_per_px / 16;
     w = LbTextStringWidth(str) * units_per_px / 16;
     if (w > dst_width) w = dst_width;
-    switch (fdflags & 0x03)
+    switch (fdflags & (Fnt_LeftJustify|Fnt_RightJustify|Fnt_CenterPos))
     {
     case Fnt_LeftJustify:
         LbTextSetWindow(scr_x, scr_y, w, h);
