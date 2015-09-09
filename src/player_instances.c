@@ -380,8 +380,9 @@ long pinstfm_control_creature(struct PlayerInfo *player, long *n)
     if (thing_is_invalid(thing) || (thing->class_id == TCls_DeadCreature) || creature_is_dying(thing))
     {
         set_camera_zoom(cam, player->dungeon_camera_zoom);
-        if (is_my_player(player))
+        if (is_my_player(player)) {
             PaletteSetPlayerPalette(player, engine_palette);
+        }
         player->influenced_thing_idx = 0;
         player->allocflags &= ~PlaF_Unknown10;
         player->allocflags &= ~PlaF_Unknown80;
@@ -464,17 +465,18 @@ long pinstfe_direct_control_creature(struct PlayerInfo *player, long *n)
     set_player_instance(player, PI_CrCtrlFade, false);
     if (thing->class_id == TCls_Creature)
     {
-        load_swipe_graphic_for_creature(thing);
         if (is_my_player(player))
         {
+            load_swipe_graphic_for_creature(thing);
             if (creature_affected_by_spell(thing, SplK_Freeze)) {
                 PaletteSetPlayerPalette(player, blue_palette);
             }
         }
         creature_choose_first_available_instance(thing);
     }
-    if (is_my_player(player))
-      turn_on_menu(GMnu_CREATURE_QUERY1);
+    if (is_my_player(player)) {
+        turn_on_menu(GMnu_CREATURE_QUERY1);
+    }
     return 0;
 }
 
@@ -485,6 +487,16 @@ long pinstfe_passenger_control_creature(struct PlayerInfo *player, long *n)
     if (!thing_is_invalid(thing))
       control_creature_as_passenger(player, thing);
     set_player_instance(player, PI_CrCtrlFade, false);
+    if (thing->class_id == TCls_Creature)
+    {
+        if (is_my_player(player))
+        {
+            load_swipe_graphic_for_creature(thing);
+        }
+    }
+    if (is_my_player(player)) {
+        turn_on_menu(GMnu_CREATURE_QUERY1);
+    }
     return 0;
 }
 
@@ -504,7 +516,7 @@ long pinstfs_direct_leave_creature(struct PlayerInfo *player, long *n)
       PaletteSetPlayerPalette(player, engine_palette);
       player->field_4C5 = 11;
       turn_off_all_window_menus();
-      turn_off_query_menus();
+      turn_off_all_panel_menus(); // for some reason turn_off_query_menus() is not enough
       turn_on_main_panel_menu();
       set_flag_byte(&game.operation_flags, GOF_ShowPanel, (game.operation_flags & GOF_ShowGui) != 0);
   }
@@ -542,12 +554,12 @@ long pinstfs_passenger_leave_creature(struct PlayerInfo *player, long *n)
   reset_creature_eye_lens(thing);
   if (is_my_player(player))
   {
-    PaletteSetPlayerPalette(player, engine_palette);
-    player->field_4C5 = 11;
-    turn_off_all_window_menus();
-    turn_off_query_menus();
-    turn_on_main_panel_menu();
-    set_flag_byte(&game.operation_flags, GOF_ShowPanel, (game.operation_flags & GOF_ShowGui) != 0);
+      PaletteSetPlayerPalette(player, engine_palette);
+      player->field_4C5 = 11;
+      turn_off_all_window_menus();
+      turn_off_all_panel_menus(); // for some reason turn_off_query_menus() is not enough
+      turn_on_main_panel_menu();
+      set_flag_byte(&game.operation_flags, GOF_ShowPanel, (game.operation_flags & GOF_ShowGui) != 0);
   }
   leave_creature_as_passenger(player, thing);
   player->allocflags |= PlaF_Unknown10;
@@ -955,8 +967,8 @@ TbBool control_creature_as_controller(struct PlayerInfo *player, struct Thing *t
     cctrl->moveto_pos.z.val = 0;
     if (is_my_player(player))
     {
-      toggle_status_menu(0);
-      turn_off_roaming_menus();
+        turn_off_roaming_menus();
+        set_menu_mode(GMnu_CREATURE_QUERY1);
     }
     set_selected_creature(player, thing);
     cam = player->acamera;
@@ -1003,8 +1015,8 @@ TbBool control_creature_as_passenger(struct PlayerInfo *player, struct Thing *th
     }
     if (is_my_player(player))
     {
-        toggle_status_menu(0);
         turn_off_roaming_menus();
+        set_menu_mode(GMnu_CREATURE_QUERY1);
     }
     set_selected_thing(player, thing);
     cam = player->acamera;

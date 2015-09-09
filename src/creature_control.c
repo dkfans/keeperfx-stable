@@ -191,6 +191,7 @@ struct Thing *create_and_control_creature_as_controller(struct PlayerInfo *playe
     dungeon->owned_creatures_of_model[thing->model]--;
     if (is_my_player(player))
     {
+        // Usually in possession we do not toggle menus, but switch them to creature query. This kind of possession shows no query.
         toggle_status_menu(0);
         turn_off_roaming_menus();
     }

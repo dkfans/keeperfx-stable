@@ -429,7 +429,7 @@ int status_panel_width = 140;
 /******************************************************************************/
 short menu_is_active(short idx)
 {
-  return (menu_id_to_number(idx) >= 0);
+  return (menu_id_to_number(idx) > MENU_INVALID_ID);
 }
 
 TbBool a_menu_window_is_active(void)

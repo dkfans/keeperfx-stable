@@ -1591,19 +1591,19 @@ static void get_dungeon_speech_inputs(void)
         }
         break;
     case KS_VIEW_INFO:
-        set_menu_mode(BID_INFO_TAB); //TODO SPEECH not working for some reason, debug
+        set_menu_mode(GMnu_QUERY);
         break;
     case KS_VIEW_ROOMS:
-        set_menu_mode(BID_ROOM_TAB);
+        set_menu_mode(GMnu_ROOM);
         break;
     case KS_VIEW_POWERS:
-        set_menu_mode(BID_SPELL_TAB);
+        set_menu_mode(GMnu_SPELL);
         break;
     case KS_VIEW_TRAPS:
-        set_menu_mode(BID_MNFCT_TAB);
+        set_menu_mode(GMnu_TRAP);
         break;
     case KS_VIEW_CREATURES:
-        set_menu_mode(BID_CREATR_TAB);
+        set_menu_mode(GMnu_CREATURE);
         break;
     default:
         break; //don't care

@@ -114,7 +114,7 @@ void turn_off_menu(MenuID mnu_idx)
         save_settings();
     menu_num = menu_id_to_number(mnu_idx);
     SYNCDBG(8,"Menu number %d",(int)menu_num);
-    if (menu_num >= 0)
+    if (menu_num > MENU_INVALID_ID)
     {
         if (game_is_busy_doing_gui_string_input())
         {
@@ -286,7 +286,7 @@ short turn_off_all_window_menus(void)
 
 void turn_on_main_panel_menu(void)
 {
-  if (menu_id_to_number(GMnu_MAIN) == MENU_INVALID_ID)
+  if (!menu_is_active(GMnu_MAIN))
   {
     turn_on_menu(GMnu_MAIN);
   }
