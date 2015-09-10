@@ -341,8 +341,7 @@ long pinstfs_passenger_control_creature(struct PlayerInfo *player, long *n)
   {
     player->field_4C5 = 1;
     turn_off_all_window_menus();
-    turn_off_menu(GMnu_CREATURE_QUERY1);
-    turn_off_menu(GMnu_CREATURE_QUERY2);
+    turn_off_query_menus();
     game.field_15038E = 0;
     game.flags_font |= FFlg_unk04;
   }

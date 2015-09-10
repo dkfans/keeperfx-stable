@@ -1024,10 +1024,10 @@ long creature_tunnel_to(struct Thing *creatng, struct Coord3d *pos, short speed)
         creature_set_speed(creatng, 0);
         return 1;
     }
-    i = cctrl->party.long_8B;
+    i = cctrl->party.action_turns_counter;
     if ((i > 0) && (i < LONG_MAX))
     {
-        cctrl->party.long_8B++;
+        cctrl->party.action_turns_counter++;
     }
     if ((pos->x.val != cctrl->navi.pos_final.x.val)
      || (pos->y.val != cctrl->navi.pos_final.y.val)
@@ -1040,10 +1040,10 @@ long creature_tunnel_to(struct Thing *creatng, struct Coord3d *pos, short speed)
     tnlret = get_next_position_and_angle_required_to_tunnel_creature_to(creatng, pos, cctrl->party.byte_8F);
     if (tnlret == 2)
     {
-        i = cctrl->navi.field_15;
-        if (cctrl->navi.field_17 != i)
+        i = cctrl->navi.stl_15;
+        if (cctrl->navi.stl_17 != i)
         {
-            cctrl->navi.field_17 = i;
+            cctrl->navi.stl_17 = i;
         } else
         if (cctrl->instance_id == CrInst_NULL)
         {
@@ -1054,7 +1054,7 @@ long creature_tunnel_to(struct Thing *creatng, struct Coord3d *pos, short speed)
     dist = get_2d_distance(&creatng->mappos, &cctrl->navi.pos_next);
     if (dist <= 16)
     {
-        creature_turn_to_face_angle(creatng, cctrl->navi.field_D);
+        creature_turn_to_face_angle(creatng, cctrl->navi.angle_D);
         creature_set_speed(creatng, 0);
         return 0;
     }
@@ -1091,6 +1091,7 @@ short tunnelling(struct Thing *creatng)
     pos = &cctrl->moveto_pos;
     if (slabmap_owner(slb) == cctrl->party.target_plyr_idx)
     {
+        // we have reached the target player dungeon
         internal_set_thing_state(creatng, CrSt_GoodDoingNothing);
         return 1;
     }
@@ -1103,7 +1104,7 @@ short tunnelling(struct Thing *creatng)
     }
     if (move_result == -1)
     {
-        ERRORLOG("Bad place to tunnel to!");
+        ERRORLOG("The %s index %d cannot tunnel to (%d,%d), bad place",thing_model_name(creatng),(int)creatng->index,(int)pos->x.stl.num,(int)pos->y.stl.num);
         set_start_state(creatng);
         creatng->continue_state = CrSt_Unused;
         return 0;

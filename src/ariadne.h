@@ -66,6 +66,17 @@ enum AriadneUpdateSubStateManoeuvreValues {
     AridUpSStM_Unkn2,
 };
 
+enum NavigationStateValues {
+    NavS_Unkn0   = 0,
+    NavS_Unkn1,
+    NavS_Unkn2,
+    NavS_Unkn3,
+    NavS_Unkn4,
+    NavS_Unkn5,
+    NavS_Unkn6,
+    NavS_Unkn7,
+};
+
 #define NAVMAP_FLOORHEIGHT_BIT  0
 #define NAVMAP_FLOORHEIGHT_MAX  0x0f
 #define NAVMAP_FLOORHEIGHT_MASK 0x0f
@@ -154,10 +165,10 @@ struct Navigation { // sizeof = 0x27
   unsigned char field_4;
   long field_5;
   long field_9;
-  long field_D;
+  long angle_D;
   unsigned char field_11[4];
-  unsigned short field_15;
-  unsigned short field_17;
+  unsigned short stl_15;
+  unsigned short stl_17;
   unsigned char field_19[2];
   struct Coord3d pos_next;
   struct Coord3d pos_final;
