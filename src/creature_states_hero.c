@@ -1054,27 +1054,19 @@ long creature_tunnel_to(struct Thing *creatng, struct Coord3d *pos, short speed)
     dist = get_2d_distance(&creatng->mappos, &cctrl->navi.pos_next);
     if (dist <= 16)
     {
+        // We're on a correct dig position, turn to the slab to dig
         creature_turn_to_face_angle(creatng, cctrl->navi.angle_D);
         creature_set_speed(creatng, 0);
         return 0;
     }
-    if (dist > 768)
+    if ((dist > 3*COORD_PER_STL) || thing_in_wall_at(creatng, &cctrl->navi.pos_next))
     {
-        ERRORLOG("Move %s index %d to (%d,%d) reset - wallhug distance %d too large",thing_model_name(creatng),(int)creatng->index,(int)pos->x.stl.num,(int)pos->y.stl.num,(int)dist);
+        ERRORLOG("Move %s index %d to (%d,%d) reset - distance %d too large, or destination is solid",thing_model_name(creatng),(int)creatng->index,(int)pos->x.stl.num,(int)pos->y.stl.num,(int)dist);
         clear_wallhugging_path(&cctrl->navi);
         creature_set_speed(creatng, speed);
         return 0;
     }
-    if (creature_turn_to_face(creatng, &cctrl->navi.pos_next) > 0)
-    {
-        creature_set_speed(creatng, 0);
-        return 0;
-    }
-    cctrl->moveaccel.x.val = cctrl->navi.pos_next.x.val - (MapCoordDelta)creatng->mappos.x.val;
-    cctrl->moveaccel.y.val = cctrl->navi.pos_next.y.val - (MapCoordDelta)creatng->mappos.y.val;
-    cctrl->moveaccel.z.val = 0;
-    cctrl->flgfield_2 |= TF2_Unkn01;
-    creature_set_speed(creatng, min(speed,dist));
+    creature_move_direct_line(creatng, &cctrl->navi.pos_next, min(speed,dist));
     return 0;
 }
 

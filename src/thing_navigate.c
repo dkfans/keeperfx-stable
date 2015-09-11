@@ -371,6 +371,66 @@ long creature_turn_to_face_angle(struct Thing *thing, long a2)
     return _DK_creature_turn_to_face_angle(thing, a2);
 }
 
+long creature_move_direct_line(struct Thing *thing, struct Coord3d *nextpos, MoveSpeed speed)
+{
+    if (creature_turn_to_face(thing, nextpos) > 0)
+    {
+        // Creature is turning - don't let it move
+        creature_set_speed(thing, 0);
+        return 2;
+    }
+    struct CreatureControl *cctrl;
+    cctrl = creature_control_get_from_thing(thing);
+    creature_set_speed(thing, speed);
+    cctrl->flgfield_2 |= TF2_Unkn01;
+    if (get_2d_box_distance(&thing->mappos, nextpos) > 2*cctrl->move_speed)
+    {
+        ERRORDBG(3,"The %s index %d tried to reach (%d,%d) from (%d,%d) with excessive forward speed",
+            thing_model_name(thing),(int)thing->index,(int)nextpos->x.stl.num,(int)nextpos->y.stl.num,
+            (int)thing->mappos.x.stl.num,(int)thing->mappos.y.stl.num);
+        cctrl->moveaccel.x.val = distance_with_angle_to_coord_x(cctrl->move_speed, thing->move_angle_xy);
+        cctrl->moveaccel.y.val = distance_with_angle_to_coord_y(cctrl->move_speed, thing->move_angle_xy);
+        cctrl->moveaccel.z.val = 0;
+        return 1;
+    } else
+    {
+        cctrl->moveaccel.x.val = nextpos->x.val - (MapCoordDelta)thing->mappos.x.val;
+        cctrl->moveaccel.y.val = nextpos->y.val - (MapCoordDelta)thing->mappos.y.val;
+        cctrl->moveaccel.z.val = 0;
+        return 0;
+    }
+}
+
+long creature_move_direct_line_backwards(struct Thing *thing, struct Coord3d *nextpos, MoveSpeed speed)
+{
+    if (creature_turn_to_face_backwards(thing, nextpos) > 0)
+    {
+        // Creature is turning - don't let it move
+        creature_set_speed(thing, 0);
+        return 2;
+    }
+    struct CreatureControl *cctrl;
+    cctrl = creature_control_get_from_thing(thing);
+    creature_set_speed(thing, -speed);
+    cctrl->flgfield_2 |= TF2_Unkn01;
+    if (get_2d_box_distance(&thing->mappos, nextpos) > -2*cctrl->move_speed)
+    {
+        ERRORDBG(3,"The %s index %d tried to reach (%d,%d) from (%d,%d) with excessive backward speed",
+            thing_model_name(thing),(int)thing->index,(int)nextpos->x.stl.num,(int)nextpos->y.stl.num,
+            (int)thing->mappos.x.stl.num,(int)thing->mappos.y.stl.num);
+        cctrl->moveaccel.x.val = distance_with_angle_to_coord_x(cctrl->move_speed, thing->move_angle_xy);
+        cctrl->moveaccel.y.val = distance_with_angle_to_coord_y(cctrl->move_speed, thing->move_angle_xy);
+        cctrl->moveaccel.z.val = 0;
+        return 1;
+    } else
+    {
+        cctrl->moveaccel.x.val = nextpos->x.val - (MapCoordDelta)thing->mappos.x.val;
+        cctrl->moveaccel.y.val = nextpos->y.val - (MapCoordDelta)thing->mappos.y.val;
+        cctrl->moveaccel.z.val = 0;
+        return 0;
+    }
+}
+
 long creature_move_to_using_gates(struct Thing *thing, struct Coord3d *pos, MoveSpeed speed, long a4, NaviRouteFlags flags, TbBool backward)
 {
     struct Coord3d nextpos;
@@ -406,55 +466,11 @@ long creature_move_to_using_gates(struct Thing *thing, struct Coord3d *pos, Move
     cctrl = creature_control_get_from_thing(thing);
     if ( backward )
     {
-        if (creature_turn_to_face_backwards(thing, &nextpos) > 0)
-        {
-            // Creature is turning - don't let it move
-            creature_set_speed(thing, 0);
-        } else
-        {
-            creature_set_speed(thing, -speed);
-            cctrl->flgfield_2 |= TF2_Unkn01;
-            if (get_2d_box_distance(&thing->mappos, &nextpos) > -2*cctrl->move_speed)
-            {
-                ERRORDBG(3,"The %s index %d tried to reach (%d,%d) from (%d,%d) with excessive backward speed",
-                    thing_model_name(thing),(int)thing->index,(int)nextpos.x.stl.num,(int)nextpos.y.stl.num,
-                    (int)thing->mappos.x.stl.num,(int)thing->mappos.y.stl.num);
-                cctrl->moveaccel.x.val = distance_with_angle_to_coord_x(cctrl->move_speed, thing->move_angle_xy);
-                cctrl->moveaccel.y.val = distance_with_angle_to_coord_y(cctrl->move_speed, thing->move_angle_xy);
-                cctrl->moveaccel.z.val = 0;
-            } else
-            {
-                cctrl->moveaccel.x.val = nextpos.x.val - (MapCoordDelta)thing->mappos.x.val;
-                cctrl->moveaccel.y.val = nextpos.y.val - (MapCoordDelta)thing->mappos.y.val;
-                cctrl->moveaccel.z.val = 0;
-            }
-        }
+        creature_move_direct_line_backwards(thing, &nextpos, speed);
         SYNCDBG(18,"Backward target set, speed %d, accel (%d,%d)",(int)cctrl->move_speed,(int)cctrl->moveaccel.x.val,(int)cctrl->moveaccel.y.val);
     } else
     {
-        if (creature_turn_to_face(thing, &nextpos) > 0)
-        {
-            // Creature is turning - don't let it move
-            creature_set_speed(thing, 0);
-        } else
-        {
-            creature_set_speed(thing, speed);
-            cctrl->flgfield_2 |= TF2_Unkn01;
-            if (get_2d_box_distance(&thing->mappos, &nextpos) > 2*cctrl->move_speed)
-            {
-                ERRORDBG(3,"The %s index %d tried to reach (%d,%d) from (%d,%d) with excessive forward speed",
-                    thing_model_name(thing),(int)thing->index,(int)nextpos.x.stl.num,(int)nextpos.y.stl.num,
-                    (int)thing->mappos.x.stl.num,(int)thing->mappos.y.stl.num);
-                cctrl->moveaccel.x.val = distance_with_angle_to_coord_x(cctrl->move_speed, thing->move_angle_xy);
-                cctrl->moveaccel.y.val = distance_with_angle_to_coord_y(cctrl->move_speed, thing->move_angle_xy);
-                cctrl->moveaccel.z.val = 0;
-            } else
-            {
-                cctrl->moveaccel.x.val = nextpos.x.val - (MapCoordDelta)thing->mappos.x.val;
-                cctrl->moveaccel.y.val = nextpos.y.val - (MapCoordDelta)thing->mappos.y.val;
-                cctrl->moveaccel.z.val = 0;
-            }
-        }
+        creature_move_direct_line(thing, &nextpos, speed);
         SYNCDBG(18,"Forward target set, speed %d, accel (%d,%d)",(int)cctrl->move_speed,(int)cctrl->moveaccel.x.val,(int)cctrl->moveaccel.y.val);
     }
     return 0;

@@ -51,8 +51,8 @@ struct QuadrantOffset {
 };
 
 struct HugStart {
-    short field_0;
-    unsigned char field_2;
+    short wh_angle;
+    unsigned char wh_side;
 };
 
 #ifdef __cplusplus
@@ -2229,13 +2229,13 @@ long ariadne_get_starting_angle_and_side_of_wallhug(struct Thing *thing, struct 
 {
     TbBool nxdelta_x_neg, nxdelta_y_neg;
     TbBool crdelta_x_neg, crdelta_y_neg;
-    crdelta_x_neg = (thing->mappos.x.val - (long)pos->x.val) <= 0;
-    crdelta_y_neg = (thing->mappos.y.val - (long)pos->y.val) <= 0;
-    nxdelta_x_neg = (thing->mappos.x.val - (long)arid->current_waypoint_pos.x.val) <= 0;
-    nxdelta_y_neg = (thing->mappos.y.val - (long)arid->current_waypoint_pos.y.val) <= 0;
+    crdelta_x_neg = (thing->mappos.x.val - (MapCoordDelta)pos->x.val) <= 0;
+    crdelta_y_neg = (thing->mappos.y.val - (MapCoordDelta)pos->y.val) <= 0;
+    nxdelta_x_neg = (thing->mappos.x.val - (MapCoordDelta)arid->current_waypoint_pos.x.val) <= 0;
+    nxdelta_y_neg = (thing->mappos.y.val - (MapCoordDelta)arid->current_waypoint_pos.y.val) <= 0;
     int axis_closer;
     int nav_radius;
-    axis_closer = abs(thing->mappos.x.val - (long)arid->current_waypoint_pos.x.val) < abs(thing->mappos.y.val - (long)arid->current_waypoint_pos.y.val);
+    axis_closer = abs(thing->mappos.x.val - (MapCoordDelta)arid->current_waypoint_pos.x.val) < abs(thing->mappos.y.val - (MapCoordDelta)arid->current_waypoint_pos.y.val);
     nav_radius = thing_nav_sizexy(thing) / 2;
     MapCoord cur_pos_y_beg, cur_pos_y_end;
     MapCoord cur_pos_x_beg, cur_pos_x_end;
@@ -2260,8 +2260,8 @@ long ariadne_get_starting_angle_and_side_of_wallhug(struct Thing *thing, struct 
                 ariadne_get_starting_angle_and_side_of_wallhug_for_desireable_move(thing, arid, 3*LbFPMath_PI/2, rangle, rflag);
         } else
         {
-            *rangle = blocked_x_hug_start[crdelta_x_neg][nxdelta_y_neg].field_0;
-            *rflag = blocked_x_hug_start[crdelta_x_neg][nxdelta_y_neg].field_2;
+            *rangle = blocked_x_hug_start[crdelta_x_neg][nxdelta_y_neg].wh_angle;
+            *rflag = blocked_x_hug_start[crdelta_x_neg][nxdelta_y_neg].wh_side;
         }
         return 1;
     }
@@ -2275,15 +2275,15 @@ long ariadne_get_starting_angle_and_side_of_wallhug(struct Thing *thing, struct 
                 ariadne_get_starting_angle_and_side_of_wallhug_for_desireable_move(thing, arid, 0, rangle, rflag);
         } else
         {
-            *rangle = blocked_y_hug_start[crdelta_y_neg][nxdelta_x_neg].field_0;
-            *rflag = blocked_y_hug_start[crdelta_y_neg][nxdelta_x_neg].field_2;
+            *rangle = blocked_y_hug_start[crdelta_y_neg][nxdelta_x_neg].wh_angle;
+            *rflag = blocked_y_hug_start[crdelta_y_neg][nxdelta_x_neg].wh_side;
         }
         return 1;
     }
     if ((blk_flags & 0x04) != 0)
     {
-        *rangle = blocked_xy_hug_start[crdelta_y_neg][crdelta_x_neg][axis_closer].field_0;
-        *rflag = blocked_xy_hug_start[crdelta_y_neg][crdelta_x_neg][axis_closer].field_2;
+        *rangle = blocked_xy_hug_start[crdelta_y_neg][crdelta_x_neg][axis_closer].wh_angle;
+        *rflag = blocked_xy_hug_start[crdelta_y_neg][crdelta_x_neg][axis_closer].wh_side;
         return 1;
     }
     return 0;

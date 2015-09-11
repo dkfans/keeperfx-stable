@@ -88,6 +88,12 @@ TbBool add_key_on_door(struct Thing *thing)
     return true;
 }
 
+TbBool door_will_open_for_thing(const struct Thing *doortng, const struct Thing *passtng)
+{
+    return (!doortng->door.is_locked && thing_is_creature(passtng)
+        && players_are_mutual_allies(doortng->owner, passtng->owner));
+}
+
 void unlock_door(struct Thing *thing)
 {
     thing->byte_18 = 0;
