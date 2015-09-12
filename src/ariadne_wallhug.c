@@ -397,7 +397,7 @@ long get_map_index_of_first_block_thing_colliding_with_at(struct Thing *creatng,
 {
     MapSubtlCoord beg_stl_x, beg_stl_y;
     MapSubtlCoord end_stl_x, end_stl_y;
-    //return _DK_get_map_index_of_first_block_thing_colliding_with_at(creatng, pos, a3, a4);
+    //return _DK_get_map_index_of_first_block_thing_colliding_with_at(creatng, pos, mapblk_flags, plyr_bits);
     {
         int nav_radius;
         MapSubtlDelta i;
@@ -848,7 +848,7 @@ long get_map_index_of_first_block_thing_colliding_with_travelling_to(struct Thin
     }
 }
 
-TbBool navigation_push_towards_target(struct Navigation *navi, struct Thing *creatng, const struct Coord3d *pos, MoveSpeed speed, MoveSpeed nav_radius, unsigned char a3)
+TbBool navigation_push_towards_target(struct Navigation *navi, struct Thing *creatng, const struct Coord3d *pos, MoveSpeed speed, MoveSpeed nav_radius, unsigned char plyr_bits)
 {
     navi->navstate = NavS_Unkn2;
     navi->pos_next.x.val = creatng->mappos.x.val + distance_with_angle_to_coord_x(speed, navi->angle_D);
@@ -858,7 +858,7 @@ TbBool navigation_push_towards_target(struct Navigation *navi, struct Thing *cre
     pos1.x.val = navi->pos_next.x.val;
     pos1.y.val = navi->pos_next.y.val;
     pos1.z.val = navi->pos_next.z.val;
-    check_forward_for_prospective_hugs(creatng, &pos1, navi->angle_D, navi->field_1[0], 33, speed, a3);
+    check_forward_for_prospective_hugs(creatng, &pos1, navi->angle_D, navi->field_1[0], SlbAtFlg_Filled|SlbAtFlg_Valuable, speed, plyr_bits);
     if (get_2d_box_distance(&pos1, &creatng->mappos) > 16)
     {
         navi->pos_next.x.val = pos1.x.val;
@@ -867,7 +867,7 @@ TbBool navigation_push_towards_target(struct Navigation *navi, struct Thing *cre
     }
     navi->field_9 = get_2d_box_distance(&creatng->mappos, &navi->pos_next);
     int cannot_move;
-    cannot_move = creature_cannot_move_directly_to_with_collide(creatng, &navi->pos_next, 33, a3);
+    cannot_move = creature_cannot_move_directly_to_with_collide(creatng, &navi->pos_next, SlbAtFlg_Filled|SlbAtFlg_Valuable, plyr_bits);
     if (cannot_move == 4)
     {
         navi->pos_next.x.val = creatng->mappos.x.val;
@@ -879,7 +879,7 @@ TbBool navigation_push_towards_target(struct Navigation *navi, struct Thing *cre
     if (cannot_move == 1)
     {
         SubtlCodedCoords stl_num;
-        stl_num = get_map_index_of_first_block_thing_colliding_with_travelling_to(creatng, &creatng->mappos, &navi->pos_next, 40, 0);
+        stl_num = get_map_index_of_first_block_thing_colliding_with_travelling_to(creatng, &creatng->mappos, &navi->pos_next, SlbAtFlg_Filled|SlbAtFlg_Digable, 0);
         navi->stl_15 = stl_num;
         MapSubtlCoord stl_x, stl_y;
         stl_x = slab_subtile_center(subtile_slab_fast(stl_num_decode_x(stl_num)));
@@ -905,7 +905,7 @@ long get_next_position_and_angle_required_to_tunnel_creature_to(struct Thing *cr
     }
     plyr_bits |= (1 << creatng->owner);
     SYNCDBG(16,"Move %s index %d from (%d,%d) to (%d,%d) with nav state %d",thing_model_name(creatng),(int)creatng->index,(int)creatng->mappos.x.stl.num,(int)creatng->mappos.y.stl.num,(int)pos->x.stl.num,(int)pos->y.stl.num,(int)navi->navstate);
-    //return _DK_get_next_position_and_angle_required_to_tunnel_creature_to(creatng, pos, a3);
+    //return _DK_get_next_position_and_angle_required_to_tunnel_creature_to(creatng, pos, plyr_bits);
     MapSubtlCoord stl_x, stl_y;
     SubtlCodedCoords stl_num;
     MapCoordDelta dist_to_next;
@@ -936,7 +936,7 @@ long get_next_position_and_angle_required_to_tunnel_creature_to(struct Thing *cr
             if (cannot_move == 4)
             {
                 struct SlabMap *slb;
-                stl_num = get_map_index_of_first_block_thing_colliding_with_travelling_to(creatng, &creatng->mappos, &navi->pos_next, 40, 0);
+                stl_num = get_map_index_of_first_block_thing_colliding_with_travelling_to(creatng, &creatng->mappos, &navi->pos_next, SlbAtFlg_Filled|SlbAtFlg_Digable, 0);
                 slb = get_slabmap_for_subtile(stl_num_decode_x(stl_num), stl_num_decode_y(stl_num));
                 unsigned short ownflag;
                 ownflag = 0;
@@ -969,7 +969,7 @@ long get_next_position_and_angle_required_to_tunnel_creature_to(struct Thing *cr
             }
             if (cannot_move == 1)
             {
-                stl_num = get_map_index_of_first_block_thing_colliding_with_travelling_to(creatng, &creatng->mappos, &navi->pos_next, 40, 0);
+                stl_num = get_map_index_of_first_block_thing_colliding_with_travelling_to(creatng, &creatng->mappos, &navi->pos_next, SlbAtFlg_Filled|SlbAtFlg_Digable, 0);
                 navi->stl_15 = stl_num;
                 nav_radius = thing_nav_sizexy(creatng) / 2;
                 MapSubtlCoord stl_x, stl_y;
@@ -1101,7 +1101,7 @@ long get_next_position_and_angle_required_to_tunnel_creature_to(struct Thing *cr
             navi->field_9 = get_2d_box_distance(&creatng->mappos, &navi->pos_next);
             return 1;
         }
-        stl_num = get_map_index_of_first_block_thing_colliding_with_travelling_to(creatng, &creatng->mappos, &navi->pos_next, 40, 0);
+        stl_num = get_map_index_of_first_block_thing_colliding_with_travelling_to(creatng, &creatng->mappos, &navi->pos_next, SlbAtFlg_Filled|SlbAtFlg_Digable, 0);
         navi->stl_15 = stl_num;
         nav_radius = thing_nav_sizexy(creatng) / 2;
         stl_x = slab_subtile_center(subtile_slab_fast(stl_num_decode_x(stl_num)));
@@ -1252,7 +1252,7 @@ TbBool is_valid_hug_subtile(MapSubtlCoord stl_x, MapSubtlCoord stl_y, PlayerNumb
 long dig_to_position(PlayerNumber plyr_idx, MapSubtlCoord basestl_x, MapSubtlCoord basestl_y, int direction_around, TbBool revside)
 {
     long i,round_idx,round_change;
-    //return _DK_dig_to_position(a1, a2, a3, start_side, revside);
+    //return _DK_dig_to_position(plyr_idx, basestl_x, basestl_y, direction_around, revside);
     SYNCDBG(14,"Starting for subtile (%d,%d)",(int)basestl_x,(int)basestl_y);
     if (revside) {
       round_change = 1;

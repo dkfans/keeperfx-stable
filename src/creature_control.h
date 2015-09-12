@@ -204,7 +204,7 @@ unsigned char field_67;
     unsigned char byte_8Ax;
     long action_turns_counter;
     unsigned char byte_8F;
-    unsigned short member_pos_stl[5];
+    unsigned short member_pos_stl[5];//strange, GROUP_MEMBERS_COUNT is higher
   } party;
   struct {
     long stack_update_turn;

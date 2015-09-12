@@ -1059,9 +1059,9 @@ long creature_tunnel_to(struct Thing *creatng, struct Coord3d *pos, short speed)
         creature_set_speed(creatng, 0);
         return 0;
     }
-    if ((dist > 3*COORD_PER_STL) || thing_in_wall_at(creatng, &cctrl->navi.pos_next))
+    if (dist > 3*COORD_PER_STL)
     {
-        ERRORLOG("Move %s index %d to (%d,%d) reset - distance %d too large, or destination is solid",thing_model_name(creatng),(int)creatng->index,(int)pos->x.stl.num,(int)pos->y.stl.num,(int)dist);
+        ERRORLOG("Move %s index %d to (%d,%d) reset - wallhug distance %d too large",thing_model_name(creatng),(int)creatng->index,(int)pos->x.stl.num,(int)pos->y.stl.num,(int)dist);
         clear_wallhugging_path(&cctrl->navi);
         creature_set_speed(creatng, speed);
         return 0;
@@ -1125,7 +1125,7 @@ TbBool is_hero_tunnelling_to_attack(struct Thing *creatng)
         return false;
     CrtrStateId crstat;
     crstat = get_creature_state_besides_move(creatng);
-    if ((crstat != CrSt_Tunnelling) || (crstat != CrSt_TunnellerDoingNothing))
+    if ((crstat != CrSt_Tunnelling) && (crstat != CrSt_TunnellerDoingNothing))
         return false;
     return true;
 }

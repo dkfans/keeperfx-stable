@@ -966,6 +966,7 @@ TbBool control_creature_as_controller(struct PlayerInfo *player, struct Thing *t
     cctrl->moveto_pos.z.val = 0;
     if (is_my_player(player))
     {
+        toggle_status_menu(0);
         turn_off_roaming_menus();
         set_menu_mode(GMnu_CREATURE_QUERY1);
     }
@@ -1014,6 +1015,7 @@ TbBool control_creature_as_passenger(struct PlayerInfo *player, struct Thing *th
     }
     if (is_my_player(player))
     {
+        toggle_status_menu(0);
         turn_off_roaming_menus();
         set_menu_mode(GMnu_CREATURE_QUERY1);
     }
