@@ -1052,7 +1052,7 @@ long creature_tunnel_to(struct Thing *creatng, struct Coord3d *pos, short speed)
     }
     MapCoordDelta dist;
     dist = get_2d_distance(&creatng->mappos, &cctrl->navi.pos_next);
-    if (dist <= 16)
+    if (dist <= MOVE_DESTINATION_SPOT_RADIUS)
     {
         // We're on a correct dig position, turn to the slab to dig
         creature_turn_to_face_angle(creatng, cctrl->navi.angle_D);

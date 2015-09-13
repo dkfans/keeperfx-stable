@@ -51,6 +51,7 @@ extern struct Around const my_around_eight[];
 extern struct Around const my_around_nine[];
 extern short const around_map[];
 #define AROUND_MAP_LENGTH 9
+#define MOVE_DESTINATION_SPOT_RADIUS 16
 /******************************************************************************/
 int small_around_index_in_direction(long srcpos_x, long srcpos_y, long dstpos_x, long dstpos_y);
 

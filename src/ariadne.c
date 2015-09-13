@@ -2370,19 +2370,19 @@ long ariadne_get_blocked_flags(struct Thing *thing, const struct Coord3d *pos)
     lpos.z.val = thing->mappos.z.val;
     blkflags = 0;
     if (ariadne_creature_blocked_by_wall_at(thing, &lpos))
-        blkflags |= 0x01;
+        blkflags |= SlbBloF_WalledX;
     lpos.x.val = thing->mappos.x.val;
     lpos.y.val = pos->y.val;
     lpos.z.val = thing->mappos.z.val;
     if (ariadne_creature_blocked_by_wall_at(thing, &lpos))
-        blkflags |= 0x02;
+        blkflags |= SlbBloF_WalledY;
     if (blkflags == 0)
     {
         lpos.x.val = pos->x.val;
         lpos.y.val = pos->y.val;
         lpos.z.val = thing->mappos.z.val;
         if (ariadne_creature_blocked_by_wall_at(thing, &lpos))
-          blkflags |= 0x04;
+          blkflags |= SlbBloF_WalledZ;
     }
     return blkflags;
 }
@@ -2441,12 +2441,12 @@ long ariadne_push_position_against_wall(struct Thing *thing, const struct Coord3
     lpos.y.val = pos1->y.val;
     lpos.z.val = 0;
 
-    if ((blk_flags & 0x01) != 0)
+    if ((blk_flags & SlbBloF_WalledX) != 0)
     {
       if (pos1->x.val >= thing->mappos.x.val)
       {
           lpos.x.val = thing->mappos.x.val + radius;
-          lpos.x.stl.pos = 255;
+          lpos.x.stl.pos = COORD_PER_STL-1;
           lpos.x.val -= radius;
       } else
       {
@@ -2456,12 +2456,12 @@ long ariadne_push_position_against_wall(struct Thing *thing, const struct Coord3
       }
       lpos.z.val = get_thing_height_at(thing, &lpos);
     }
-    if ((blk_flags & 0x02) != 0)
+    if ((blk_flags & SlbBloF_WalledY) != 0)
     {
       if (pos1->y.val >= thing->mappos.y.val)
       {
         lpos.y.val = thing->mappos.y.val + radius;
-        lpos.y.stl.pos = 255;
+        lpos.y.stl.pos = COORD_PER_STL-1;
         lpos.y.val -= radius;
       } else
       {
@@ -2471,12 +2471,12 @@ long ariadne_push_position_against_wall(struct Thing *thing, const struct Coord3
       }
       lpos.z.val = get_thing_height_at(thing, &lpos);
     }
-    if ((blk_flags & 0x04) != 0)
+    if ((blk_flags & SlbBloF_WalledZ) != 0)
     {
       if (pos1->x.val >= thing->mappos.x.val)
       {
           lpos.x.val = thing->mappos.x.val + radius;
-          lpos.x.stl.pos = 255;
+          lpos.x.stl.pos = COORD_PER_STL-1;
           lpos.x.val -= radius;
       } else
       {
@@ -2487,7 +2487,7 @@ long ariadne_push_position_against_wall(struct Thing *thing, const struct Coord3
       if (pos1->y.val >= thing->mappos.y.val)
       {
           lpos.y.val = thing->mappos.y.val + radius;
-          lpos.y.stl.pos = 255;
+          lpos.y.stl.pos = COORD_PER_STL-1;
           lpos.y.val -= radius;
       }
       else

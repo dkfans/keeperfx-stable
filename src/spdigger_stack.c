@@ -698,6 +698,7 @@ long check_place_to_convert_excluding(struct Thing *creatng, MapSlabCoord slb_x,
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            break_mapwho_infinite_chain(mapblk);
             break;
         }
     }
@@ -753,6 +754,7 @@ long check_place_to_pretty_excluding(struct Thing *creatng, MapSlabCoord slb_x, 
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            break_mapwho_infinite_chain(mapblk);
             break;
         }
     }
@@ -2100,6 +2102,7 @@ struct Thing *check_place_to_pickup_dead_body(struct Thing *creatng, long stl_x,
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            break_mapwho_infinite_chain(mapblk);
             break;
         }
     }
@@ -2146,6 +2149,7 @@ struct Thing *check_place_to_pickup_spell(const struct Thing *creatng, MapSubtlC
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            break_mapwho_infinite_chain(mapblk);
             break;
         }
     }
@@ -2219,6 +2223,7 @@ struct Thing *check_place_to_pickup_crate(const struct Thing *creatng, MapSubtlC
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            break_mapwho_infinite_chain(mapblk);
             break;
         }
     }

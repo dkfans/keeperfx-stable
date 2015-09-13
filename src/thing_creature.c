@@ -1452,6 +1452,7 @@ struct Thing *find_gold_pile_or_chicken_laying_on_mapblk(struct Map *mapblk)
     if (k > THINGS_COUNT)
     {
       ERRORLOG("Infinite loop detected when sweeping things list");
+      break_mapwho_infinite_chain(mapblk);
       break;
     }
   }
@@ -2505,6 +2506,7 @@ void process_creature_standing_on_corpses_at(struct Thing *creatng, struct Coord
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            break_mapwho_infinite_chain(mapblk);
             break;
         }
     }
