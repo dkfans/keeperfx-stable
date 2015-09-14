@@ -2350,12 +2350,10 @@ void clear_wallhugging_path(struct Navigation *navi)
     navi->field_4 = 0;
 }
 
-void initialise_wallhugging_path_from_to(struct Navigation *navi, struct Coord3d *mvstart, struct Coord3d *mvend)
+void initialise_wallhugging_path_from_to(struct Navigation *navi, const struct Coord3d *mvstart, const struct Coord3d *mvend)
 {
     navi->navstate = NavS_Unkn1;
-    navi->pos_final.x.val = mvend->x.val;
-    navi->pos_final.y.val = mvend->y.val;
-    navi->pos_final.z.val = mvend->z.val;
+    navi->pos_final = *mvend;
     navi->field_1[2] = 0;
     navi->field_1[1] = 0;
     navi->field_4 = 0;
