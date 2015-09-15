@@ -23,6 +23,7 @@
 #include "bflib_memory.h"
 #include "bflib_planar.h"
 
+#include "gui_topmsg.h"
 #include "game_legacy.h"
 
 #ifdef __cplusplus
@@ -203,6 +204,7 @@ TbBool action_point_is_creature_from_list_within(const struct ActionPoint *apt, 
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }

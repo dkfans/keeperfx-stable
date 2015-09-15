@@ -40,6 +40,7 @@
 #include "room_workshop.h"
 #include "power_hand.h"
 #include "gui_soundmsgs.h"
+#include "gui_topmsg.h"
 #include "game_legacy.h"
 
 #ifdef __cplusplus
@@ -235,6 +236,7 @@ TbBool make_all_players_creatures_angry(long plyr_idx)
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -301,6 +303,7 @@ void apply_spell_effect_to_players_creatures(PlayerNumber plyr_idx, long spl_idx
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -348,6 +351,7 @@ void kill_all_players_chickens(PlayerNumber plyr_idx)
         if (k > slist->count)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }

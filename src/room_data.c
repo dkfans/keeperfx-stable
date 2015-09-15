@@ -327,8 +327,8 @@ void get_room_kind_total_and_used_capacity(struct Dungeon *dungeon, RoomKind rki
         k++;
         if (k > ROOMS_COUNT)
         {
-          ERRORLOG("Infinite loop detected when sweeping rooms list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping rooms list");
+            break;
         }
     }
     *total_cap = total_capacity;
@@ -392,6 +392,7 @@ struct Thing *find_gold_hoarde_at(MapSubtlCoord stl_x, MapSubtlCoord stl_y)
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -513,6 +514,7 @@ void count_gold_hoardes_in_room(struct Room *room)
         if (k > map_tiles_x * map_tiles_y)
         {
             ERRORLOG("Infinite loop detected when sweeping room slabs");
+            erstat_inc(ESE_InfChainSlbPerRoom);
             break;
         }
     }
@@ -616,6 +618,7 @@ void reposition_all_books_in_room_on_subtile(struct Room *room, MapSubtlCoord st
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -698,6 +701,7 @@ int check_books_on_subtile_for_reposition_in_room(struct Room *room, MapSubtlCoo
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -776,6 +780,7 @@ void count_books_in_room(struct Room *room)
             if (k > room->slabs_count)
             {
                 ERRORLOG("Infinite loop detected when sweeping room slabs");
+                erstat_inc(ESE_InfChainSlbPerRoom);
                 break;
             }
         }
@@ -934,6 +939,7 @@ int check_crates_on_subtile_for_reposition_in_room(struct Room *room, MapSubtlCo
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -986,6 +992,7 @@ void reposition_all_crates_in_room_on_subtile(struct Room *room, MapSubtlCoord s
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -1114,6 +1121,7 @@ void reposition_all_bodies_in_room_on_subtile(struct Room *room, MapSubtlCoord s
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -1201,6 +1209,7 @@ int check_bodies_on_subtile_for_reposition_in_room(struct Room *room, MapSubtlCo
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -1355,6 +1364,7 @@ void reposition_all_food_in_room_on_subtile(struct Room *room, MapSubtlCoord stl
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -1412,6 +1422,7 @@ int check_food_on_subtile_for_reposition_in_room(struct Room *room, MapSubtlCoor
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -3806,6 +3817,7 @@ struct Thing *find_lair_totem_at(MapSubtlCoord stl_x, MapSubtlCoord stl_y)
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -3849,6 +3861,7 @@ void kill_room_contents_at_subtile(struct Room *room, PlayerNumber plyr_idx, Map
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -3920,6 +3933,7 @@ void kill_room_contents_at_subtile(struct Room *room, PlayerNumber plyr_idx, Map
             if (k > THINGS_COUNT)
             {
                 ERRORLOG("Infinite loop detected when sweeping things list");
+                erstat_inc(ESE_InfChainTngPerMapWho);
                 break_mapwho_infinite_chain(mapblk);
                 break;
             }
@@ -3976,6 +3990,7 @@ void kill_room_contents_at_subtile(struct Room *room, PlayerNumber plyr_idx, Map
             if (k > THINGS_COUNT)
             {
                 ERRORLOG("Infinite loop detected when sweeping things list");
+                erstat_inc(ESE_InfChainTngPerMapWho);
                 break_mapwho_infinite_chain(mapblk);
                 break;
             }
@@ -4006,6 +4021,7 @@ void kill_room_contents_at_subtile(struct Room *room, PlayerNumber plyr_idx, Map
             if (k > THINGS_COUNT)
             {
                 ERRORLOG("Infinite loop detected when sweeping things list");
+                erstat_inc(ESE_InfChainTngPerMapWho);
                 break_mapwho_infinite_chain(mapblk);
                 break;
             }
@@ -4134,6 +4150,7 @@ void reset_creatures_rooms(struct Room *room)
         if (k > slist->count)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -4493,6 +4510,7 @@ void delete_room_slabbed_objects(SlabCodedCoords slb_num)
                 if (k > THINGS_COUNT)
                 {
                     ERRORLOG("Infinite loop detected when sweeping things list");
+                    erstat_inc(ESE_InfChainTngPerMapWho);
                     break_mapwho_infinite_chain(mapblk);
                     break;
                 }
@@ -4546,6 +4564,7 @@ TbBool change_room_subtile_things_ownership(struct Room *room, MapSubtlCoord stl
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }

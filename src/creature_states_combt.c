@@ -44,6 +44,7 @@
 #include "map_utils.h"
 #include "ariadne_wallhug.h"
 #include "gui_soundmsgs.h"
+#include "gui_topmsg.h"
 #include "game_legacy.h"
 #include "engine_redraw.h"
 
@@ -563,8 +564,9 @@ long count_creatures_really_in_combat(BattleIndex battle_id)
         k++;
         if (k > CREATURES_COUNT)
         {
-          ERRORLOG("Infinite loop detected when sweeping creatures list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerGroup);
+            break;
         }
     }
     return count;
@@ -592,8 +594,9 @@ void cleanup_battle(BattleIndex battle_id)
             k++;
             if (k > CREATURES_COUNT)
             {
-              ERRORLOG("Infinite loop detected when sweeping creatures list");
-              break;
+                ERRORLOG("Infinite loop detected when sweeping creatures list");
+                erstat_inc(ESE_InfChainTngPerGroup);
+                break;
             }
         }
         SYNCDBG(7,"Removed %d wanderers from battle %d",(int)k,(int)battle_id);
@@ -637,8 +640,9 @@ void update_battle_events(BattleIndex battle_id)
         k++;
         if (k > CREATURES_COUNT)
         {
-          ERRORLOG("Infinite loop detected when sweeping creatures list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerGroup);
+            break;
         }
     }
     for (i=0; i < PLAYERS_COUNT; i++)
@@ -683,8 +687,9 @@ TbBool battle_with_creature_of_player(PlayerNumber plyr_idx, BattleIndex battle_
         k++;
         if (k > CREATURES_COUNT)
         {
-          ERRORLOG("Infinite loop detected when sweeping creatures list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerGroup);
+            break;
         }
     }
     return false;
@@ -734,8 +739,10 @@ TbBool battle_any_of_things_in_specific_battle(const struct CreatureBattle *batt
         }
         // Per battle creature code ends
         k++;
-        if (k >= CREATURES_COUNT) {
+        if (k >= CREATURES_COUNT)
+        {
             ERRORLOG("Infinite loop in battle add");
+            erstat_inc(ESE_InfChainTngPerGroup);
             break;
         }
     }
@@ -1345,6 +1352,7 @@ CrAttackType find_fellow_creature_to_fight_in_room(struct Thing *fightng, struct
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -2069,6 +2077,7 @@ struct Thing *get_thing_collided_with_at_satisfying_filter_in_square_of_for_subt
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }

@@ -35,6 +35,7 @@
 #include "thing_physics.h"
 #include "dungeon_data.h"
 #include "ariadne.h"
+#include "gui_topmsg.h"
 #include "game_legacy.h"
 
 #ifdef __cplusplus
@@ -202,7 +203,9 @@ struct Thing *find_hero_door_hero_can_navigate_to(struct Thing *herotng)
     unsigned long k;
     int i;
     k = 0;
-    i = game.thing_lists[TngList_Objects].index;
+    const struct StructureList *slist;
+    slist = get_list_for_thing_class(TCls_Object);
+    i = slist->index;
     while (i != 0)
     {
         thing = thing_get(i);
@@ -221,9 +224,10 @@ struct Thing *find_hero_door_hero_can_navigate_to(struct Thing *herotng)
         }
         // Per thing code ends
         k++;
-        if (k > THINGS_COUNT)
+        if (k > slist->count)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }

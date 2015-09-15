@@ -36,6 +36,7 @@
 #include "front_lvlstats.h"
 #include "gui_soundmsgs.h"
 #include "gui_frontmenu.h"
+#include "gui_topmsg.h"
 #include "config_settings.h"
 #include "config_terrain.h"
 #include "map_blocks.h"
@@ -230,6 +231,7 @@ GoldAmount take_money_from_room(struct Room *room, GoldAmount amount_take)
         if (k > map_tiles_x * map_tiles_y)
         {
             ERRORLOG("Infinite loop detected when sweeping room slabs");
+            erstat_inc(ESE_InfChainSlbPerRoom);
             break;
         }
     }
@@ -265,6 +267,7 @@ GoldAmount take_money_from_room(struct Room *room, GoldAmount amount_take)
         if (k > map_tiles_x * map_tiles_y)
         {
             ERRORLOG("Infinite loop detected when sweeping room slabs");
+            erstat_inc(ESE_InfChainSlbPerRoom);
             break;
         }
     }

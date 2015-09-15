@@ -34,6 +34,7 @@
 #include "power_hand.h"
 
 #include "gui_soundmsgs.h"
+#include "gui_topmsg.h"
 #include "dungeon_data.h"
 #include "game_legacy.h"
 
@@ -839,6 +840,7 @@ long move_imp_to_dig_here(struct Computer2 *comp, struct Coord3d *pos, long max_
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -885,6 +887,7 @@ long move_imp_to_mine_here(struct Computer2 *comp, struct Coord3d *pos, long max
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }

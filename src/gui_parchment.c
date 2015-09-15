@@ -33,6 +33,7 @@
 #include "gui_boxmenu.h"
 #include "gui_tooltips.h"
 #include "gui_draw.h"
+#include "gui_topmsg.h"
 #include "kjm_input.h"
 #include "engine_render.h"
 #include "map_data.h"
@@ -467,8 +468,9 @@ int draw_overhead_creatures(const struct TbRect *map_area, long block_size, Play
         k++;
         if (k > THINGS_COUNT)
         {
-          ERRORLOG("Infinite loop detected when sweeping things list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
+            break;
         }
     }
     return n;
@@ -516,6 +518,7 @@ int draw_overhead_traps(const struct TbRect *map_area, long block_size, PlayerNu
         if (k > slist->count)
         {
           ERRORLOG("Infinite loop detected when sweeping things list");
+          erstat_inc(ESE_InfChainTngPerClass);
           break;
         }
     }
@@ -559,8 +562,9 @@ int draw_overhead_spells(const struct TbRect *map_area, long block_size, PlayerN
         k++;
         if (k > slist->count)
         {
-          ERRORLOG("Infinite loop detected when sweeping things list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
+            break;
         }
     }
     return n;
@@ -717,6 +721,7 @@ void draw_zoom_box_things_on_mapblk(struct Map *mapblk,unsigned short subtile_si
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }

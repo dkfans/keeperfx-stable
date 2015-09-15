@@ -54,6 +54,7 @@
 #include "slab_data.h"
 #include "power_hand.h"
 #include "power_process.h"
+#include "gui_topmsg.h"
 #include "game_legacy.h"
 
 #include "keeperfx.hpp"
@@ -2227,6 +2228,7 @@ struct Thing *find_creature_for_pickup(struct Computer2 *comp, struct Coord3d *p
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -2298,6 +2300,7 @@ long count_creatures_for_pickup(struct Computer2 *comp, struct Coord3d *pos, str
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -2513,6 +2516,7 @@ struct Thing *find_creature_for_defend_pickup(struct Computer2 *comp)
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -2707,6 +2711,7 @@ long task_slap_imps(struct Computer2 *comp, struct ComputerTask *ctask)
             if (k > THINGS_COUNT)
             {
                 ERRORLOG("Infinite loop detected when sweeping things list");
+                erstat_inc(ESE_InfChainTngPerOwner);
                 break;
             }
         }

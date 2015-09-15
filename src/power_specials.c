@@ -43,6 +43,7 @@
 #include "frontmenu_ingame_map.h"
 #include "gui_frontmenu.h"
 #include "gui_soundmsgs.h"
+#include "gui_topmsg.h"
 #include "game_legacy.h"
 
 #include "keeperfx.hpp"
@@ -107,6 +108,7 @@ void multiply_creatures_in_dungeon_list(struct Dungeon *dungeon, long list_start
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -149,8 +151,9 @@ void increase_level(struct PlayerInfo *player)
         k++;
         if (k > CREATURES_COUNT)
         {
-          ERRORLOG("Infinite loop detected when sweeping creatures list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
+            break;
         }
     }
     // Increase level of special workers
@@ -173,6 +176,7 @@ void increase_level(struct PlayerInfo *player)
         if (k > CREATURES_COUNT)
         {
           ERRORLOG("Infinite loop detected when sweeping creatures list");
+          erstat_inc(ESE_InfChainTngPerOwner);
           break;
         }
     }
@@ -240,6 +244,7 @@ TbBool steal_hero(struct PlayerInfo *player, struct Coord3d *pos)
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }

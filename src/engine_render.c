@@ -43,6 +43,7 @@
 #include "game_heap.h"
 #include "kjm_input.h"
 #include "gui_draw.h"
+#include "gui_topmsg.h"
 #include "front_simple.h"
 #include "frontend.h"
 #include "vidmode.h"
@@ -6207,6 +6208,7 @@ void do_map_who(short tnglist_idx)
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break;
         }
     }
@@ -6294,6 +6296,7 @@ void draw_frontview_things_on_element(struct Map *mapblk, struct Camera *cam)
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }

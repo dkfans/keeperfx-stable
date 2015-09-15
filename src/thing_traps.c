@@ -94,6 +94,7 @@ struct Thing *get_trap_for_position(MapSubtlCoord stl_x, MapSubtlCoord stl_y)
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -163,6 +164,7 @@ TbBool update_trap_trigger_line_of_sight_90_on_subtile(struct Thing *traptng, Ma
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -478,6 +480,7 @@ TbBool find_pressure_trigger_trap_target_passing_by_subtile(const struct Thing *
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -679,6 +682,7 @@ void init_traps(void)
         if (k > slist->index)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }

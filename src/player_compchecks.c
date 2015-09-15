@@ -40,6 +40,7 @@
 #include "ariadne_wallhug.h"
 #include "power_hand.h"
 #include "gui_soundmsgs.h"
+#include "gui_topmsg.h"
 #include "game_legacy.h"
 
 #include "keeperfx.hpp"
@@ -317,6 +318,7 @@ static TbBool any_digger_is_digging_indestructible_valuables(struct Dungeon *dun
 		if (k > CREATURES_COUNT)
 		{
 			ERRORLOG("Infinite loop detected when sweeping creatures list");
+	        erstat_inc(ESE_InfChainTngPerOwner);
 			return false;
 		}
 	}
@@ -626,8 +628,9 @@ struct Thing * find_imp_for_pickup(struct Computer2 *comp, MapSubtlCoord stl_x, 
         k++;
         if (k > CREATURES_COUNT)
         {
-          ERRORLOG("Infinite loop detected when sweeping creatures list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
+            break;
         }
     }
     if (!thing_is_invalid(pick2_tng)) {
@@ -803,6 +806,7 @@ struct Thing *computer_check_creatures_in_room_for_accelerate(struct Computer2 *
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerRoom);
             break;
         }
     }

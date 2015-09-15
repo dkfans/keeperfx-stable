@@ -40,6 +40,7 @@
 #include "config_effects.h"
 #include "front_simple.h"
 #include "slab_data.h"
+#include "gui_topmsg.h"
 #include "game_legacy.h"
 #include "power_hand.h"
 
@@ -230,6 +231,7 @@ void process_disease(struct Thing *creatng)
               if (k > THINGS_COUNT)
               {
                   ERRORLOG("Infinite loop detected when sweeping things list");
+                  erstat_inc(ESE_InfChainTngPerMapWho);
                   break_mapwho_infinite_chain(mapblk);
                   break;
               }
@@ -377,6 +379,7 @@ void god_lightning_choose_next_creature(struct Thing *shotng)
         if (k > slist->count)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }

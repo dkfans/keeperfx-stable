@@ -397,6 +397,7 @@ long count_player_deployed_doors_of_model(PlayerNumber owner, int model)
         if (k > slist->count)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -435,6 +436,7 @@ TbBool player_has_deployed_door_of_model(PlayerNumber owner, int model, short lo
         if (k > slist->count)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -466,6 +468,7 @@ long count_player_deployed_traps_of_model(PlayerNumber owner, int model)
         if (k > slist->count)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -496,6 +499,7 @@ TbBool player_has_deployed_trap_of_model(PlayerNumber owner, int model)
         if (k > slist->count)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }

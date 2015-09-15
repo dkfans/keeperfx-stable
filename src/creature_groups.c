@@ -31,6 +31,7 @@
 #include "config_creature.h"
 #include "room_jobs.h"
 #include "ariadne_wallhug.h"
+#include "gui_topmsg.h"
 #include "game_legacy.h"
 
 #ifdef __cplusplus
@@ -85,6 +86,7 @@ struct Thing *get_highest_experience_and_score_creature_in_group(struct Thing *g
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures group");
+            erstat_inc(ESE_InfChainTngPerGroup);
             break;
         }
     }
@@ -113,9 +115,10 @@ long get_no_creatures_in_group(const struct Thing *grptng)
             break;
         i = cctrl->next_in_group;
         k++;
-        if (k > GROUP_MEMBERS_COUNT)
+        if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures group");
+            erstat_inc(ESE_InfChainTngPerGroup);
             break;
         }
     }
@@ -147,6 +150,7 @@ struct Thing *get_last_follower_creature_in_group(const struct Thing *grptng)
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures group");
+            erstat_inc(ESE_InfChainTngPerGroup);
             break;
         }
     }
@@ -218,9 +222,10 @@ void internal_update_leader_index_in_group(struct Thing *leadtng)
         cctrl->group_info ^= (leadtng->index ^ cctrl->group_info) & TngGroup_LeaderIndex;
         // Per-thing code ends
         k++;
-        if (k > GROUP_MEMBERS_COUNT)
+        if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures group");
+            erstat_inc(ESE_InfChainTngPerGroup);
             break;
         }
     }

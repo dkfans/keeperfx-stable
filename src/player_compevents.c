@@ -34,6 +34,7 @@
 #include "power_hand.h"
 
 #include "dungeon_data.h"
+#include "gui_topmsg.h"
 #include "game_legacy.h"
 #include "map_utils.h"
 
@@ -246,6 +247,7 @@ struct Thing *find_creature_in_fight_with_enemy(struct Computer2 *comp)
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -273,6 +275,7 @@ struct Thing *find_creature_in_fight_with_enemy(struct Computer2 *comp)
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -542,6 +545,7 @@ long computer_event_check_imps_in_danger(struct Computer2 *comp, struct Computer
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }

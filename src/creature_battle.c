@@ -32,6 +32,7 @@
 #include "thing_stats.h"
 #include "thing_objects.h"
 #include "player_instances.h"
+#include "gui_topmsg.h"
 #include "game_legacy.h"
 
 /******************************************************************************/
@@ -478,6 +479,7 @@ long setup_player_battlers(struct PlayerInfo *player, struct CreatureBattle *bat
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping battle creatures list");
+            erstat_inc(ESE_InfChainTngPerGroup);
             break;
         }
     }

@@ -94,6 +94,7 @@ struct Thing *check_for_empty_trap_for_imp(struct Thing *spdigtng, long tngmodel
         if (k > slist->count)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -149,6 +150,7 @@ long check_out_unclaimed_unconscious_bodies(struct Thing *spdigtng, long range)
         if (k > slist->count)
         {
           ERRORLOG("Infinite loop detected when sweeping things list");
+          erstat_inc(ESE_InfChainTngPerClass);
           break;
         }
     }
@@ -206,8 +208,9 @@ long check_out_unclaimed_dead_bodies(struct Thing *spdigtng, long range)
         k++;
         if (k > slist->count)
         {
-          ERRORLOG("Infinite loop detected when sweeping things list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
+            break;
         }
     }
     return 0;
@@ -277,6 +280,7 @@ long check_out_unclaimed_spells(struct Thing *spdigtng, long range)
         if (k > slist->count)
         {
           ERRORLOG("Infinite loop detected when sweeping things list");
+          erstat_inc(ESE_InfChainTngPerClass);
           break;
         }
     }
@@ -364,8 +368,9 @@ long check_out_unclaimed_traps(struct Thing *spdigtng, long range)
         k++;
         if (k > slist->count)
         {
-          ERRORLOG("Infinite loop detected when sweeping things list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
+            break;
         }
     }
     return 0;
@@ -486,8 +491,9 @@ long check_out_unclaimed_gold(struct Thing *spdigtng, long range)
         k++;
         if (k > slist->count)
         {
-          ERRORLOG("Infinite loop detected when sweeping things list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
+            break;
         }
     }
     return 0;
@@ -552,6 +558,7 @@ long check_out_object_for_trap(struct Thing *spdigtng, struct Thing *traptng)
         if (k > slist->count)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -589,8 +596,9 @@ long check_out_empty_traps(struct Thing *spdigtng, long range)
         k++;
         if (k > slist->count)
         {
-          ERRORLOG("Infinite loop detected when sweeping things list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
+            break;
         }
     }
     return 0;
@@ -688,8 +696,9 @@ TbBool check_out_crates_to_arm_trap_in_room(struct Thing *spdigtng)
         k++;
         if (k > slist->count)
         {
-          ERRORLOG("Infinite loop detected when sweeping things list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
+            break;
         }
     }
     return false;
@@ -1177,6 +1186,7 @@ GoldAmount take_from_gold_pile(MapSubtlCoord stl_x, MapSubtlCoord stl_y, long li
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }

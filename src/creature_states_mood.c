@@ -38,6 +38,7 @@
 #include "room_data.h"
 #include "room_jobs.h"
 #include "player_utils.h"
+#include "gui_topmsg.h"
 #include "game_legacy.h"
 
 /******************************************************************************/
@@ -447,6 +448,7 @@ TbBool find_combat_target_passing_by_subtile_but_having_unrelated_job(const stru
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -516,6 +518,7 @@ TbBool find_combat_target_passing_by_room_but_having_unrelated_job(const struct 
         if (k > room->slabs_count)
         {
             ERRORLOG("Infinite loop detected when sweeping room slabs");
+            erstat_inc(ESE_InfChainSlbPerRoom);
             break;
         }
     }
@@ -662,8 +665,9 @@ TbBool any_worker_will_go_postal_on_creature_in_room(const struct Room *room, co
         k++;
         if (k > THINGS_COUNT)
         {
-          ERRORLOG("Infinite loop detected when sweeping creatures list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerRoom);
+            break;
         }
     }
     return false;

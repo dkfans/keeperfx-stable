@@ -890,6 +890,7 @@ TbBigChecksum update_things_in_list(struct StructureList *list)
       if (k > THINGS_COUNT)
       {
         ERRORLOG("Infinite loop detected when sweeping things list");
+        erstat_inc(ESE_InfChainTngPerClass);
         break;
       }
     }
@@ -926,6 +927,7 @@ unsigned long update_cave_in_things(void)
     if (k > THINGS_COUNT)
     {
       ERRORLOG("Infinite loop detected when sweeping things list");
+      erstat_inc(ESE_InfChainTngPerClass);
       break;
     }
   }
@@ -960,6 +962,7 @@ unsigned long update_things_sounds_in_list(struct StructureList *list)
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -1002,6 +1005,7 @@ unsigned long update_creatures_not_in_list(void)
     if (k > THINGS_COUNT)
     {
       ERRORLOG("Infinite loop detected when sweeping things list");
+      erstat_inc(ESE_InfChainTngPerClass);
       break;
     }
   }
@@ -1060,6 +1064,7 @@ struct Thing *find_players_dungeon_heart(PlayerNumber plyridx)
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -1167,6 +1172,7 @@ void init_all_creature_states(void)
         if (k > THINGS_COUNT)
         {
           ERRORLOG("Infinite loop detected when sweeping things list");
+          erstat_inc(ESE_InfChainTngPerClass);
           break;
         }
     }
@@ -1264,6 +1270,7 @@ struct Thing *find_base_thing_on_mapwho(ThingClass oclass, ThingModel model, Map
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -1301,6 +1308,7 @@ struct Thing *find_hero_gate_of_number(long num)
       if (k > THINGS_COUNT)
       {
         ERRORLOG("Infinite loop detected when sweeping things list");
+        erstat_inc(ESE_InfChainTngPerClass);
         break;
       }
     }
@@ -1344,6 +1352,7 @@ struct Thing *find_creature_lair_totem_at_subtile(MapSubtlCoord stl_x, MapSubtlC
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -1401,6 +1410,7 @@ long count_things_of_class_with_filter(Thing_Maximizer_Filter filter, MaxTngFilt
         if (k > slist->count)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -1469,6 +1479,7 @@ struct Thing *get_nth_thing_of_class_with_filter(Thing_Maximizer_Filter filter, 
         if (k > slist->count)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -1520,6 +1531,7 @@ long do_to_all_things_of_class_and_model(int tngclass, int tngmodel, Thing_Bool_
         if (k > slist->count)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -1729,6 +1741,7 @@ long creature_of_model_find_first(ThingModel crmodel)
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -1763,6 +1776,7 @@ long creature_of_model_in_prison_or_tortured(ThingModel crmodel)
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -1836,6 +1850,7 @@ TbBool perform_action_on_all_creatures_in_group(struct Thing *thing, Thing_Bool_
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures group");
+            erstat_inc(ESE_InfChainTngPerGroup);
             return false;
         }
     }
@@ -1925,9 +1940,10 @@ long electricity_affecting_area(const struct Coord3d *pos, PlayerNumber immune_p
         }
         // Per-thing code ends
         k++;
-        if (k > THINGS_COUNT)
+        if (k > slist->count)
         {
           ERRORLOG("Infinite loop detected when sweeping things list");
+          erstat_inc(ESE_InfChainTngPerClass);
           break;
         }
     }
@@ -1982,9 +1998,10 @@ long do_on_player_list_all_creatures_of_model(long thing_idx, int crmodel,
         }
         // Per creature code ends
         k++;
-        if (k > THINGS_COUNT)
+        if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -2052,9 +2069,10 @@ long count_player_list_creatures_of_model(long thing_idx, ThingModel crmodel)
             count++;
         // Per creature code ends
         k++;
-        if (k > THINGS_COUNT)
+        if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -2094,10 +2112,11 @@ struct Thing *get_player_list_nth_creature_of_model(long thing_idx, ThingModel c
           crtr_idx--;
       // Per creature code ends
       k++;
-      if (k > THINGS_COUNT)
+      if (k > CREATURES_COUNT)
       {
-        ERRORLOG("Infinite loop detected when sweeping things list");
-        return INVALID_THING;
+          ERRORLOG("Infinite loop detected when sweeping things list");
+          erstat_inc(ESE_InfChainTngPerOwner);
+          return INVALID_THING;
       }
     }
     ERRORLOG("Tried to get creature of index exceeding list");
@@ -2151,6 +2170,7 @@ GoldAmount compute_player_payday_total(const struct Dungeon *dungeon)
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -2208,9 +2228,10 @@ long count_player_list_creatures_with_filter(long thing_idx, Thing_Maximizer_Fil
         }
         // Per creature code ends
         k++;
-        if (k > THINGS_COUNT)
+        if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -2293,9 +2314,10 @@ struct Thing *get_player_list_creature_with_filter(ThingIndex thing_idx, Thing_M
         }
         // Per creature code ends
         k++;
-        if (k > THINGS_COUNT)
+        if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -2358,9 +2380,10 @@ struct Thing *get_player_list_random_creature_with_filter(ThingIndex thing_idx, 
         }
         // Per creature code ends
         k++;
-        if (k > THINGS_COUNT)
+        if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -2407,8 +2430,9 @@ struct Thing *get_thing_on_map_block_with_filter(long thing_idx, Thing_Maximizer
       k++;
       if (k > THINGS_COUNT)
       {
-        ERRORLOG("Infinite loop detected when sweeping things list");
-        break;
+          ERRORLOG("Infinite loop detected when sweeping things list");
+          erstat_inc(ESE_InfChainTngPerMapWho);
+          break;
       }
     }
     return retng;
@@ -2440,13 +2464,14 @@ long do_to_things_on_map_block(long thing_idx, Thing_Bool_Modifier do_cb)
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break;
         }
     }
     return n;
 }
 
-long do_to_things_with_param_on_map_block(ThingIndex thing_idx, Thing_Modifier_Func do_cb, ModTngFilterParam param)
+long do_to_things_with_param_on_map_block(struct Map *mapblk, Thing_Modifier_Func do_cb, ModTngFilterParam param)
 {
     struct Thing *thing;
     unsigned long k;
@@ -2454,7 +2479,7 @@ long do_to_things_with_param_on_map_block(ThingIndex thing_idx, Thing_Modifier_F
     SYNCDBG(19,"Starting");
     n = 0;
     k = 0;
-    i = thing_idx;
+    i = get_mapwho_thing_index(mapblk);
     while (i != 0)
     {
         thing = thing_get(i);
@@ -2472,6 +2497,7 @@ long do_to_things_with_param_on_map_block(ThingIndex thing_idx, Thing_Modifier_F
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break;
         }
     }
@@ -2647,7 +2673,6 @@ long do_to_things_with_param_around_map_block(const struct Coord3d *center_pos, 
 {
     long count;
     int around;
-    long i;
     SYNCDBG(19,"Starting");
     count = 0;
     for (around=0; around < sizeof(mid_around)/sizeof(mid_around[0]); around++)
@@ -2662,8 +2687,7 @@ long do_to_things_with_param_around_map_block(const struct Coord3d *center_pos, 
         mapblk = get_map_block_at(sx, sy);
         if (!map_block_invalid(mapblk))
         {
-            i = get_mapwho_thing_index(mapblk);
-            count += do_to_things_with_param_on_map_block(i, do_cb, param);
+            count += do_to_things_with_param_on_map_block(mapblk, do_cb, param);
         }
     }
     return count;
@@ -2679,7 +2703,6 @@ long do_to_things_with_param_spiral_near_map_block(const struct Coord3d *center_
         WARNLOG("Spiral range %d trimmed to max %d",(int)spiral_range,SPIRAL_STEPS_RANGE);
         spiral_range = SPIRAL_STEPS_RANGE;
     }
-    long i;
     SYNCDBG(19,"Starting");
     count = 0;
     for (around=0; around < spiral_range*spiral_range; around++)
@@ -2694,8 +2717,7 @@ long do_to_things_with_param_spiral_near_map_block(const struct Coord3d *center_
         mapblk = get_map_block_at(sx, sy);
         if (!map_block_invalid(mapblk))
         {
-            i = get_mapwho_thing_index(mapblk);
-            count += do_to_things_with_param_on_map_block(i, do_cb, param);
+            count += do_to_things_with_param_on_map_block(mapblk, do_cb, param);
         }
     }
     return count;
@@ -3070,6 +3092,7 @@ TbBool imp_already_digging_at_excluding(struct Thing *excltng, MapSubtlCoord stl
     if (k > THINGS_COUNT)
     {
       ERRORLOG("Infinite loop detected when sweeping things list");
+      erstat_inc(ESE_InfChainTngPerMapWho);
       break_mapwho_infinite_chain(mapblk);
       break;
     }
@@ -3115,6 +3138,7 @@ struct Thing *smallest_gold_pile_at_xy(MapSubtlCoord stl_x, MapSubtlCoord stl_y)
     if (k > THINGS_COUNT)
     {
       ERRORLOG("Infinite loop detected when sweeping things list");
+      erstat_inc(ESE_InfChainTngPerMapWho);
       break_mapwho_infinite_chain(mapblk);
       break;
     }
@@ -3170,6 +3194,7 @@ TbBool apply_anger_to_all_players_creatures_excluding(PlayerNumber plyr_idx, lon
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -3210,6 +3235,7 @@ TbBool gold_pile_with_maximum_at_xy(MapSubtlCoord stl_x, MapSubtlCoord stl_y)
     if (k > THINGS_COUNT)
     {
       ERRORLOG("Infinite loop detected when sweeping things list");
+      erstat_inc(ESE_InfChainTngPerMapWho);
       break_mapwho_infinite_chain(mapblk);
       break;
     }

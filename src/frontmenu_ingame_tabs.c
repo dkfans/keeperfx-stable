@@ -47,6 +47,7 @@
 #include "gui_frontbtns.h"
 #include "gui_parchment.h"
 #include "gui_draw.h"
+#include "gui_topmsg.h"
 #include "packets.h"
 #include "magic.h"
 #include "player_instances.h"
@@ -756,8 +757,9 @@ void go_to_next_trap_of_type(ThingModel tngmodel, PlayerNumber plyr_idx)
         k++;
         if (k > THINGS_COUNT)
         {
-          ERRORLOG("Infinite loop detected when sweeping things list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
+            break;
         }
     }
     i = seltrap[tngmodel];
@@ -814,8 +816,9 @@ void go_to_next_door_of_type(ThingModel tngmodel, PlayerNumber plyr_idx)
         k++;
         if (k > THINGS_COUNT)
         {
-          ERRORLOG("Infinite loop detected when sweeping things list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
+            break;
         }
     }
     i = seldoor[tngmodel];

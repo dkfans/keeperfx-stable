@@ -41,6 +41,7 @@
 #include "room_entrance.h"
 #include "power_hand.h"
 #include "gui_soundmsgs.h"
+#include "gui_topmsg.h"
 #include "game_legacy.h"
 
 #ifdef __cplusplus
@@ -141,6 +142,7 @@ struct Thing *get_random_fellow_not_hated_creature(struct Thing *creatng)
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -351,6 +353,7 @@ struct Thing *select_scavenger_target(const struct Thing *calltng)
         if (k > slist->count)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }

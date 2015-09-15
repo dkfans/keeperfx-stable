@@ -37,6 +37,7 @@
 #include "map_utils.h"
 #include "ariadne_wallhug.h"
 #include "gui_soundmsgs.h"
+#include "gui_topmsg.h"
 
 #include "game_legacy.h"
 #include "keeperfx.hpp"
@@ -101,6 +102,7 @@ struct Thing *get_workshop_equipment_to_work_with_on_subtile(PlayerNumber plyr_i
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -149,6 +151,7 @@ struct Thing *get_other_creature_manufacturing_on_subtile(PlayerNumber plyr_idx,
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }

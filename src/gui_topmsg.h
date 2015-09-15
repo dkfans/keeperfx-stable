@@ -39,6 +39,12 @@ enum ErrorStatisticEntries {
     ESE_BadPathHeap,
     ESE_BadRouteTree,
     ESE_CantReadPackets,
+    ESE_InfChainTngPerMapWho,
+    ESE_InfChainTngPerClass,
+    ESE_InfChainTngPerOwner, /**< Infinite loop while sweeping through owning dungeon things chain. */
+    ESE_InfChainTngPerGroup, /**< Infinite loop while sweeping through things group or battle chain. */
+    ESE_InfChainTngPerRoom, /**< Infinite loop while sweeping through things stored within a room. */
+    ESE_InfChainSlbPerRoom, /**< Infinite loop while sweeping through slabs making up a room. */
 };
 
 struct ErrorStatistics {

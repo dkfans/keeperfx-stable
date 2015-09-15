@@ -27,6 +27,7 @@
 #include "creature_control.h"
 #include "config_creature.h"
 #include "gui_soundmsgs.h"
+#include "gui_topmsg.h"
 #include "game_legacy.h"
 
 #ifdef __cplusplus
@@ -101,6 +102,7 @@ long calculate_free_lair_space(struct Dungeon * dungeon)
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }

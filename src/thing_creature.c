@@ -1452,6 +1452,7 @@ struct Thing *find_gold_pile_or_chicken_laying_on_mapblk(struct Map *mapblk)
     if (k > THINGS_COUNT)
     {
       ERRORLOG("Infinite loop detected when sweeping things list");
+      erstat_inc(ESE_InfChainTngPerMapWho);
       break_mapwho_infinite_chain(mapblk);
       break;
     }
@@ -2222,6 +2223,7 @@ unsigned long remove_parent_thing_from_things_in_list(struct StructureList *list
         k++;
         if (k > THINGS_COUNT) {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -2506,6 +2508,7 @@ void process_creature_standing_on_corpses_at(struct Thing *creatng, struct Coord
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -5010,6 +5013,7 @@ int claim_neutral_creatures_in_sight(struct Thing *creatng, struct Coord3d *pos,
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -5083,6 +5087,7 @@ TbBool creature_stats_debug_dump(void)
         k++;
         if (k > THINGS_COUNT) {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             result = true;
             break;
         }

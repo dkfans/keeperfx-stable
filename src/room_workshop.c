@@ -33,6 +33,7 @@
 #include "power_hand.h"
 #include "game_legacy.h"
 #include "gui_soundmsgs.h"
+#include "gui_topmsg.h"
 #include "player_instances.h"
 #include "creature_states.h"
 #include "keeperfx.hpp"
@@ -219,6 +220,7 @@ struct Thing *get_workshop_box_thing(PlayerNumber owner, ThingModel objmodel)
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }

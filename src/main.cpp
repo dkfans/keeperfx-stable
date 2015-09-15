@@ -624,6 +624,7 @@ void affect_nearby_friends_with_alarm(struct Thing *traptng)
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -2445,6 +2446,7 @@ void count_players_creatures_being_paid(int *creatures_count)
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -2762,6 +2764,7 @@ void update_near_creatures_for_footsteps(long *near_creatures, const struct Coor
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -2798,8 +2801,9 @@ long stop_playing_flight_sample_in_all_flying_creatures(void)
         k++;
         if (k > THINGS_COUNT)
         {
-          ERRORLOG("Infinite loop detected when sweeping things list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
+            break;
         }
     }
     return naffected;

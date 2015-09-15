@@ -40,6 +40,7 @@
 #include "map_utils.h"
 #include "ariadne_wallhug.h"
 #include "gui_soundmsgs.h"
+#include "gui_topmsg.h"
 #include "game_legacy.h"
 
 /******************************************************************************/
@@ -150,8 +151,9 @@ struct Thing *get_creature_in_training_room_which_could_accept_partner(struct Ro
         k++;
         if (k > THINGS_COUNT)
         {
-          ERRORLOG("Infinite loop detected when sweeping creatures list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerRoom);
+            break;
         }
     }
     return INVALID_THING;

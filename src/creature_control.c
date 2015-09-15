@@ -32,6 +32,7 @@
 #include "lens_api.h"
 #include "light_data.h"
 #include "sounds.h"
+#include "gui_topmsg.h"
 #include "game_legacy.h"
 
 #ifdef __cplusplus
@@ -242,8 +243,9 @@ struct Thing *get_group_last_member(struct Thing *thing)
         k++;
         if (k > CREATURES_COUNT)
         {
-          ERRORLOG("Infinite loop detected when sweeping creatures group");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping creatures group");
+            erstat_inc(ESE_InfChainTngPerGroup);
+            break;
         }
     }
     return ctng;

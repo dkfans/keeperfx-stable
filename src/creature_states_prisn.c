@@ -36,6 +36,7 @@
 #include "room_jobs.h"
 #include "room_list.h"
 #include "gui_soundmsgs.h"
+#include "gui_topmsg.h"
 #include "game_legacy.h"
 
 #ifdef __cplusplus
@@ -74,6 +75,7 @@ TbBool jailbreak_possible(struct Room *room, long plyr_idx)
         if (k > map_tiles_x * map_tiles_y)
         {
             ERRORLOG("Infinite loop detected when sweeping room slabs");
+            erstat_inc(ESE_InfChainSlbPerRoom);
             break;
         }
     }
@@ -214,8 +216,9 @@ struct Thing *find_prisoner_for_thing(struct Thing *creatng)
         k++;
         if (k > THINGS_COUNT)
         {
-          ERRORLOG("Infinite loop detected when sweeping creatures list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerRoom);
+            break;
         }
     }
     return out_creatng;

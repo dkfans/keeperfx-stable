@@ -243,6 +243,7 @@ long get_wanderer_possible_targets_count_in_list(long first_thing_idx, struct Th
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -305,6 +306,7 @@ TbBool wander_to_specific_possible_target_in_list(long first_thing_idx, struct T
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }

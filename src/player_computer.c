@@ -42,6 +42,7 @@
 #include "player_complookup.h"
 #include "power_hand.h"
 #include "room_data.h"
+#include "gui_topmsg.h"
 #include "game_legacy.h"
 
 #ifdef __cplusplus
@@ -510,6 +511,7 @@ long count_creatures_availiable_for_fight(struct Computer2 *comp, struct Coord3d
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -963,6 +965,7 @@ long computer_pick_training_or_scavenging_creatures_and_place_on_room(struct Com
       if (k > THINGS_COUNT)
       {
         ERRORLOG("Infinite loop detected when sweeping things list");
+        erstat_inc(ESE_InfChainTngPerOwner);
         break;
       }
     }

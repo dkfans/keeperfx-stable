@@ -33,6 +33,7 @@
 #include "room_data.h"
 #include "room_jobs.h"
 #include "gui_soundmsgs.h"
+#include "gui_topmsg.h"
 
 #include "keeperfx.hpp"
 
@@ -128,8 +129,9 @@ long check_for_first_person_barrack_party(struct Thing *grthing)
         k++;
         if (k > THINGS_COUNT)
         {
-          ERRORLOG("Infinite loop detected when sweeping creatures list");
-          break;
+            ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerRoom);
+            break;
         }
     }
     return n;

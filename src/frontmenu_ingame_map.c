@@ -44,6 +44,7 @@
 #include "frontmenu_ingame_tabs.h"
 #include "vidmode.h"
 #include "vidfade.h"
+#include "gui_topmsg.h"
 
 /******************************************************************************/
 /**
@@ -207,6 +208,7 @@ int draw_overlay_call_to_arms(struct PlayerInfo *player, long units_per_px, long
         if (k > slist->count)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -279,6 +281,7 @@ int draw_overlay_traps(struct PlayerInfo *player, long units_per_px, long zoom)
         if (k > slist->count)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -346,6 +349,7 @@ int draw_overlay_spells_and_boxes(struct PlayerInfo *player, long units_per_px, 
         if (k > slist->count)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }
@@ -464,6 +468,7 @@ int draw_overlay_creatures(struct PlayerInfo *player, long units_per_px, long zo
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerClass);
             break;
         }
     }

@@ -2335,6 +2335,7 @@ struct Thing *find_random_creature_for_persuade(PlayerNumber plyr_idx, struct Co
         if (k > CREATURES_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping creatures list");
+            erstat_inc(ESE_InfChainTngPerOwner);
             break;
         }
     }
@@ -2547,7 +2548,8 @@ TbBool find_random_valid_position_for_thing_in_room_avoiding_object(struct Thing
         }
         k++;
         if (k > room->slabs_count) {
-            ERRORLOG("Infinite loop detected when sweeping room slabs list");
+            ERRORLOG("Infinite loop detected when sweeping room list");
+            erstat_inc(ESE_InfChainSlbPerRoom);
             break;
         }
     }
@@ -3028,6 +3030,7 @@ TbBool is_creature_other_than_given_waiting_at_closed_door_on_subtile(MapSubtlCo
         if (k > THINGS_COUNT)
         {
             ERRORLOG("Infinite loop detected when sweeping things list");
+            erstat_inc(ESE_InfChainTngPerMapWho);
             break_mapwho_infinite_chain(mapblk);
             break;
         }
@@ -3278,6 +3281,7 @@ CrAttackType creature_can_have_combat_with_creature_on_slab(struct Thing *creatn
                 if (k > THINGS_COUNT)
                 {
                     ERRORLOG("Infinite loop detected when sweeping things list");
+                    erstat_inc(ESE_InfChainTngPerMapWho);
                     break_mapwho_infinite_chain(mapblk);
                     break;
                 }

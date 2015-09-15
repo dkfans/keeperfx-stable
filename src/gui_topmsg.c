@@ -44,6 +44,12 @@ struct ErrorStatistics erstat[] = {
     {0, 0, "Path heap failure"},
     {0, 0, "Route tree failure"},
     {0, 0, "Cannot read packet from file"},
+    {0, 0, "Infinite things chain for map pos"},
+    {0, 0, "Infinite things chain for class"},
+    {0, 0, "Infinite things chain for owner"},
+    {0, 0, "Infinite things chain for group"},
+    {0, 0, "Infinite things chain for room"},
+    {0, 0, "Infinite slabs chain for room"},
 };
 int last_checked_stat_num = 0;
 /******************************************************************************/

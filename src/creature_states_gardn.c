@@ -37,6 +37,7 @@
 #include "room_jobs.h"
 #include "room_list.h"
 #include "gui_soundmsgs.h"
+#include "gui_topmsg.h"
 #include "creature_states_prisn.h"
 #include "game_legacy.h"
 
@@ -148,6 +149,7 @@ void person_search_for_food_again(struct Thing *creatng, struct Room *room)
         if (k > room->slabs_count)
         {
             ERRORLOG("Infinite loop detected when sweeping room slabs");
+            erstat_inc(ESE_InfChainSlbPerRoom);
             break;
         }
     }
