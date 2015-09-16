@@ -4,7 +4,8 @@
 /** @file ariadne.h
  *     Header file for ariadne.c.
  * @par Purpose:
- *     Dungeon routing and path finding system.
+ *     Dungeon routing and path finding system, using Delaunay triangulation
+ *     and Wallhug algorithm.
  * @par Comment:
  *     Just a header file - #defines, typedefs, function prototypes etc.
  * @author   Tomasz Lis

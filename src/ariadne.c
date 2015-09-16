@@ -273,7 +273,7 @@ long route_to_path(long ptfind_x, long ptfind_y, long ptstart_x, long ptstart_y,
 void path_out_a_bit(struct Path *path, const long *route);
 void gate_navigator_init8(struct Pathway *pway, long trAx, long trAy, long trBx, long trBy, long wp_lim, unsigned char a7);
 void route_through_gates(const struct Pathway *pway, struct Path *path, long subroute);
-long ariadne_push_position_against_wall(struct Thing *thing, const struct Coord3d *pos1, struct Coord3d *pos_out);
+long ariadne_push_position_against_wall(struct Thing *thing, const struct Coord3d *next_pos, struct Coord3d *out_pos);
 long ariadne_check_forward_for_wallhug_gap(struct Thing *thing, struct Ariadne *arid, struct Coord3d *pos, long hug_angle);
 long ariadne_get_blocked_flags(struct Thing *thing, const struct Coord3d *pos);
 long triangle_findSE8(long ptfind_x, long ptfind_y);
@@ -2427,78 +2427,93 @@ TbBool blocked_by_door_at(struct Thing *thing, struct Coord3d *pos, unsigned lon
     return false;
 }
 
-long ariadne_push_position_against_wall(struct Thing *thing, const struct Coord3d *pos1, struct Coord3d *pos_out)
+TbBool push_position_against_wall(const struct Coord3d *orig_pos, MapCoordDelta radius, unsigned long blk_flags, struct Coord3d *check_pos)
 {
     struct Coord3d lpos;
-    long radius;
-    unsigned long blk_flags;
-    //return _DK_ariadne_push_position_against_wall(thing, pos1, pos_out);
-    blk_flags = ariadne_get_blocked_flags(thing, pos1);
-    radius = thing_nav_sizexy(thing) >> 1;
-    lpos.x.val = pos1->x.val;
-    lpos.y.val = pos1->y.val;
+    TbBool ret;
+    ret = false;
+    lpos.x.val = check_pos->x.val;
+    lpos.y.val = check_pos->y.val;
     lpos.z.val = 0;
 
     if ((blk_flags & SlbBloF_WalledX) != 0)
     {
-      if (pos1->x.val >= thing->mappos.x.val)
+      if (check_pos->x.val >= orig_pos->x.val)
       {
-          lpos.x.val = thing->mappos.x.val + radius;
+          lpos.x.val = orig_pos->x.val + radius;
           lpos.x.stl.pos = COORD_PER_STL-1;
           lpos.x.val -= radius;
       } else
       {
-          lpos.x.val = thing->mappos.x.val - radius;
+          lpos.x.val = orig_pos->x.val - radius;
           lpos.x.stl.pos = 0;
           lpos.x.val += radius;
       }
-      lpos.z.val = get_thing_height_at(thing, &lpos);
+      ret = true;
     }
     if ((blk_flags & SlbBloF_WalledY) != 0)
     {
-      if (pos1->y.val >= thing->mappos.y.val)
+      if (check_pos->y.val >= orig_pos->y.val)
       {
-        lpos.y.val = thing->mappos.y.val + radius;
+        lpos.y.val = orig_pos->y.val + radius;
         lpos.y.stl.pos = COORD_PER_STL-1;
         lpos.y.val -= radius;
       } else
       {
-        lpos.y.val = thing->mappos.y.val - radius;
+        lpos.y.val = orig_pos->y.val - radius;
         lpos.y.stl.pos = 0;
         lpos.y.val += radius;
       }
-      lpos.z.val = get_thing_height_at(thing, &lpos);
+      ret = true;
     }
     if ((blk_flags & SlbBloF_WalledZ) != 0)
     {
-      if (pos1->x.val >= thing->mappos.x.val)
+      if (check_pos->x.val >= orig_pos->x.val)
       {
-          lpos.x.val = thing->mappos.x.val + radius;
+          lpos.x.val = orig_pos->x.val + radius;
           lpos.x.stl.pos = COORD_PER_STL-1;
           lpos.x.val -= radius;
       } else
       {
-          lpos.x.val = thing->mappos.x.val - radius;
+          lpos.x.val = orig_pos->x.val - radius;
           lpos.x.stl.pos = 0;
           lpos.x.val += radius;
       }
-      if (pos1->y.val >= thing->mappos.y.val)
+      if (check_pos->y.val >= orig_pos->y.val)
       {
-          lpos.y.val = thing->mappos.y.val + radius;
+          lpos.y.val = orig_pos->y.val + radius;
           lpos.y.stl.pos = COORD_PER_STL-1;
           lpos.y.val -= radius;
-      }
-      else
+      } else
       {
-          lpos.y.val = thing->mappos.y.val - radius;
+          lpos.y.val = orig_pos->y.val - radius;
           lpos.y.stl.pos = 0;
           lpos.y.val += radius;
       }
-      lpos.z.val = get_thing_height_at(thing, &lpos);
+      ret = true;
     }
-    pos_out->x.val = lpos.x.val;
-    pos_out->y.val = lpos.y.val;
-    pos_out->z.val = lpos.z.val;
+    check_pos->x.val = lpos.x.val;
+    check_pos->y.val = lpos.y.val;
+    return ret;
+}
+
+long ariadne_push_position_against_wall(struct Thing *thing, const struct Coord3d *next_pos, struct Coord3d *out_pos)
+{
+    struct Coord3d lpos;
+    MapCoordDelta radius;
+    unsigned long blk_flags;
+    //return _DK_ariadne_push_position_against_wall(thing, pos1, pos_out);
+    blk_flags = ariadne_get_blocked_flags(thing, next_pos);
+    radius = thing_nav_sizexy(thing) >> 1;
+    lpos.x.val = next_pos->x.val;
+    lpos.y.val = next_pos->y.val;
+    lpos.z.val = next_pos->z.val;
+    if (push_position_against_wall(&thing->mappos, radius, blk_flags, &lpos)) {
+        lpos.z.val = get_thing_height_at(thing, &lpos);
+    }
+    out_pos->x.val = lpos.x.val;
+    out_pos->y.val = lpos.y.val;
+    out_pos->z.val = lpos.z.val;
     return blk_flags;
 }
 

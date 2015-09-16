@@ -57,6 +57,7 @@ TbBool thing_on_thing_at(const struct Thing *firstng, const struct Coord3d *pos,
 TbBool things_collide_while_first_moves_to(const struct Thing *firstng, const struct Coord3d *dstpos, const struct Thing *sectng);
 TbBool cross_x_boundary_first(const struct Coord3d *pos1, const struct Coord3d *pos2);
 TbBool cross_y_boundary_first(const struct Coord3d *pos1, const struct Coord3d *pos2);
+TbBool cross_one_boundary_at_most_with_radius(const struct Coord3d *startpos, const struct Coord3d *endpos, MapCoordDelta radius);
 
 void slide_thing_against_wall_at(struct Thing *thing, struct Coord3d *wallpos, unsigned long blocked_flags);
 void bounce_thing_off_wall_at(struct Thing *thing, struct Coord3d *wallpos, unsigned long blocked_flags);

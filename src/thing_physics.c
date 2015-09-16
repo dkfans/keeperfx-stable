@@ -335,12 +335,12 @@ TbBool cross_x_boundary_first(const struct Coord3d *pos1, const struct Coord3d *
   if (delta_x < 0) {
       mul_x = pos1->x.stl.pos;
   } else {
-      mul_x = 255 - (int)pos1->x.stl.pos;
+      mul_x = COORD_PER_STL-1 - (int)pos1->x.stl.pos;
   }
   if ( delta_y < 0 ) {
       mul_y = pos1->y.stl.pos;
   } else {
-      mul_y = 255 - (int)pos1->y.stl.pos;
+      mul_y = COORD_PER_STL-1 - (int)pos1->y.stl.pos;
   }
   return abs(delta_x * mul_y) > abs(mul_x * delta_y);
 }
@@ -354,14 +354,38 @@ TbBool cross_y_boundary_first(const struct Coord3d *pos1, const struct Coord3d *
   if (delta_x < 0) {
       mul_x = pos1->x.stl.pos;
   } else {
-      mul_x = 255 - (int)pos1->x.stl.pos;
+      mul_x = COORD_PER_STL-1 - (int)pos1->x.stl.pos;
   }
   if ( delta_y < 0 ) {
       mul_y = pos1->y.stl.pos;
   } else {
-      mul_y = 255 - (int)pos1->y.stl.pos;
+      mul_y = COORD_PER_STL-1 - (int)pos1->y.stl.pos;
   }
   return abs(delta_y * mul_x) > abs(mul_y * delta_x);
+}
+
+TbBool cross_one_boundary_at_most_with_radius(const struct Coord3d *startpos, const struct Coord3d *endpos, MapCoordDelta radius)
+{
+    // If subtile changed in both dimensions, this will not work
+    if ((coord_subtile(endpos->x.val) != coord_subtile(startpos->x.val)) && (coord_subtile(endpos->y.val) != coord_subtile(startpos->y.val))) {
+        return false;
+    }
+    if (radius >= COORD_PER_STL-1) {
+        return false;
+    }
+    if (coord_subtile(endpos->x.val) == coord_subtile(startpos->x.val))
+    {
+        if (((endpos->x.val & COORD_PER_STL_MASK) < radius) || ((endpos->x.val & COORD_PER_STL_MASK) > COORD_PER_STL-radius-1)) {
+            return false;
+        }
+    }
+    if (coord_subtile(endpos->y.val) == coord_subtile(startpos->y.val))
+    {
+        if (((endpos->y.val & COORD_PER_STL_MASK) < radius) || ((endpos->y.val & COORD_PER_STL_MASK) > COORD_PER_STL-radius-1)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 TbBool position_over_floor_level(const struct Thing *thing, const struct Coord3d *pos)

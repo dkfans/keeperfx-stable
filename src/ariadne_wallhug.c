@@ -394,13 +394,13 @@ void set_hugging_pos_using_blocked_flags(struct Coord3d *dstpos, struct Thing *c
     dstpos->z.val = tmpos.z.val;
 }
 
-long get_map_index_of_first_block_thing_colliding_with_at(struct Thing *creatng, struct Coord3d *pos, long mapblk_flags, unsigned char plyr_bits)
+long get_map_index_of_first_block_thing_colliding_with_at(struct Thing *creatng, const struct Coord3d *pos, long mapblk_flags, unsigned char plyr_bits)
 {
     MapSubtlCoord beg_stl_x, beg_stl_y;
     MapSubtlCoord end_stl_x, end_stl_y;
     //return _DK_get_map_index_of_first_block_thing_colliding_with_at(creatng, pos, mapblk_flags, plyr_bits);
     {
-        int nav_radius;
+        MapCoordDelta nav_radius;
         MapSubtlDelta i;
         nav_radius = thing_nav_sizexy(creatng) / 2;
         i = (pos->x.val - nav_radius) / COORD_PER_STL;
@@ -437,9 +437,11 @@ long get_map_index_of_first_block_thing_colliding_with_at(struct Thing *creatng,
             mapblk = get_map_block_at(stl_x, stl_y);
             struct SlabMap *slb;
             slb = get_slabmap_for_subtile(stl_x, stl_y);
-
-            if ( (((mapblk->flags & mapblk_flags) == 0) && (slb->kind != SlbT_ROCK))
-              || (((mapblk->flags & mapblk_flags & SlbAtFlg_Filled) != 0) && ((1 << slabmap_owner(slb)) & plyr_bits)))
+            // If none of given flags are set, reject this place
+            if (((mapblk->flags & mapblk_flags) == 0) && (slb->kind != SlbT_ROCK))
+                continue;
+            // If the place is filled, and owner meets given player flags, reject this place
+            if (((mapblk->flags & mapblk_flags & SlbAtFlg_Filled) != 0) && ((1 << slabmap_owner(slb)) & plyr_bits))
                 continue;
             if ((mapblk->flags & SlbAtFlg_IsDoor) == 0)
                 return get_subtile_number(stl_x, stl_y);
@@ -725,21 +727,25 @@ TbBool find_approach_position_to_subtile(const struct Coord3d *srcpos, MapSubtlC
     return (min_dist < LONG_MAX);
 }
 
-long get_map_index_of_first_block_thing_colliding_with_travelling_to(struct Thing *creatng, struct Coord3d *startpos, struct Coord3d *endpos, long mapblk_flags, unsigned char plyr_bits)
+long get_map_index_of_first_block_thing_colliding_with_travelling_to(struct Thing *creatng, const struct Coord3d *startpos, const struct Coord3d *endpos, long mapblk_flags, unsigned char plyr_bits)
 {
     MapCoord tmp_cor;
     long stl_num; // should be SubtlCodedCoords, but may need to be signed
-    struct Coord3d pos;
-    struct Coord3d pos1;
+    struct Coord3d tmp_pos;
+    struct Coord3d mod_pos;
     struct Coord3d orig_pos;
     MapCoordDelta delta_x, delta_y;
     //return _DK_get_map_index_of_first_block_thing_colliding_with_travelling_to(creatng, startpos, endpos, mapblk_flags, plyr_bits);
 
-    pos1 = *startpos;
-    delta_x = pos1.x.val - (MapCoordDelta)endpos->x.val;
-    delta_y = pos1.y.val - (MapCoordDelta)endpos->y.val;
+    mod_pos = *startpos;
+    delta_x = mod_pos.x.val - (MapCoordDelta)endpos->x.val;
+    delta_y = mod_pos.y.val - (MapCoordDelta)endpos->y.val;
     orig_pos = creatng->mappos;
-    if ((endpos->x.stl.num == pos1.x.stl.num) || (endpos->y.stl.num == pos1.y.stl.num))
+    SYNCDBG(6,"Check %s index %d from (%d,%d) to (%d,%d)",thing_model_name(creatng),(int)creatng->index,
+        (int)coord_subtile(startpos->x.val),(int)coord_subtile(startpos->y.val),(int)coord_subtile(endpos->x.val),(int)coord_subtile(endpos->y.val));
+    // Speed is limited to one subtile per turn, and usually it is much lower, so in over 99% cases the difference between startpos and endpos
+    // will be minimal, and both will be on one slab. Bearing that in mind, we can prepare an optimization for these cases.
+    if (cross_one_boundary_at_most_with_radius(&mod_pos, endpos, thing_nav_sizexy(creatng)/2))
     {
         stl_num = get_map_index_of_first_block_thing_colliding_with_at(creatng, endpos, mapblk_flags, plyr_bits);
         if (stl_num >= 0) {
@@ -750,40 +756,40 @@ long get_map_index_of_first_block_thing_colliding_with_travelling_to(struct Thin
         creatng->mappos = orig_pos;
         return 0;
     }
-    if (cross_x_boundary_first(&pos1, endpos))
+    if (cross_x_boundary_first(&mod_pos, endpos))
     {
-        if (endpos->x.val <= pos1.x.val)
-          tmp_cor = (pos1.x.val & ~COORD_PER_STL_MASK) - 1;
+        if (endpos->x.val <= mod_pos.x.val)
+          tmp_cor = (mod_pos.x.val & ~COORD_PER_STL_MASK) - 1;
         else
-          tmp_cor = (pos1.x.val + COORD_PER_STL) & ~COORD_PER_STL_MASK;
-        pos.x.val = tmp_cor;
-        pos.y.val = delta_y * abs(tmp_cor - (MapCoordDelta)orig_pos.x.val) / delta_x + orig_pos.y.val;
-        pos.z.val = pos1.z.val;
-        stl_num = get_map_index_of_first_block_thing_colliding_with_at(creatng, &pos, mapblk_flags, plyr_bits);
+          tmp_cor = (mod_pos.x.val + COORD_PER_STL) & ~COORD_PER_STL_MASK;
+        tmp_pos.x.val = tmp_cor;
+        tmp_pos.y.val = delta_y * abs(tmp_cor - (MapCoordDelta)orig_pos.x.val) / delta_x + orig_pos.y.val;
+        tmp_pos.z.val = mod_pos.z.val;
+        stl_num = get_map_index_of_first_block_thing_colliding_with_at(creatng, &tmp_pos, mapblk_flags, plyr_bits);
         if (stl_num >= 0) {
             creatng->mappos = orig_pos;
             return stl_num;
         }
 
-        pos1 = creatng->mappos;
-        if (endpos->y.val <= pos1.y.val)
-          tmp_cor = (pos1.y.val & ~COORD_PER_STL_MASK) - 1;
+        mod_pos = creatng->mappos;
+        if (endpos->y.val <= mod_pos.y.val)
+          tmp_cor = (mod_pos.y.val & ~COORD_PER_STL_MASK) - 1;
         else
-          tmp_cor = (pos1.y.val + COORD_PER_STL) & ~COORD_PER_STL_MASK;
-        pos.x.val = tmp_cor;
-        pos.y.val = delta_x * abs(tmp_cor - (MapCoordDelta)orig_pos.y.val) / delta_y + orig_pos.x.val;
-        pos.z.val = pos1.z.val;
-        stl_num = get_map_index_of_first_block_thing_colliding_with_at(creatng, &pos, mapblk_flags, plyr_bits);
+          tmp_cor = (mod_pos.y.val + COORD_PER_STL) & ~COORD_PER_STL_MASK;
+        tmp_pos.x.val = tmp_cor;
+        tmp_pos.y.val = delta_x * abs(tmp_cor - (MapCoordDelta)orig_pos.y.val) / delta_y + orig_pos.x.val;
+        tmp_pos.z.val = mod_pos.z.val;
+        stl_num = get_map_index_of_first_block_thing_colliding_with_at(creatng, &tmp_pos, mapblk_flags, plyr_bits);
         if (stl_num >= 0) {
             creatng->mappos = orig_pos;
             return stl_num;
         }
 
-        pos1 = creatng->mappos;
-        pos.x.val = endpos->x.val;
-        pos.y.val = endpos->y.val;
-        pos.z.val = creatng->mappos.z.val;
-        stl_num = get_map_index_of_first_block_thing_colliding_with_at(creatng, &pos, mapblk_flags, plyr_bits);
+        mod_pos = creatng->mappos;
+        tmp_pos.x.val = endpos->x.val;
+        tmp_pos.y.val = endpos->y.val;
+        tmp_pos.z.val = creatng->mappos.z.val;
+        stl_num = get_map_index_of_first_block_thing_colliding_with_at(creatng, &tmp_pos, mapblk_flags, plyr_bits);
         if (stl_num >= 0) {
             creatng->mappos = orig_pos;
             return stl_num;
@@ -792,40 +798,40 @@ long get_map_index_of_first_block_thing_colliding_with_travelling_to(struct Thin
         creatng->mappos = orig_pos;
         return 0;
     }
-    if (cross_y_boundary_first(&pos1, endpos))
+    if (cross_y_boundary_first(&mod_pos, endpos))
     {
-      if (endpos->y.val <= pos1.y.val)
-          tmp_cor = (pos1.y.val & ~COORD_PER_STL_MASK) - 1;
+      if (endpos->y.val <= mod_pos.y.val)
+          tmp_cor = (mod_pos.y.val & ~COORD_PER_STL_MASK) - 1;
       else
-          tmp_cor = (pos1.y.val + COORD_PER_STL) & ~COORD_PER_STL_MASK;
-      pos.y.val = tmp_cor;
-      pos.x.val = delta_x * abs(tmp_cor - (MapCoordDelta)orig_pos.y.val) / delta_y + orig_pos.x.val;
-      pos.z.val = pos1.z.val;
-      stl_num = get_map_index_of_first_block_thing_colliding_with_at(creatng, &pos, mapblk_flags, plyr_bits);
+          tmp_cor = (mod_pos.y.val + COORD_PER_STL) & ~COORD_PER_STL_MASK;
+      tmp_pos.y.val = tmp_cor;
+      tmp_pos.x.val = delta_x * abs(tmp_cor - (MapCoordDelta)orig_pos.y.val) / delta_y + orig_pos.x.val;
+      tmp_pos.z.val = mod_pos.z.val;
+      stl_num = get_map_index_of_first_block_thing_colliding_with_at(creatng, &tmp_pos, mapblk_flags, plyr_bits);
       if (stl_num >= 0) {
           creatng->mappos = orig_pos;
           return stl_num;
       }
 
-      pos1 = creatng->mappos;
-      if (endpos->x.val <= pos1.x.val)
-        tmp_cor = (pos1.x.val & ~COORD_PER_STL_MASK) - 1;
+      mod_pos = creatng->mappos;
+      if (endpos->x.val <= mod_pos.x.val)
+        tmp_cor = (mod_pos.x.val & ~COORD_PER_STL_MASK) - 1;
       else
-        tmp_cor = (pos1.x.val + COORD_PER_STL) & ~COORD_PER_STL_MASK;
-      pos.x.val = tmp_cor;
-      pos.y.val = delta_y * abs(tmp_cor - (MapCoordDelta)orig_pos.x.val) / delta_x + orig_pos.y.val;
-      pos.z.val = pos1.z.val;
-      stl_num = get_map_index_of_first_block_thing_colliding_with_at(creatng, &pos, mapblk_flags, plyr_bits);
+        tmp_cor = (mod_pos.x.val + COORD_PER_STL) & ~COORD_PER_STL_MASK;
+      tmp_pos.x.val = tmp_cor;
+      tmp_pos.y.val = delta_y * abs(tmp_cor - (MapCoordDelta)orig_pos.x.val) / delta_x + orig_pos.y.val;
+      tmp_pos.z.val = mod_pos.z.val;
+      stl_num = get_map_index_of_first_block_thing_colliding_with_at(creatng, &tmp_pos, mapblk_flags, plyr_bits);
       if (stl_num >= 0) {
           creatng->mappos = orig_pos;
           return stl_num;
       }
 
-      pos1 = creatng->mappos;
-      pos.x.val = endpos->x.val;
-      pos.y.val = endpos->y.val;
-      pos.z.val = creatng->mappos.z.val;
-      stl_num = get_map_index_of_first_block_thing_colliding_with_at(creatng, &pos, mapblk_flags, plyr_bits);
+      mod_pos = creatng->mappos;
+      tmp_pos.x.val = endpos->x.val;
+      tmp_pos.y.val = endpos->y.val;
+      tmp_pos.z.val = creatng->mappos.z.val;
+      stl_num = get_map_index_of_first_block_thing_colliding_with_at(creatng, &tmp_pos, mapblk_flags, plyr_bits);
       if (stl_num >= 0) {
           creatng->mappos = orig_pos;
           return stl_num;
@@ -877,7 +883,12 @@ TbBool navigation_push_towards_target(struct Navigation *navi, struct Thing *cre
         MapSubtlCoord stl_x, stl_y;
         stl_x = slab_subtile_center(subtile_slab_fast(stl_num_decode_x(stl_num)));
         stl_y = slab_subtile_center(subtile_slab_fast(stl_num_decode_y(stl_num)));
-        find_approach_position_to_subtile(&creatng->mappos, stl_x, stl_y, nav_radius + 385, &navi->pos_next);
+        if (!find_approach_position_to_subtile(&creatng->mappos, stl_x, stl_y, nav_radius + 3*COORD_PER_STL/2 + 1, &navi->pos_next)) {
+            // Cannot approach selected subtile - reset
+            ERRORLOG("The target subtile (%d,%d) has no approachable position",(int)stl_x,(int)stl_y);
+            initialise_wallhugging_path_from_to(navi, &creatng->mappos, pos);
+            return false;
+        }
         navi->angle_D = get_angle_xy_to(&creatng->mappos, &navi->pos_next);
         navi->navstate = NavS_Unkn3;
     }
@@ -968,7 +979,12 @@ long get_next_position_and_angle_required_to_tunnel_creature_to(struct Thing *cr
                 MapSubtlCoord stl_x, stl_y;
                 stl_x = slab_subtile_center(subtile_slab_fast(stl_num_decode_x(stl_num)));
                 stl_y = slab_subtile_center(subtile_slab_fast(stl_num_decode_y(stl_num)));
-                find_approach_position_to_subtile(&creatng->mappos, stl_x, stl_y, nav_radius + 385, &navi->pos_next);
+                if (!find_approach_position_to_subtile(&creatng->mappos, stl_x, stl_y, nav_radius + 3*COORD_PER_STL/2 + 1, &navi->pos_next)) {
+                    // Cannot approach selected subtile - reset
+                    ERRORLOG("The target subtile (%d,%d) has no approachable position",(int)stl_x,(int)stl_y);
+                    initialise_wallhugging_path_from_to(navi, &creatng->mappos, pos);
+                    return 1;
+                }
                 navi->angle_D = get_angle_xy_to(&creatng->mappos, &navi->pos_next);
                 navi->navstate = NavS_Unkn3;
                 return 1;
