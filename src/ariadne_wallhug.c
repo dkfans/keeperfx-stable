@@ -428,7 +428,11 @@ long get_map_index_of_first_block_thing_colliding_with_at(struct Thing *creatng,
             end_stl_y = i;
         }
     }
+    long best_stlnum;
+    MapCoordDelta best_dist;
     MapSubtlCoord stl_x, stl_y;
+    best_dist = LONG_MAX;
+    best_stlnum = -1;
     for (stl_y = beg_stl_y; stl_y < end_stl_y; stl_y++)
     {
         for (stl_x = beg_stl_x; stl_x < end_stl_x; stl_x++)
@@ -443,16 +447,28 @@ long get_map_index_of_first_block_thing_colliding_with_at(struct Thing *creatng,
             // If the place is filled, and owner meets given player flags, reject this place
             if (((mapblk->flags & mapblk_flags & SlbAtFlg_Filled) != 0) && ((1 << slabmap_owner(slb)) & plyr_bits))
                 continue;
-            if ((mapblk->flags & SlbAtFlg_IsDoor) == 0)
-                return get_subtile_number(stl_x, stl_y);
-            struct Thing *doortng;
-            doortng = get_door_for_position(stl_x, stl_y);
-            if (thing_is_invalid(doortng) || !door_will_open_for_thing(doortng, creatng))
-                return get_subtile_number(stl_x, stl_y);
+            if ((mapblk->flags & SlbAtFlg_IsDoor) != 0)
+            {
+                struct Thing *doortng;
+                doortng = get_door_for_position(stl_x, stl_y);
+                if (!thing_is_invalid(doortng) && door_will_open_for_thing(doortng, creatng))
+                    continue;
+            }
+            MapCoordDelta dist;
+            struct Coord3d collpos;
+            collpos.x.val = subtile_coord_center(stl_x);
+            collpos.y.val = subtile_coord_center(stl_y);
+            collpos.z.val = 0;
+            dist = get_2d_distance(&creatng->mappos, &collpos);
+            if (dist < best_dist)
+            {
+                best_dist = dist;
+                best_stlnum = get_subtile_number(stl_x, stl_y);
+            }
         }
 
     }
-    return -1;
+    return best_stlnum;
 }
 
 long creature_cannot_move_directly_to_with_collide_sub(struct Thing *creatng, struct Coord3d pos, long mapblk_flags, unsigned char plyr_bits)
@@ -745,7 +761,8 @@ long get_map_index_of_first_block_thing_colliding_with_travelling_to(struct Thin
         (int)coord_subtile(startpos->x.val),(int)coord_subtile(startpos->y.val),(int)coord_subtile(endpos->x.val),(int)coord_subtile(endpos->y.val));
     // Speed is limited to one subtile per turn, and usually it is much lower, so in over 99% cases the difference between startpos and endpos
     // will be minimal, and both will be on one slab. Bearing that in mind, we can prepare an optimization for these cases.
-    if (cross_one_boundary_at_most_with_radius(&mod_pos, endpos, thing_nav_sizexy(creatng)/2))
+    // This also makes sure that deltas are nonzero in the rest of the code (so we can divide by them).
+    if ((delta_x == 0) || (delta_y == 0) || cross_one_boundary_at_most_with_radius(&mod_pos, endpos, thing_nav_sizexy(creatng)/2))
     {
         stl_num = get_map_index_of_first_block_thing_colliding_with_at(creatng, endpos, mapblk_flags, plyr_bits);
         if (stl_num >= 0) {
