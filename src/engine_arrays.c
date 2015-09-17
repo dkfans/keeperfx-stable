@@ -1090,7 +1090,6 @@ TbBool load_ceiling_table(void)
     char numstr[8];
     TbBool do_next;
     long i,n;
-    //_DK_load_ceiling_table(); return true;
     // Prepare filename and open the file
     wait_for_cd_to_be_available();
     fname = prepare_file_path(FGrp_StdData,"ceiling.txt");

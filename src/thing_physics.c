@@ -179,7 +179,7 @@ void slide_thing_against_wall_at(struct Thing *thing, struct Coord3d *wallpos, u
         }
         break;
     default:
-        ERRORDBG(7,"Bad blocked flags");
+        ERRORDBG(7,"Bad blocked flags %d for %s index %d",(int)blocked_flags,thing_model_name(thing),(int)thing->index);
         break;
     }
 }

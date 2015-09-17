@@ -63,6 +63,12 @@ struct PlayerInfo;
 
 typedef unsigned char QKind;
 
+struct XYZ { // sizeof = 12
+    long x;
+    long y;
+    long z;
+};
+
 struct BasicQ { // sizeof = 5
   struct BasicQ *next;
   QKind kind;
@@ -203,22 +209,16 @@ struct RotoSpr {
     unsigned char field_19[3];
 };
 
-struct BasicUnk09 {
+struct BasicUnk09 { // sizeof = 104
     struct BasicQ b;
     unsigned char subtype;
     unsigned short block;
     struct PolyPoint p1;
     struct PolyPoint p2;
     struct PolyPoint p3;
-    long field_44;
-    long field_48;
-    long field_4C;
-    long field_50;
-    long field_54;
-    long field_58;
-    long field_5C;
-    long field_60;
-    long field_64;
+    struct XYZ c1;
+    struct XYZ c2;
+    struct XYZ c3;
 };
 
 struct BasicUnk10 {

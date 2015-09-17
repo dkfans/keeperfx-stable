@@ -91,8 +91,8 @@ struct KeeperSprite { // sizeof = 16
   unsigned char FrameOffsW;
   unsigned char FrameOffsH;
 #endif
-  short field_C;
-  short field_E;
+  short HotspotShiftW; /** Shift from the center of the sprite to left of the sprite, negative W pixels count.*/
+  short HotspotShiftH; /** Shift from the center of the sprite to top of the sprite, negative H pixels count.*/
 };
 
 /******************************************************************************/

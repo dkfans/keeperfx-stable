@@ -40,12 +40,6 @@ struct M33;
 typedef void (*RotPers_Func)(struct EngineCoord *epos, const struct M33 *matx);
 typedef void (*Perspect_Func)(struct XYZ *cor, struct PolyPoint *ppt);
 
-struct XYZ { // sizeof = 12
-    long x;
-    long y;
-    long z;
-};
-
 /******************************************************************************/
 DLLIMPORT unsigned char _DK_lens_mode;
 #define lens_mode _DK_lens_mode

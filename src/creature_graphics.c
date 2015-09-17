@@ -20,6 +20,7 @@
 
 #include "globals.h"
 #include "bflib_basics.h"
+#include "bflib_math.h"
 
 #include "thing_creature.h"
 #include "config_creature.h"
@@ -232,18 +233,18 @@ long get_lifespan_of_animation(long ani, long frameskip)
     return (keepersprite_frames(ani) << 8) / frameskip;
 }
 
-void get_keepsprite_unscaled_dimensions(long kspr_frame, long a2, long a3, short *orig_w, short *orig_h, short *unsc_w, short *unsc_h)
+void get_keepsprite_unscaled_dimensions(long kspr_frame, long angle, long a3, short *orig_w, short *orig_h, short *unsc_w, short *unsc_h)
 {
     struct KeeperSprite *kspr;
-    TbBool val_in_range;
+    TbBool needs_xflip;
     unsigned long i;
     i = creature_list[kspr_frame];
     kspr = &creature_table[i];
-    if ( ((a2 & 0x7FF) <= 1151) || ((a2 & 0x7FF) >= 1919) )
-        val_in_range = 0;
+    if ( ((angle & LbFPMath_AngleMask) < LbFPMath_PI + LbFPMath_PI/8) || ((angle & LbFPMath_AngleMask) > 2*LbFPMath_PI - LbFPMath_PI/8) )
+        needs_xflip = 0;
     else
-        val_in_range = 1;
-    if ( val_in_range )
+        needs_xflip = 1;
+    if ( needs_xflip )
       lbDisplay.DrawFlags |= Lb_SPRITE_FLIP_HORIZ;
     else
       lbDisplay.DrawFlags &= ~Lb_SPRITE_FLIP_HORIZ;
@@ -252,7 +253,7 @@ void get_keepsprite_unscaled_dimensions(long kspr_frame, long a2, long a3, short
         kspr += a3;
         *orig_w = kspr->FrameWidth;
         *orig_h = kspr->FrameHeight;
-        if ( val_in_range )
+        if ( needs_xflip )
         {
           *unsc_w = *orig_w - (long)kspr->SWidth - (long)kspr->FrameOffsW;
           *unsc_h = kspr->FrameOffsH;
@@ -265,10 +266,10 @@ void get_keepsprite_unscaled_dimensions(long kspr_frame, long a2, long a3, short
     } else
     if (kspr->Rotable == 2)
     {
-        kspr += a3 + abs(4 - (((a2 + 128) & 0x7FF) >> 8)) * kspr->FramesCount;
+        kspr += a3 + abs(4 - (((angle + LbFPMath_PI/8) & LbFPMath_AngleMask) >> 8)) * kspr->FramesCount;
         *orig_w = kspr->SWidth;
         *orig_h = kspr->SHeight;
-        if ( val_in_range )
+        if ( needs_xflip )
         {
           *unsc_w = (long)kspr->FrameWidth - (long)kspr->FrameOffsW - *orig_w;
           *unsc_h = kspr->FrameOffsH;
@@ -279,8 +280,8 @@ void get_keepsprite_unscaled_dimensions(long kspr_frame, long a2, long a3, short
           *unsc_h = kspr->FrameOffsH;
         }
     }
-    *unsc_w += kspr->field_C;
-    *unsc_h += kspr->field_E;
+    *unsc_w += kspr->HotspotShiftW;
+    *unsc_h += kspr->HotspotShiftH;
 
 }
 
