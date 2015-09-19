@@ -774,8 +774,7 @@ long wander_point_initialise(struct Wander *wandr, PlayerNumber plyr_idx, unsign
     SlabCodedCoords slb_num;
     stl_num_list_count = 0;
     stl_num_list = (SubtlCodedCoords *)scratch;
-    slb_num = 0;
-    while (1)
+    for (slb_num=0; slb_num < map_tiles_x*map_tiles_y; slb_num++)
     {
         MapSlabCoord slb_x,slb_y;
         SubtlCodedCoords stl_num;
@@ -789,11 +788,8 @@ long wander_point_initialise(struct Wander *wandr, PlayerNumber plyr_idx, unsign
             stl_num_list[stl_num_list_count] = stl_num;
             stl_num_list_count++;
         }
-        slb_num++;
-        if (slb_num >= map_tiles_x*map_tiles_y) {
-            break;
-        }
     }
+    SYNCDBG(6,"Got %d wander points for player %d slot %d",(int)stl_num_list_count,(int)plyr_idx,(int)wandr_slot);
     // Check if we have found anything
     if (stl_num_list_count <= 0)
         return 1;
@@ -849,6 +845,7 @@ long wander_point_update(struct Wander *wandr)
 
 void post_init_player(struct PlayerInfo *player)
 {
+    SYNCDBG(16,"Init player %d for game kind %d",(int)player->id_number,(int)game.game_kind);
     switch (game.game_kind)
     {
     case GKind_Unknown3:

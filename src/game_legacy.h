@@ -109,6 +109,36 @@ struct PerExpLevelValues { // sizeof = 10
   unsigned char value[10];
 };
 
+/**
+ * A struct for storing variables related to local player.
+ * These variables can only be used for creating packets;
+ * using them for executing packet commands will lead to desync.
+ */
+struct MyPlayerInfo {
+    /** The MenuID of currently active panel menu, or 0 if none. */
+    char active_panel_mnu_idx;
+    char comp_player_aggressive;
+    char comp_player_defensive;
+    char comp_player_construct;
+    char comp_player_creatrsonly;
+    /** Imprisonment tendency variable. Used for GUI only; the real tendency is a flag inside Dungeon. */
+    char creatures_tend_imprison;
+    /** Flee tendency variable. Used for GUI only; the real tendency is a flag inside Dungeon. */
+    char creatures_tend_flee;
+    short hand_over_subtile_x;
+    short hand_over_subtile_y;
+    int chosen_room_kind;
+    int chosen_room_spridx;
+    int chosen_room_tooltip;
+    int chosen_spell_type;
+    int chosen_spell_spridx;
+    int chosen_spell_tooltip;
+    int manufactr_element;
+    int manufactr_spridx;
+    int manufactr_tooltip;
+};
+
+
 #define SIZEOF_Game 1382437
 
 // only one such struct exists at .data:005F0310
@@ -335,7 +365,7 @@ char field_1512E6[1037];
     long flash_button_index; /**< GUI Button Designation ID of a button which is supposed to flash, as part of tutorial. */
     long flash_button_gameturns; // signed
 long field_1516FB;
-    char loaded_swipe_idx;
+    char loaded_swipe_idx; //TODO [structs] When possible, add it to MyPlayerInfo
     long boulder_reduce_health_wall;
     long boulder_reduce_health_slap;
     long boulder_reduce_health_room;
@@ -345,26 +375,7 @@ long field_1516FB;
     long bonus_time;
     struct CreatureStorage intralvl_transfered_creature; //TODO [structs] When possible, add it to IntralevelData struct
     struct Armageddon armageddon;
-    char active_panel_mnu_idx; /**< The MenuID of currently active panel menu, or 0 if none. */
-    char comp_player_aggressive;
-    char comp_player_defensive;
-    char comp_player_construct;
-    char comp_player_creatrsonly;
-    /** Imprisonment tendency variable. Used for GUI only; the real tendency is a flag inside Dungeon. */
-    char creatures_tend_imprison;
-    /** Flee tendency variable. Used for GUI only; the real tendency is a flag inside Dungeon. */
-    char creatures_tend_flee;
-    short hand_over_subtile_x;
-    short hand_over_subtile_y;
-    int chosen_room_kind;
-    int chosen_room_spridx;
-    int chosen_room_tooltip;
-    int chosen_spell_type;
-    int chosen_spell_spridx;
-    int chosen_spell_tooltip;
-    int manufactr_element;
-    int manufactr_spridx;
-    int manufactr_tooltip;
+    struct MyPlayerInfo my;
 };
 
 #pragma pack()

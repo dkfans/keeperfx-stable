@@ -52,6 +52,14 @@ extern "C" {
 #define COMPUTER_DIG_ROOM_TIMEOUT 7500
 #define COMPUTER_TOOL_DIG_LIMIT 356
 
+enum ComputerPlayerTypes {
+    ComPlyr_None = 0,
+    ComPlyr_Aggressive,
+    ComPlyr_Defensive,
+    ComPlyr_Construct,
+    ComPlyr_CreatrsOnly,
+};
+
 enum ComputerTaskTypes {
     CTT_None = 0,
     CTT_DigRoomPassage,

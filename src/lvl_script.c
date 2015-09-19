@@ -40,6 +40,7 @@
 #include "player_instances.h"
 #include "player_data.h"
 #include "player_utils.h"
+#include "player_local.h"
 #include "thing_factory.h"
 #include "thing_physics.h"
 #include "thing_effects.h"
@@ -4085,9 +4086,7 @@ void script_process_value(unsigned long var_index, unsigned long plr_range_id, l
           player = get_player(i);
           set_creature_tendencies(player, val2, val3);
           if (is_my_player(player)) {
-              dungeon = get_players_dungeon(player);
-              game.creatures_tend_imprison = ((dungeon->creature_tendencies & 0x01) != 0);
-              game.creatures_tend_flee = ((dungeon->creature_tendencies & 0x02) != 0);
+              update_chosen_tendencies();
           }
       }
       break;

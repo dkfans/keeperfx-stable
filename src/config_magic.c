@@ -33,6 +33,7 @@
 #include "thing_effects.h"
 #include "power_process.h"
 #include "player_states.h"
+#include "player_local.h"
 #include "game_legacy.h"
 
 #include "keeperfx.hpp"
@@ -1567,7 +1568,7 @@ void remove_power_from_player(PowerKind pwkind, PlayerNumber plyr_idx)
             turn_off_power_call_to_arms(plyr_idx);
         break;
     }
-    if (game.chosen_spell_type == pwkind)
+    if (is_my_player_number(plyr_idx) && (game.my.chosen_spell_type == pwkind))
     {
         set_chosen_power_none();
     }

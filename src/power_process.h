@@ -40,9 +40,6 @@ struct Armageddon { // sizeof = 14
 
 #pragma pack()
 /******************************************************************************/
-void set_chosen_power(PowerKind pwkind, TextStringId sptooltip);
-void set_chosen_power_none(void);
-
 void process_disease(struct Thing *thing);
 
 TbBool player_uses_power_armageddon(PlayerNumber plyr_idx);

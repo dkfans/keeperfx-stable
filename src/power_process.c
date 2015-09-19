@@ -63,33 +63,6 @@ DLLIMPORT void _DK_remove_explored_flags_for_power_sight(struct PlayerInfo *play
 }
 #endif
 /******************************************************************************/
-/**
- * Sets keeper power selected by local human player.
- *
- * @param pwkind Power to select.
- * @param sptooltip Tooltip string index.
- * @note Was set_chosen_spell()
- */
-void set_chosen_power(PowerKind pwkind, TextStringId sptooltip)
-{
-    const struct PowerConfigStats *powerst;
-    powerst = get_power_model_stats(pwkind);
-    if (power_model_stats_invalid(powerst))
-      pwkind = 0;
-    SYNCDBG(6,"Setting to %ld",pwkind);
-    game.chosen_spell_type = pwkind;
-    game.chosen_spell_spridx = powerst->bigsym_sprite_idx;
-    game.chosen_spell_tooltip = sptooltip;
-}
-
-void set_chosen_power_none(void)
-{
-    SYNCDBG(6,"Setting to %d",0);
-    game.chosen_spell_type = 0;
-    game.chosen_spell_spridx = 0;
-    game.chosen_spell_tooltip = 0;
-}
-
 unsigned char general_expand_check(void)
 {
     struct PlayerInfo *player;

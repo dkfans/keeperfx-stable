@@ -36,29 +36,8 @@
 extern "C" {
 #endif
 /******************************************************************************/
-struct Boing {
-  unsigned char field_0;
-  unsigned char comp_player_aggressive;
-  unsigned char comp_player_defensive;
-  unsigned char comp_player_construct;
-  unsigned char comp_player_creatrsonly;
-  unsigned char creatures_tend_imprison;
-  unsigned char creatures_tend_flee;
-  unsigned short hand_over_subtile_x;
-  unsigned short hand_over_subtile_y;
-  unsigned long chosen_room_kind;
-  unsigned long chosen_room_spridx;
-  unsigned long chosen_room_tooltip;
-  unsigned long chosen_spell_type;
-  unsigned long chosen_spell_spridx;
-  unsigned long chosen_spell_tooltip;
-  unsigned long manufactr_element;
-  unsigned long manufactr_spridx;
-  unsigned long manufactr_tooltip;
-};
-/******************************************************************************/
 /** Structure used for storing 'localised parameters' when resyncing net game. */
-struct Boing boing;
+struct MyPlayerInfo boing;
 /******************************************************************************/
 long get_resync_sender(void)
 {
@@ -102,46 +81,12 @@ TbBool receive_resync_game(void)
 
 void store_localised_game_structure(void)
 {
-    boing.field_0 = game.active_panel_mnu_idx;
-    boing.comp_player_aggressive = game.comp_player_aggressive;
-    boing.comp_player_defensive = game.comp_player_defensive;
-    boing.comp_player_construct = game.comp_player_construct;
-    boing.comp_player_creatrsonly = game.comp_player_creatrsonly;
-    boing.creatures_tend_imprison = game.creatures_tend_imprison;
-    boing.creatures_tend_flee = game.creatures_tend_flee;
-    boing.hand_over_subtile_x = game.hand_over_subtile_x;
-    boing.hand_over_subtile_y = game.hand_over_subtile_y;
-    boing.chosen_room_kind = game.chosen_room_kind;
-    boing.chosen_room_spridx = game.chosen_room_spridx;
-    boing.chosen_room_tooltip = game.chosen_room_tooltip;
-    boing.chosen_spell_type = game.chosen_spell_type;
-    boing.chosen_spell_spridx = game.chosen_spell_spridx;
-    boing.chosen_spell_tooltip = game.chosen_spell_tooltip;
-    boing.manufactr_element = game.manufactr_element;
-    boing.manufactr_spridx = game.manufactr_spridx;
-    boing.manufactr_tooltip = game.manufactr_tooltip;
+    boing = game.my;
 }
 
 void recall_localised_game_structure(void)
 {
-    game.active_panel_mnu_idx = boing.field_0;
-    game.comp_player_aggressive = boing.comp_player_aggressive;
-    game.comp_player_defensive = boing.comp_player_defensive;
-    game.comp_player_construct = boing.comp_player_construct;
-    game.comp_player_creatrsonly = boing.comp_player_creatrsonly;
-    game.creatures_tend_imprison = boing.creatures_tend_imprison;
-    game.creatures_tend_flee = boing.creatures_tend_flee;
-    game.hand_over_subtile_x = boing.hand_over_subtile_x;
-    game.hand_over_subtile_y = boing.hand_over_subtile_y;
-    game.chosen_room_kind = boing.chosen_room_kind;
-    game.chosen_room_spridx = boing.chosen_room_spridx;
-    game.chosen_room_tooltip = boing.chosen_room_tooltip;
-    game.chosen_spell_type = boing.chosen_spell_type;
-    game.chosen_spell_spridx = boing.chosen_spell_spridx;
-    game.chosen_spell_tooltip = boing.chosen_spell_tooltip;
-    game.manufactr_element = boing.manufactr_element;
-    game.manufactr_spridx = boing.manufactr_spridx;
-    game.manufactr_tooltip = boing.manufactr_tooltip;
+    game.my = boing;
 }
 
 void resync_game(void)

@@ -240,6 +240,7 @@ obj/player_data.o \
 obj/player_instances.o \
 obj/player_states.o \
 obj/player_utils.o \
+obj/player_local.o \
 obj/power_hand.o \
 obj/power_process.o \
 obj/power_specials.o \

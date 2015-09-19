@@ -76,6 +76,7 @@
 #include "player_instances.h"
 #include "player_utils.h"
 #include "player_states.h"
+#include "player_local.h"
 #include "gui_frontmenu.h"
 #include "gui_frontbtns.h"
 #include "gui_soundmsgs.h"
@@ -945,11 +946,7 @@ void activate_room_build_mode(RoomKind rkind, TextStringId tooltip_id)
     struct PlayerInfo *player;
     player = get_my_player();
     set_players_packet_action(player, PckA_SetPlyrState, PSt_BuildRoom, rkind, 0, 0);
-    struct RoomConfigStats *roomst;
-    roomst = &slab_conf.room_cfgstats[rkind];
-    game.chosen_room_kind = rkind;
-    game.chosen_room_spridx = roomst->bigsym_sprite_idx;
-    game.chosen_room_tooltip = tooltip_id;
+    set_chosen_room(rkind, tooltip_id);
 }
 
 long player_state_to_packet(long work_state, PowerKind pwkind, TbBool already_in)
@@ -1000,7 +997,7 @@ long player_state_to_packet(long work_state, PowerKind pwkind, TbBool already_in
 
 TbBool set_players_packet_change_spell(struct PlayerInfo *player,PowerKind pwkind)
 {
-    if (power_is_instinctive(game.chosen_spell_type) && (game.chosen_spell_type != 0))
+    if (power_is_instinctive(game.my.chosen_spell_type) && (game.my.chosen_spell_type != 0))
         return false;
     const struct PowerConfigStats *powerst;
     powerst = get_power_model_stats(pwkind);
@@ -1076,7 +1073,7 @@ void choose_spell(PowerKind pwkind, TextStringId tooltip_id)
     // Disable previous spell
     if (!set_players_packet_change_spell(player, pwkind)) {
         WARNLOG("Inconsistency when switching spell %d to %d",
-            (int)game.chosen_spell_type, (int)pwkind);
+            (int)game.my.chosen_spell_type, (int)pwkind);
     }
 
     set_chosen_power(pwkind, tooltip_id);
@@ -3240,25 +3237,25 @@ void gui_set_autopilot(struct GuiButton *gbtn)
   struct PlayerInfo *player;
   player = get_my_player();
   int ntype;
-  if (game.comp_player_aggressive)
+  if (game.my.comp_player_aggressive)
   {
-    ntype = 1;
+      ntype = ComPlyr_Aggressive;
   } else
-  if (game.comp_player_defensive)
+  if (game.my.comp_player_defensive)
   {
-    ntype = 2;
+      ntype = ComPlyr_Defensive;
   } else
-  if (game.comp_player_construct)
+  if (game.my.comp_player_construct)
   {
-    ntype = 3;
+      ntype = ComPlyr_Construct;
   } else
-  if (game.comp_player_creatrsonly)
+  if (game.my.comp_player_creatrsonly)
   {
-    ntype = 4;
+      ntype = ComPlyr_CreatrsOnly;
   } else
   {
-    ERRORLOG("Illegal Autopilot type, resetting to default");
-    ntype = 1;
+      ERRORLOG("Illegal Autopilot type, resetting to default");
+      ntype = ComPlyr_Aggressive;
   }
   set_players_packet_action(player, PckA_SetComputerKind, ntype, 0, 0, 0);
 }

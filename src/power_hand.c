@@ -507,8 +507,8 @@ void draw_power_hand(void)
       && mouse_is_over_pannel_map(player->minimap_pos_x, player->minimap_pos_y))
     {
         MapSubtlCoord stl_x,stl_y;
-        stl_x = game.hand_over_subtile_x;
-        stl_y = game.hand_over_subtile_y;
+        stl_x = game.my.hand_over_subtile_x;
+        stl_y = game.my.hand_over_subtile_y;
         SYNCDBG(7,"Drawing over pannel map");
         room = subtile_room_get(stl_x,stl_y);
         if ((!room_is_invalid(room)) && (subtile_revealed(stl_x, stl_y, player->id_number)))

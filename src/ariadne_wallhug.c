@@ -771,7 +771,7 @@ long get_map_index_of_first_block_thing_colliding_with_travelling_to(struct Thin
         }
 
         creatng->mappos = orig_pos;
-        return 0;
+        return -1;
     }
     if (cross_x_boundary_first(&mod_pos, endpos))
     {
@@ -813,7 +813,7 @@ long get_map_index_of_first_block_thing_colliding_with_travelling_to(struct Thin
         }
 
         creatng->mappos = orig_pos;
-        return 0;
+        return -1;
     }
     if (cross_y_boundary_first(&mod_pos, endpos))
     {
@@ -855,7 +855,7 @@ long get_map_index_of_first_block_thing_colliding_with_travelling_to(struct Thin
       }
 
       creatng->mappos = orig_pos;
-      return 0;
+      return -1;
     }
 
     {
@@ -866,7 +866,7 @@ long get_map_index_of_first_block_thing_colliding_with_travelling_to(struct Thin
         }
 
         creatng->mappos = orig_pos;
-        return 0;
+        return -1;
     }
 }
 
@@ -896,6 +896,11 @@ TbBool navigation_push_towards_target(struct Navigation *navi, struct Thing *cre
     {
         SubtlCodedCoords stl_num;
         stl_num = get_map_index_of_first_block_thing_colliding_with_travelling_to(creatng, &creatng->mappos, &navi->pos_next, SlbAtFlg_Filled|SlbAtFlg_Digable, 0);
+        if (stl_num < 0) {
+            ERRORLOG("Could not find collided with block while moving to (%d,%d)",(int)coord_subtile(navi->pos_next.x.val),(int)coord_subtile(navi->pos_next.y.val));
+            initialise_wallhugging_path_from_to(navi, &creatng->mappos, pos);
+            return false;
+        }
         navi->stl_15 = stl_num;
         MapSubtlCoord stl_x, stl_y;
         stl_x = slab_subtile_center(subtile_slab_fast(stl_num_decode_x(stl_num)));
@@ -958,6 +963,11 @@ long get_next_position_and_angle_required_to_tunnel_creature_to(struct Thing *cr
             {
                 struct SlabMap *slb;
                 stl_num = get_map_index_of_first_block_thing_colliding_with_travelling_to(creatng, &creatng->mappos, &navi->pos_next, SlbAtFlg_Filled|SlbAtFlg_Digable, 0);
+                if (stl_num < 0) {
+                    ERRORLOG("Could not find collided with block while moving to (%d,%d)",(int)coord_subtile(navi->pos_next.x.val),(int)coord_subtile(navi->pos_next.y.val));
+                    initialise_wallhugging_path_from_to(navi, &creatng->mappos, pos);
+                    return 1;
+                }
                 slb = get_slabmap_for_subtile(stl_num_decode_x(stl_num), stl_num_decode_y(stl_num));
                 unsigned short ownflag;
                 ownflag = 0;
@@ -991,6 +1001,11 @@ long get_next_position_and_angle_required_to_tunnel_creature_to(struct Thing *cr
             if (cannot_move == 1)
             {
                 stl_num = get_map_index_of_first_block_thing_colliding_with_travelling_to(creatng, &creatng->mappos, &navi->pos_next, SlbAtFlg_Filled|SlbAtFlg_Digable, 0);
+                if (stl_num < 0) {
+                    ERRORLOG("Could not find collided with block while moving to (%d,%d)",(int)coord_subtile(navi->pos_next.x.val),(int)coord_subtile(navi->pos_next.y.val));
+                    initialise_wallhugging_path_from_to(navi, &creatng->mappos, pos);
+                    return 1;
+                }
                 navi->stl_15 = stl_num;
                 nav_radius = thing_nav_sizexy(creatng) / 2;
                 MapSubtlCoord stl_x, stl_y;
@@ -1117,6 +1132,11 @@ long get_next_position_and_angle_required_to_tunnel_creature_to(struct Thing *cr
         if (cannot_move == 1)
         {
             stl_num = get_map_index_of_first_block_thing_colliding_with_travelling_to(creatng, &creatng->mappos, &navi->pos_next, SlbAtFlg_Filled|SlbAtFlg_Digable, 0);
+            if (stl_num < 0) {
+                ERRORLOG("Could not find collided with block while moving to (%d,%d)",(int)coord_subtile(navi->pos_next.x.val),(int)coord_subtile(navi->pos_next.y.val));
+                initialise_wallhugging_path_from_to(navi, &creatng->mappos, pos);
+                return 1;
+            }
             navi->stl_15 = stl_num;
             nav_radius = thing_nav_sizexy(creatng) / 2;
             stl_x = slab_subtile_center(subtile_slab_fast(stl_num_decode_x(stl_num)));

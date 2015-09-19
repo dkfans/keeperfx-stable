@@ -50,6 +50,7 @@
 #include "player_data.h"
 #include "player_states.h"
 #include "player_utils.h"
+#include "player_local.h"
 #include "thing_physics.h"
 #include "thing_doors.h"
 #include "thing_effects.h"
@@ -1867,9 +1868,7 @@ TbBool process_players_global_packet_action(PlayerNumber plyr_idx)
   case PckA_ToggleTendency:
       toggle_creature_tendencies(player, pckt->actn_par1);
       if (is_my_player(player)) {
-          dungeon = get_players_dungeon(player);
-          game.creatures_tend_imprison = ((dungeon->creature_tendencies & 0x01) != 0);
-          game.creatures_tend_flee = ((dungeon->creature_tendencies & 0x02) != 0);
+          update_chosen_tendencies();
       }
       return 0;
   case PckA_CheatEnter:

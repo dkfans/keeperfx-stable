@@ -73,10 +73,10 @@ struct GuiButtonInit pause_buttons[] = {
 
 struct GuiButtonInit autopilot_menu_buttons[] = {
   {LbBtnT_NormalBtn,  BID_DEFAULT, 0, 0, NULL,               NULL,        NULL,               0, 999,  10, 999,  10,155, 32, gui_area_text,                     1, GUIStr_MnuComputer,      0,       {0},            0, NULL },
-  {LbBtnT_RadioBtn,   BID_DEFAULT, 0, 0, gui_set_autopilot,  NULL,        NULL,               0,  12,  36,  12,  36, 46, 64, gui_area_new_normal_button,      503, GUIStr_AggressiveAssistDesc,0,{(long)&game.comp_player_aggressive}, 0, NULL },
-  {LbBtnT_RadioBtn,   BID_DEFAULT, 0, 0, gui_set_autopilot,  NULL,        NULL,               0,  60,  36,  60,  36, 46, 64, gui_area_new_normal_button,      505, GUIStr_DefensiveAssistDesc,0,{(long)&game.comp_player_defensive}, 0, NULL },
-  {LbBtnT_RadioBtn,   BID_DEFAULT, 0, 0, gui_set_autopilot,  NULL,        NULL,               0, 108,  36, 108,  36, 46, 64, gui_area_new_normal_button,      507, GUIStr_ConstructionAssistDesc,0,{(long)&game.comp_player_construct}, 0, NULL },
-  {LbBtnT_RadioBtn,   BID_DEFAULT, 0, 0, gui_set_autopilot,  NULL,        NULL,               0, 156,  36, 156,  36, 46, 64, gui_area_new_normal_button,      509, GUIStr_MoveOnlyAssistDesc,0,{(long)&game.comp_player_creatrsonly}, 0, NULL },
+  {LbBtnT_RadioBtn,   BID_DEFAULT, 0, 0, gui_set_autopilot,  NULL,        NULL,               0,  12,  36,  12,  36, 46, 64, gui_area_new_normal_button,      503, GUIStr_AggressiveAssistDesc,0,{(long)&game.my.comp_player_aggressive}, 0, NULL },
+  {LbBtnT_RadioBtn,   BID_DEFAULT, 0, 0, gui_set_autopilot,  NULL,        NULL,               0,  60,  36,  60,  36, 46, 64, gui_area_new_normal_button,      505, GUIStr_DefensiveAssistDesc,0,{(long)&game.my.comp_player_defensive}, 0, NULL },
+  {LbBtnT_RadioBtn,   BID_DEFAULT, 0, 0, gui_set_autopilot,  NULL,        NULL,               0, 108,  36, 108,  36, 46, 64, gui_area_new_normal_button,      507, GUIStr_ConstructionAssistDesc,0,{(long)&game.my.comp_player_construct}, 0, NULL },
+  {LbBtnT_RadioBtn,   BID_DEFAULT, 0, 0, gui_set_autopilot,  NULL,        NULL,               0, 156,  36, 156,  36, 46, 64, gui_area_new_normal_button,      509, GUIStr_MoveOnlyAssistDesc,0,{(long)&game.my.comp_player_creatrsonly}, 0, NULL },
   {              -1,  BID_DEFAULT, 0, 0, NULL,               NULL,        NULL,               0,   0,   0,   0,   0,  0,  0, NULL,                              0,   0,                     0,       {0},            0, NULL },
 };
 

@@ -62,6 +62,7 @@
 #include "player_utils.h"
 #include "player_states.h"
 #include "player_computer.h"
+#include "player_local.h"
 #include "game_heap.h"
 #include "game_saves.h"
 #include "engine_render.h"
@@ -1013,12 +1014,8 @@ void init_keeper(void)
     poly_pool_end = &poly_pool[sizeof(poly_pool)-128];
     lbDisplay.GlassMap = pixmap.ghost;
     lbDisplay.DrawColour = colours[15][15][15];
-    game.comp_player_aggressive = 0;
-    game.comp_player_defensive = 1;
-    game.comp_player_construct = 0;
-    game.comp_player_creatrsonly = 0;
-    game.creatures_tend_imprison = 0;
-    game.creatures_tend_flee = 0;
+    set_autopilot_default();
+    set_chosen_tendencies_none();
     game.operation_flags |= GOF_ShowPanel;
     game.numfield_D |= (GNFldD_Unkn20 | GNFldD_Unkn40);
     init_censorship();
@@ -1467,10 +1464,10 @@ void reset_gui_based_on_player_mode(void)
     } else
     {
         turn_on_menu(GMnu_MAIN);
-        if (game.active_panel_mnu_idx > 0)
+        if (game.my.active_panel_mnu_idx > 0)
         {
-            initialise_tab_tags(game.active_panel_mnu_idx);
-            turn_on_menu(game.active_panel_mnu_idx);
+            initialise_tab_tags(game.my.active_panel_mnu_idx);
+            turn_on_menu(game.my.active_panel_mnu_idx);
             MenuNumber mnuidx;
             mnuidx = menu_id_to_number(GMnu_MAIN);
             if (mnuidx != MENU_INVALID_ID) {
@@ -4045,16 +4042,11 @@ void init_level(void)
     game.armageddon_cast_turn = 0;
     game.armageddon_field_15035A = 0;
     init_messages();
-    game.creatures_tend_imprison = 0;
-    game.creatures_tend_flee = 0;
+    set_chosen_tendencies_none();
     game.field_15033A = 0;
-    game.chosen_room_kind = 0;
-    game.chosen_room_spridx = 0;
-    game.chosen_room_tooltip = 0;
+    set_chosen_room_none();
     set_chosen_power_none();
-    game.manufactr_element = 0;
-    game.manufactr_spridx = 0;
-    game.manufactr_tooltip = 0;
+    set_chosen_manufacture_none();
 }
 
 void post_init_level(void)
@@ -4145,7 +4137,7 @@ void faststartup_saved_packet_game(void)
 
 void startup_network_game(TbBool local)
 {
-    SYNCDBG(0,"Starting up network game");
+    SYNCDBG(0,"Starting up %s game",local?"local":"network");
     //_DK_startup_network_game(); return;
     unsigned int flgmem;
     struct PlayerInfo *player;

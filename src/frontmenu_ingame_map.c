@@ -33,6 +33,7 @@
 #include "frontend.h"
 #include "front_input.h"
 #include "player_data.h"
+#include "player_local.h"
 #include "game_legacy.h"
 #include "creature_states.h"
 #include "creature_states_hero.h"
@@ -706,8 +707,7 @@ short do_left_map_drag(long begin_x, long begin_y, long curr_x, long curr_y, lon
   }
   do_map_rotate_stuff(x, y, &curr_x, &curr_y, zoom);
   player = get_my_player();
-  game.hand_over_subtile_x = curr_x;
-  game.hand_over_subtile_y = curr_y;
+  set_hand_over_subtile(curr_x, curr_y);
   if (subtile_has_slab(curr_x, curr_y))
   {
     set_players_packet_action(player, PckA_BookmarkLoad, curr_x, curr_y, 0, 0);
@@ -731,8 +731,7 @@ short do_left_map_click(long begin_x, long begin_y, long curr_x, long curr_y, lo
       } else
       {
         do_map_rotate_stuff(curr_x - begin_x - MapDiagonalLength/2, curr_y - begin_y - MapDiagonalLength/2, &curr_x, &curr_y, zoom);
-        game.hand_over_subtile_x = curr_x;
-        game.hand_over_subtile_y = curr_y;
+        set_hand_over_subtile(curr_x, curr_y);
         if (subtile_has_slab(curr_x, curr_y))
         {
           result = 1;
@@ -753,8 +752,7 @@ short do_right_map_click(long start_x, long start_y, long curr_mx, long curr_my,
     struct PlayerInfo *player;
     struct Thing *thing;
     do_map_rotate_stuff(curr_mx - start_x - MapDiagonalLength/2, curr_my - start_y - MapDiagonalLength/2, &x, &y, zoom);
-    game.hand_over_subtile_x = x;
-    game.hand_over_subtile_y = y;
+    set_hand_over_subtile(x, y);
     player = get_my_player();
     thing = get_first_thing_in_power_hand(player);
     if (!thing_is_invalid(thing))

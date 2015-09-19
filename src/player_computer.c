@@ -141,7 +141,7 @@ GoldAmount get_computer_money_less_cost(const struct Computer2 *comp)
 
 long set_autopilot_type(PlayerNumber plyr_idx, long aptype)
 {
-    setup_a_computer_player(plyr_idx, computer_assist_types[aptype-1]);
+    setup_a_computer_player(plyr_idx, computer_assist_types[aptype-ComPlyr_Aggressive]);
     return 1;
 }
 

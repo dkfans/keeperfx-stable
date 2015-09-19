@@ -3879,7 +3879,7 @@ TbBool wander_point_get_random_pos(const struct Wander *wandr, const struct Coor
 {
   long irnd;
   MapSubtlCoord selected_dist;
-  SYNCDBG(12,"Selecting out of %d points",(int)wandr->points_count);
+  SYNCDBG(2,"Selecting out of %d points",(int)wandr->points_count);
   selected_dist = 0;
   if (wandr->points_count > 0)
   {
