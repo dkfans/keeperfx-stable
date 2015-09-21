@@ -443,8 +443,8 @@ int draw_overhead_creatures(const struct TbRect *map_area, long block_size, Play
                     LbDrawPixel(pos_x, pos_y, col1);
                 }
                 n++;
-            }
-            // Special tunneler code
+            } else
+            // Hero tunnelers may be visible on unrevealed terrain too (if on revealed, then they're already drawn)
             if (is_hero_tunnelling_to_attack(thing))
             {
                 struct CreatureControl *cctrl;

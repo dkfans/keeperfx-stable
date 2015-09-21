@@ -287,6 +287,81 @@ long slab_wall_hug_route(struct Thing *thing, struct Coord3d *pos, long max_val)
     return 0;
 }
 
+long get_starting_angle_and_side_of_hug_sub1(struct Thing *creatng, struct Coord3d *pos, long mapblk_flags, unsigned char plyr_bits)
+{
+    unsigned short block_flags;
+    MapCoordDelta nav_radius;
+    MapCoordDelta cur_cord;
+    struct Coord3d posa;
+
+    block_flags = get_hugging_blocked_flags(creatng, pos, mapblk_flags, plyr_bits);
+    nav_radius = thing_nav_sizexy(creatng) / 2;
+    cur_cord = creatng->mappos.x.val;
+    posa.x.val = creatng->mappos.x.val;
+    posa.y.val = creatng->mappos.y.val;
+    if (block_flags & SlbBloF_WalledX)
+    {
+        if (pos->x.val >= cur_cord)
+        {
+          posa.x.val = cur_cord + nav_radius;
+          posa.x.stl.pos = COORD_PER_STL-1;
+          posa.x.val -= nav_radius;
+        } else
+        {
+          posa.x.val = cur_cord - nav_radius;
+          posa.x.stl.pos = 1;
+          posa.x.val += nav_radius;
+        }
+        posa.z.val = get_thing_height_at(creatng, &posa);
+    }
+    if (block_flags & SlbBloF_WalledY)
+    {
+        cur_cord = creatng->mappos.y.val;
+        if (pos->y.val >= cur_cord)
+        {
+          posa.y.val = cur_cord + nav_radius;
+          posa.y.stl.pos = COORD_PER_STL-1;
+          posa.y.val -= nav_radius;
+        } else
+        {
+          posa.y.val = cur_cord - nav_radius;
+          posa.y.stl.pos = 1;
+          posa.y.val += nav_radius;
+        }
+        posa.z.val = get_thing_height_at(creatng, &posa);
+    }
+    if (block_flags & SlbBloF_WalledZ)
+    {
+        cur_cord = creatng->mappos.x.val;
+        if (pos->x.val >= cur_cord)
+        {
+          posa.x.val = cur_cord + nav_radius;
+          posa.x.stl.pos = COORD_PER_STL-1;
+          posa.x.val -= nav_radius;
+        } else
+        {
+          posa.x.val = cur_cord - nav_radius;
+          posa.x.stl.pos = 1;
+          posa.x.val += nav_radius;
+        }
+        cur_cord = creatng->mappos.y.val;
+        if (pos->y.val >= cur_cord)
+        {
+          posa.y.val = cur_cord + nav_radius;
+          posa.y.stl.pos = COORD_PER_STL-1;
+          posa.y.val -= nav_radius;
+        } else
+        {
+          posa.y.val = cur_cord - nav_radius;
+          posa.y.stl.pos = 1;
+          posa.y.val += nav_radius;
+        }
+        posa.z.val = get_thing_height_at(creatng, &posa);
+    }
+    *pos = posa;
+    return block_flags;
+}
+
 signed char get_starting_angle_and_side_of_hug(struct Thing *creatng, struct Coord3d *pos, long *a3, unsigned char *a4, long a5, unsigned char a6)
 {
     return _DK_get_starting_angle_and_side_of_hug(creatng, pos, a3, a4, a5, a6);
@@ -746,7 +821,7 @@ TbBool find_approach_position_to_subtile(const struct Coord3d *srcpos, MapSubtlC
 long get_map_index_of_first_block_thing_colliding_with_travelling_to(struct Thing *creatng, const struct Coord3d *startpos, const struct Coord3d *endpos, long mapblk_flags, unsigned char plyr_bits)
 {
     MapCoord tmp_cor;
-    long stl_num; // should be SubtlCodedCoords, but may need to be signed
+    long stl_num; // should be SubtlCodedCoords, but needs to be signed
     struct Coord3d tmp_pos;
     struct Coord3d mod_pos;
     struct Coord3d orig_pos;
@@ -933,7 +1008,7 @@ long get_next_position_and_angle_required_to_tunnel_creature_to(struct Thing *cr
     SYNCDBG(16,"Move %s index %d from (%d,%d) to (%d,%d) with nav state %d",thing_model_name(creatng),(int)creatng->index,(int)creatng->mappos.x.stl.num,(int)creatng->mappos.y.stl.num,(int)pos->x.stl.num,(int)pos->y.stl.num,(int)navi->navstate);
     //return _DK_get_next_position_and_angle_required_to_tunnel_creature_to(creatng, pos, plyr_bits);
     MapSubtlCoord stl_x, stl_y;
-    SubtlCodedCoords stl_num;
+    long stl_num; // should be SubtlCodedCoords, but needs to be signed
     MapCoordDelta dist_to_next;
     struct Coord3d tmpos;
     int nav_radius;

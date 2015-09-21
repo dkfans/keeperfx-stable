@@ -85,7 +85,7 @@ long get_next_gap_creature_can_fit_in_below_point(struct Thing *thing, struct Co
 long thing_covers_same_blocks_in_two_positions(struct Thing *thing, struct Coord3d *pos1, struct Coord3d *pos2);
 long get_thing_blocked_flags_at(struct Thing *thing, struct Coord3d *pos);
 
-long creature_move_direct_line(struct Thing *thing, struct Coord3d *nextpos, MoveSpeed speed);
+long creature_move_direct_line(struct Thing *thing, const struct Coord3d *nextpos, MoveSpeed speed);
 long creature_move_direct_line_backwards(struct Thing *thing, struct Coord3d *nextpos, MoveSpeed speed);
 
 /******************************************************************************/

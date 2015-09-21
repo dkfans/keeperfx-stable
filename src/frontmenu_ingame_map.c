@@ -428,8 +428,8 @@ int draw_overlay_creatures(struct PlayerInfo *player, long units_per_px, long zo
                     }
                     pannel_map_draw_pixel(mapos_x+basepos, mapos_y+basepos, col);
                 }
-            }
-            // Hero tunnelers may be visible even on unrevealed terrain
+            } else
+            // Hero tunnelers may be visible on unrevealed terrain too (if on revealed, then they're already drawn)
             if (is_hero_tunnelling_to_attack(thing))
             {
                 struct CreatureControl *cctrl;

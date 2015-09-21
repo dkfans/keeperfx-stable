@@ -1003,9 +1003,7 @@ short tunneller_doing_nothing(struct Thing *creatng)
     dungeon = get_dungeon(plyr_idx);
     if ((dungeon->num_active_creatrs > 0) || (dungeon->num_active_diggers > 0))
     {
-        struct Coord3d pos;
-        get_random_position_in_dungeon_for_creature(plyr_idx, CrWaS_WithinDungeon, creatng, &pos);
-        send_tunneller_to_point_in_dungeon(creatng, plyr_idx, &pos);
+        script_support_send_tunneller_to_dungeon(creatng, plyr_idx);
     } else
     {
         good_setup_wander_to_dungeon_heart(creatng, plyr_idx);
@@ -1017,10 +1015,11 @@ long creature_tunnel_to(struct Thing *creatng, struct Coord3d *pos, short speed)
 {
     struct CreatureControl *cctrl;
     cctrl = creature_control_get_from_thing(creatng);
-    SYNCDBG(6,"Move %s index %d from (%d,%d) to (%d,%d) with speed %d",thing_model_name(creatng),(int)creatng->index,(int)creatng->mappos.x.stl.num,(int)creatng->mappos.y.stl.num,(int)pos->x.stl.num,(int)pos->y.stl.num,(int)speed);
+    SYNCDBG(6,"Move %s index %d from (%d,%d) to (%d,%d) with speed %d",thing_model_name(creatng),(int)creatng->index,
+        (int)creatng->mappos.x.stl.num,(int)creatng->mappos.y.stl.num,(int)pos->x.stl.num,(int)pos->y.stl.num,(int)speed);
     long i;
     cctrl->navi.field_19[0] = 0;
-    if (get_2d_box_distance(&creatng->mappos, pos) <= 32)
+    if (get_2d_box_distance(&creatng->mappos, pos) <= 32) // We can accept wider than MOVE_DESTINATION_SPOT_RADIUS
     {
         // We've reached the destination
         creature_set_speed(creatng, 0);
@@ -1061,14 +1060,16 @@ long creature_tunnel_to(struct Thing *creatng, struct Coord3d *pos, short speed)
         creature_set_speed(creatng, 0);
         return 0;
     }
-    if (dist > 3*COORD_PER_STL)
-    {
-        ERRORLOG("Move %s index %d to (%d,%d) reset - wallhug distance %d too large",thing_model_name(creatng),(int)creatng->index,(int)pos->x.stl.num,(int)pos->y.stl.num,(int)dist);
+    long move_result;
+    move_result = creature_move_to(creatng, &cctrl->navi.pos_next, speed, cctrl->move_flags, 0);
+    // We could switch to move state; but without it we can easier react on being close to target but not exactly on it
+    // not to mention our moveto_pos is not a target move position but target dig position
+    if (move_result == -1) {
+        ERRORLOG("Move %s index %d to (%d,%d) reset - no route",thing_model_name(creatng),(int)creatng->index,(int)pos->x.stl.num,(int)pos->y.stl.num);
         clear_wallhugging_path(&cctrl->navi);
         creature_set_speed(creatng, speed);
         return 0;
     }
-    creature_move_direct_line(creatng, &cctrl->navi.pos_next, min(speed,dist));
     return 0;
 }
 
@@ -1123,12 +1124,14 @@ short tunnelling(struct Thing *creatng)
  */
 TbBool is_hero_tunnelling_to_attack(struct Thing *creatng)
 {
-    if (creatng->model != get_players_special_digger_model(game.hero_player_num))
+    if (creatng->model != get_players_special_digger_model(game.hero_player_num)) {
         return false;
+    }
     CrtrStateId crstat;
-    crstat = get_creature_state_besides_move(creatng);
-    if ((crstat != CrSt_Tunnelling) && (crstat != CrSt_TunnellerDoingNothing))
+    crstat = get_creature_state_besides_interruptions(creatng);
+    if ((crstat != CrSt_Tunnelling) && (crstat != CrSt_TunnellerDoingNothing)) {
         return false;
+    }
     return true;
 }
 /******************************************************************************/

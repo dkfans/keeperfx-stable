@@ -375,7 +375,7 @@ long creature_turn_to_face_angle(struct Thing *thing, long a2)
     return _DK_creature_turn_to_face_angle(thing, a2);
 }
 
-long creature_move_direct_line(struct Thing *thing, struct Coord3d *nextpos, MoveSpeed speed)
+long creature_move_direct_line(struct Thing *thing, const struct Coord3d *nextpos, MoveSpeed speed)
 {
     if (creature_turn_to_face(thing, nextpos) > 0)
     {
@@ -387,11 +387,13 @@ long creature_move_direct_line(struct Thing *thing, struct Coord3d *nextpos, Mov
     cctrl = creature_control_get_from_thing(thing);
     creature_set_speed(thing, speed);
     cctrl->flgfield_2 |= TF2_Unkn01;
-    if (get_2d_box_distance(&thing->mappos, nextpos) > 2*cctrl->move_speed)
+    MapCoordDelta dist;
+    dist = get_2d_box_distance(&thing->mappos, nextpos);
+    if (dist > 2*cctrl->move_speed)
     {
-        ERRORDBG(3,"The %s index %d tried to reach (%d,%d) from (%d,%d) with excessive forward speed",
+        ERRORDBG(3,"The %s index %d tried to reach (%d,%d) from (%d,%d) with excessive forward speed %d (expected %d)",
             thing_model_name(thing),(int)thing->index,(int)nextpos->x.stl.num,(int)nextpos->y.stl.num,
-            (int)thing->mappos.x.stl.num,(int)thing->mappos.y.stl.num);
+            (int)thing->mappos.x.stl.num,(int)thing->mappos.y.stl.num,(int)dist,(int)cctrl->move_speed);
         cctrl->moveaccel.x.val = distance_with_angle_to_coord_x(cctrl->move_speed, thing->move_angle_xy);
         cctrl->moveaccel.y.val = distance_with_angle_to_coord_y(cctrl->move_speed, thing->move_angle_xy);
         cctrl->moveaccel.z.val = 0;
