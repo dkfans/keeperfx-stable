@@ -116,6 +116,7 @@
 #include "gui_soundmsgs.h"
 #include "gui_frontbtns.h"
 #include "frontmenu_ingame_tabs.h"
+#include "frontmenu_ingame_map.h"
 #include "ariadne.h"
 #include "net_game.h"
 #include "sounds.h"
@@ -3781,7 +3782,7 @@ TbBool tag_cursor_blocks_place_room(PlayerNumber plyr_idx, MapSubtlCoord stl_x, 
     } else {
         SYNCDBG(7,"Cannot build %s on slab (%d,%d)",slab_code_name(slb->kind),room_code_name(player->chosen_room_kind),(int)slb_x,(int)slb_y);
     }
-    if (is_my_player_number(plyr_idx) && !game_is_busy_doing_gui() && (game.small_map_state != 2))
+    if (is_my_player_number(plyr_idx) && !game_is_busy_doing_gui() && (game.small_map_state != SmMapStat_SetPos))
     {
         map_volume_box.visible = 1;
         map_volume_box.beg_x = subtile_coord(slab_subtile(slb_x, 0), 0);

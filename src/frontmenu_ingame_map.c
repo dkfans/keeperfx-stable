@@ -726,7 +726,7 @@ short do_left_map_click(long begin_x, long begin_y, long curr_x, long curr_y, lo
   {
       if (grabbed_small_map)
       {
-        game.small_map_state = 2;
+        game.small_map_state = SmMapStat_SetPos;
         LbMouseSetPosition(begin_x + MapDiagonalLength/2, begin_y + MapDiagonalLength/2);
       } else
       {
@@ -757,8 +757,9 @@ short do_right_map_click(long start_x, long start_y, long curr_mx, long curr_my,
     thing = get_first_thing_in_power_hand(player);
     if (!thing_is_invalid(thing))
     {
-        if (can_place_thing_here(thing, x, y, player->id_number))
-          game.small_map_state = 1;
+        if (can_place_thing_here(thing, x, y, player->id_number)) {
+            game.small_map_state = SmMapStat_HandDrop;
+        }
     }
     if (right_button_clicked)
       right_button_clicked = 0;

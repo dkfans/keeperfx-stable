@@ -1077,11 +1077,11 @@ void do_perspective_rotation(long x, long y, long z)
     struct PlayerInfo *player;
     struct EngineCoord epos;
     long zoom;
-    long engine_w,engine_h;
+    long ewwidth,ewheight;
     player = get_my_player();
     zoom = camera_zoom / pixel_size;
-    engine_w = player->engine_window_width/pixel_size;
-    engine_h = player->engine_window_height/pixel_size;
+    ewwidth = player->engine_window_width/pixel_size;
+    ewheight = player->engine_window_height/pixel_size;
     epos.x = -x;
     epos.y = 0;
     epos.z = y;
@@ -1093,22 +1093,22 @@ void do_perspective_rotation(long x, long y, long z)
     epos.y = 0;
     epos.z = 0;
     rotpers_parallel_3(&epos, &camera_matrix, zoom);
-    hori_offset[0] = epos.view_width - (engine_w >> 1);
-    hori_offset[1] = epos.view_height - (engine_h >> 1);
+    hori_offset[0] = epos.view_width - (ewwidth >> 1);
+    hori_offset[1] = epos.view_height - (ewheight >> 1);
     hori_offset[2] = epos.z;
     epos.x = 0;
     epos.y = 0;
     epos.z = -65536;
     rotpers_parallel_3(&epos, &camera_matrix, zoom);
-    vert_offset[0] = epos.view_width - (engine_w >> 1);
-    vert_offset[1] = epos.view_height - (engine_h >> 1);
+    vert_offset[0] = epos.view_width - (ewwidth >> 1);
+    vert_offset[1] = epos.view_height - (ewheight >> 1);
     vert_offset[2] = epos.z;
     epos.x = 0;
     epos.y = 65536;
     epos.z = 0;
     rotpers_parallel_3(&epos, &camera_matrix, zoom);
-    high_offset[0] = epos.view_width - (engine_w >> 1);
-    high_offset[1] = epos.view_height - (engine_h >> 1);
+    high_offset[0] = epos.view_width - (ewwidth >> 1);
+    high_offset[1] = epos.view_height - (ewheight >> 1);
     high_offset[2] = epos.z;
 }
 
@@ -3814,9 +3814,301 @@ void draw_engine_room_flag_top(struct RoomFlag *rflg)
     }
 }
 
-void draw_stripey_line(long a1, long a2, long a3, long a4, unsigned char a5)
+TbBool clip_screen_pos_range_xmin(ScreenPrecCoord *scr_beg_x, ScreenPrecCoord *scr_beg_y, ScreenPrecCoord *scr_end_x, ScreenPrecCoord *scr_end_y)
 {
-    _DK_draw_stripey_line(a1, a2, a3, a4, a5);
+    ScreenPrecCoord clip_beg_x, clip_beg_y;
+    ScreenPrecCoord clip_end_x, clip_end_y;
+    MapSubtlDelta shift_x, shift_y;
+    shift_x = (*scr_end_x) - (*scr_beg_x);
+    clip_beg_x = *scr_beg_x;
+    clip_beg_y = *scr_beg_y;
+    shift_y = (*scr_end_y) - (*scr_beg_y);
+    clip_end_x = *scr_end_x;
+    clip_end_y = *scr_end_y;
+    if ((*scr_beg_x >= 0) || (*scr_end_x >= 0))
+    {
+        if (*scr_beg_x < 0)
+        {
+            if (*scr_end_y != *scr_beg_y) {
+                clip_beg_y = (*scr_beg_y) + (-(((*scr_beg_x) * shift_y << 8) / shift_x) >> 8);
+            }
+            clip_beg_x = 0;
+        }
+        if (*scr_end_x < 0)
+        {
+            if (*scr_end_y != *scr_beg_y) {
+                clip_end_y = (*scr_end_y) + (-((shift_y * (*scr_end_x) << 8) / shift_x) >> 8);
+            }
+            clip_end_x = 0;
+        }
+        if ((clip_beg_x >= 0) && (clip_end_x >= 0))
+        {
+            *scr_beg_x = clip_beg_x;
+            *scr_beg_y = clip_beg_y;
+            *scr_end_x = clip_end_x;
+            *scr_end_y = clip_end_y;
+            return true;
+        }
+    }
+    return false;
+}
+
+TbBool clip_screen_pos_range_xmax(ScreenPrecCoord *scr_beg_x, ScreenPrecCoord *scr_beg_y, ScreenPrecCoord *scr_end_x, ScreenPrecCoord *scr_end_y, long ewwidth)
+{
+    //!!!
+    ScreenPrecCoord clip_beg_x, clip_beg_y;
+    ScreenPrecCoord clip_end_x, clip_end_y;
+    MapSubtlDelta shift_x, shift_y;
+    shift_x = (*scr_end_x) - (*scr_beg_x);
+    clip_beg_x = *scr_beg_x;
+    clip_beg_y = *scr_beg_y;
+    shift_y = (*scr_end_y) - (*scr_beg_y);
+    clip_end_x = *scr_end_x;
+    clip_end_y = *scr_end_y;
+    if ((*scr_beg_x < ewwidth) || (*scr_end_x < ewwidth))
+    {
+        if (*scr_beg_x >= ewwidth)
+        {
+          if (*scr_end_y != *scr_beg_y) {
+              clip_beg_y = (*scr_beg_y) + ((ewwidth - (*scr_beg_x) - 1) * (shift_y << 8) / shift_x >> 8);
+          }
+          clip_beg_x = ewwidth - 1;
+        }
+        if (*scr_end_x >= ewwidth)
+        {
+          if (*scr_end_y != *scr_beg_y) {
+              clip_end_y = (*scr_end_y) + ((shift_y << 8) / shift_x * (ewwidth - (*scr_end_x) - 1) >> 8);
+          }
+          clip_end_x = ewwidth - 1;
+        }
+        if ((clip_beg_x < ewwidth) && (clip_end_x < ewwidth))
+        {
+            *scr_beg_x = clip_beg_x;
+            *scr_beg_y = clip_beg_y;
+            *scr_end_x = clip_end_x;
+            *scr_end_y = clip_end_y;
+            return true;
+        }
+    }
+    return false;
+}
+
+TbBool clip_screen_pos_range_ymin(ScreenPrecCoord *scr_beg_x, ScreenPrecCoord *scr_beg_y, ScreenPrecCoord *scr_end_x, ScreenPrecCoord *scr_end_y)
+{
+    ScreenPrecCoord clip_beg_x, clip_beg_y;
+    ScreenPrecCoord clip_end_x, clip_end_y;
+    MapSubtlDelta shift_x, shift_y;
+    shift_x = (*scr_end_x) - (*scr_beg_x);
+    clip_beg_x = *scr_beg_x;
+    clip_beg_y = *scr_beg_y;
+    shift_y = (*scr_end_y) - (*scr_beg_y);
+    clip_end_x = *scr_end_x;
+    clip_end_y = *scr_end_y;
+    if ((*scr_beg_y >= 0) || (*scr_end_y >= 0))
+    {
+        if (*scr_beg_y < 0)
+        {
+            if (*scr_end_x != *scr_beg_x) {
+                clip_beg_x = (*scr_beg_x) + (-(((*scr_beg_y) * shift_x << 8) / shift_y) >> 8);
+            }
+            clip_beg_y = 0;
+        }
+        if (*scr_end_y < 0)
+        {
+            if (*scr_end_x != *scr_beg_x) {
+                clip_end_x = (*scr_end_x) + (-((shift_x * (*scr_end_y) << 8) / shift_y) >> 8);
+            }
+            clip_end_y = 0;
+        }
+        if ((clip_beg_y >= 0) && (clip_end_y >= 0))
+        {
+            *scr_beg_x = clip_beg_x;
+            *scr_beg_y = clip_beg_y;
+            *scr_end_x = clip_end_x;
+            *scr_end_y = clip_end_y;
+            return true;
+        }
+    }
+    return false;
+}
+
+TbBool clip_screen_pos_range_ymax(ScreenPrecCoord *scr_beg_x, ScreenPrecCoord *scr_beg_y, ScreenPrecCoord *scr_end_x, ScreenPrecCoord *scr_end_y, long ewheight)
+{
+    ScreenPrecCoord clip_beg_x, clip_beg_y;
+    ScreenPrecCoord clip_end_x, clip_end_y;
+    MapSubtlDelta shift_x, shift_y;
+    shift_x = (*scr_end_x) - (*scr_beg_x);
+    clip_beg_x = *scr_beg_x;
+    clip_beg_y = *scr_beg_y;
+    shift_y = (*scr_end_y) - (*scr_beg_y);
+    clip_end_x = *scr_end_x;
+    clip_end_y = *scr_end_y;
+    if ((*scr_beg_y < ewheight) || (*scr_end_y < ewheight))
+    {
+        if (*scr_beg_y >= ewheight)
+        {
+          if (*scr_end_x != *scr_beg_x) {
+              clip_beg_x = (*scr_beg_x) + ((ewheight - (*scr_beg_y) - 1) * (shift_x << 8) / shift_y >> 8);
+          }
+          clip_beg_y = ewheight - 1;
+        }
+        if (*scr_end_y >= ewheight)
+        {
+          if (*scr_end_x != *scr_beg_x) {
+              clip_end_x = (*scr_end_x) + ((shift_x << 8) / shift_y * (ewheight - (*scr_end_y) - 1) >> 8);
+          }
+          clip_end_y = ewheight - 1;
+        }
+        if ((clip_beg_y < ewheight) && (clip_end_y < ewheight))
+        {
+            *scr_beg_x = clip_beg_x;
+            *scr_beg_y = clip_beg_y;
+            *scr_end_x = clip_end_x;
+            *scr_end_y = clip_end_y;
+            return true;
+        }
+    }
+    return false;
+}
+
+void draw_stripey_line(long x1, long y1, long x2, long y2, unsigned char color)
+{
+    //_DK_draw_stripey_line(x1, y1, x2, y2, color); return;
+    TbPixel color_vals[32];
+    color_vals[0] = 66;
+    color_vals[1] = 67;
+    color_vals[2] = 68;
+    color_vals[3] = 69;
+    color_vals[4] = 70;
+    color_vals[5] = 71;
+    color_vals[6] = 71;
+    color_vals[7] = 71;
+    color_vals[8] = 70;
+    color_vals[9] = 69;
+    color_vals[10] = 68;
+    color_vals[11] = 67;
+    color_vals[12] = 66;
+    color_vals[13] = 65;
+    color_vals[14] = 64;
+    color_vals[15] = 64;
+
+    color_vals[16] = 162;
+    color_vals[17] = 163;
+    color_vals[18] = 164;
+    color_vals[19] = 165;
+    color_vals[20] = 166;
+    color_vals[21] = 167;
+    color_vals[22] = 167;
+    color_vals[23] = 167;
+    color_vals[24] = 166;
+    color_vals[25] = 165;
+    color_vals[26] = 164;
+    color_vals[27] = 163;
+    color_vals[28] = 162;
+    color_vals[29] = 161;
+    color_vals[30] = 160;
+    color_vals[31] = 160;
+
+    long ewwidth,ewheight;
+    {
+        struct PlayerInfo *player;
+        player = get_my_player();
+        ewwidth = player->engine_window_width/pixel_size;
+        ewheight = player->engine_window_height/pixel_size;
+    }
+
+    ScreenPrecCoord scr_end_x, scr_end_y;
+    ScreenPrecCoord len_x, len_y;
+    ScreenPrecCoord scr_beg_x, scr_beg_y;
+    ScreenPrecCoord cor_beg_x, cor_beg_y;
+    ScreenPrecCoord cor_end_x, cor_end_y;
+    ScreenPrecCoord cor_shift_x, cor_shift_y;
+    ScreenPrecCoord cor_len_x, cor_len_y;
+    ScreenPrecCoord step_x, step_y;
+
+    unsigned char stripey_pos;
+    stripey_pos = game.play_gameturn & 0xF;
+    step_x = 0;
+    step_y = 0;
+    len_y = abs(y2 - y1);
+    len_x = abs(x2 - x1);
+    if ((len_x >= len_y) && (x2 > x1))
+    {
+        scr_beg_x = x1;
+        scr_end_x = x2;
+        scr_beg_y = y1;
+        scr_end_y = y2;
+    } else
+    if ((len_y >= len_x) && (y2 > y1))
+    {
+        scr_beg_x = x1;
+        scr_end_x = x2;
+        scr_beg_y = y1;
+        scr_end_y = y2;
+    } else
+    {
+        scr_beg_x = x2;
+        scr_end_x = x1;
+        scr_beg_y = y2;
+        scr_end_y = y1;
+        stripey_pos = 15 - stripey_pos;
+    }
+
+    if (clip_screen_pos_range_ymin(&scr_beg_x, &scr_beg_y, &scr_end_x, &scr_end_y)
+     && clip_screen_pos_range_ymax(&scr_beg_x, &scr_beg_y, &scr_end_x, &scr_end_y, ewheight)
+     && clip_screen_pos_range_xmin(&scr_beg_x, &scr_beg_y, &scr_end_x, &scr_end_y)
+     && clip_screen_pos_range_xmax(&scr_beg_x, &scr_beg_y, &scr_end_x, &scr_end_y, ewwidth))
+    {
+        if ((scr_end_x == scr_beg_x) && (scr_end_y == scr_beg_y))
+            return;
+        cor_beg_x = subtile_coord_center(scr_beg_x);
+        cor_beg_y = subtile_coord_center(scr_beg_y);
+        cor_end_x = subtile_coord_center(scr_end_x);
+        cor_end_y = subtile_coord_center(scr_end_y);
+        cor_shift_x = cor_end_x - cor_beg_x;
+        cor_shift_y = cor_end_y - cor_beg_y;
+        if (cor_end_x == cor_beg_x)
+        {
+            step_x = 0;
+            step_y = 256;
+        } else
+        if (cor_end_y == cor_beg_y)
+        {
+            step_x = 256;
+            step_y = 0;
+        } else
+        if (cor_shift_x == cor_shift_y)
+        {
+            step_x = 256;
+            step_y = 256;
+        } else
+        if ((cor_shift_y + cor_shift_x) == 0)
+        {
+            step_x = 256;
+            step_y = -256;
+        } else
+        {
+            cor_len_y = abs(cor_shift_y);
+            cor_len_x = abs(cor_shift_x);
+            if (cor_len_y < cor_len_x)
+            {
+                step_x = 256;
+                step_y = (cor_shift_y << 8) / cor_shift_x;
+            } else
+            if (cor_len_y > cor_len_x)
+            {
+                step_x = (cor_shift_x << 8) / cor_shift_y;
+                step_y = 256;
+            }
+        }
+        while (((step_x == 256) && (cor_end_x >= cor_beg_x)) || ((step_y == 256) && (cor_end_y >= cor_beg_y)))
+        {
+            stripey_pos = (stripey_pos + 1) & 0xF;
+            LbDrawPixel(cor_beg_x >> 8, cor_beg_y >> 8, color_vals[16 * color + stripey_pos]);
+            cor_beg_x += step_x;
+            cor_beg_y += step_y;
+        }
+    }
 }
 
 void draw_clipped_line(long x1, long y1, long x2, long y2, TbPixel color)

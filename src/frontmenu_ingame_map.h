@@ -28,6 +28,13 @@ extern "C" {
 #endif
 /******************************************************************************/
 #define PANNEL_MAP_RADIUS       58
+
+enum SmallMapStates {
+    SmMapStat_Normal = 0,
+    SmMapStat_HandDrop,
+    SmMapStat_SetPos,
+};
+
 /******************************************************************************/
 DLLIMPORT long _DK_clicked_on_small_map;
 #define clicked_on_small_map _DK_clicked_on_small_map

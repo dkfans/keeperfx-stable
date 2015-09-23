@@ -63,6 +63,11 @@ struct PlayerInfo;
 
 typedef unsigned char QKind;
 
+/**
+ * Precise screen coordinate, with 8-bit position within a pixel.
+ */
+typedef long ScreenPrecCoord;
+
 struct XYZ { // sizeof = 12
     long x;
     long y;

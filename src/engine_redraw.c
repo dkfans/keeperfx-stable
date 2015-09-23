@@ -678,22 +678,22 @@ void redraw_frontview(void)
 {
     SYNCDBG(6,"Starting");
     struct PlayerInfo *player;
-    long w,h;
+    long ewwidth,ewheight;
     player = get_my_player();
     update_explored_flags_for_power_sight(player);
     if ((game.flags_font & FFlg_unk08) != 0)
     {
-      w = player->engine_window_width;
-      h = player->engine_window_height;
-      setup_engine_window(player->engine_window_x, player->engine_window_y, w, h >> 1);
+        ewwidth = player->engine_window_width;
+        ewheight = player->engine_window_height;
+        setup_engine_window(player->engine_window_x, player->engine_window_y, ewwidth, ewheight >> 1);
     } else
     {
-      w = 0;
-      h = 0;
+        ewwidth = 0;
+        ewheight = 0;
     }
     draw_frontview_engine(&player->cameras[CamIV_FrontView]);
     if ((game.flags_font & FFlg_unk08) != 0)
-      setup_engine_window(player->engine_window_x, player->engine_window_y, w, h);
+        setup_engine_window(player->engine_window_x, player->engine_window_y, ewwidth, ewheight);
     remove_explored_flags_for_power_sight(player);
     if ((game.operation_flags & GOF_ShowGui) != 0) {
         draw_whole_status_panel();
@@ -800,7 +800,7 @@ void process_dungeon_top_pointer_graphic(struct PlayerInfo *player)
     // Mouse over panel map
     if (((game.operation_flags & GOF_ShowGui) != 0) && mouse_is_over_pannel_map(player->minimap_pos_x, player->minimap_pos_y))
     {
-        if (game.small_map_state == 2) {
+        if (game.small_map_state == SmMapStat_SetPos) {
             set_pointer_graphic(MousePG_Unkn00);
         } else {
             set_pointer_graphic(MousePG_Arrow);
@@ -974,7 +974,7 @@ void redraw_display(void)
     player->flgfield_6 &= ~PlaF6_Unknown01;
     if (game.game_kind == GKind_Unknown1)
       return;
-    if (game.small_map_state == 2)
+    if (game.small_map_state == SmMapStat_SetPos)
       set_pointer_graphic_none();
     else
       process_pointer_graphic();

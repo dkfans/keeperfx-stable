@@ -51,6 +51,7 @@
 #include "player_states.h"
 #include "kjm_input.h"
 #include "front_input.h"
+#include "frontmenu_ingame_map.h"
 #include "frontend.h"
 #include "gui_draw.h"
 #include "engine_render.h"
@@ -486,7 +487,7 @@ void draw_power_hand(void)
     player = get_my_player();
     if ((player->flgfield_6 & PlaF6_Unknown01) != 0)
         return;
-    if (game.small_map_state == 2)
+    if (game.small_map_state == SmMapStat_SetPos)
         return;
     lbDisplay.DrawFlags = 0x00;
     if (player->view_type != PVT_DungeonTop)
@@ -503,7 +504,7 @@ void draw_power_hand(void)
         ps_units_per_px = (46 * units_per_pixel) / spr->SHeight;
     }
     // Now draw
-    if (((game.operation_flags & GOF_ShowGui) != 0) && (game.small_map_state != 2)
+    if (((game.operation_flags & GOF_ShowGui) != 0) && (game.small_map_state != SmMapStat_SetPos)
       && mouse_is_over_pannel_map(player->minimap_pos_x, player->minimap_pos_y))
     {
         MapSubtlCoord stl_x,stl_y;
@@ -516,7 +517,7 @@ void draw_power_hand(void)
             rdata = room_data_get_for_room(room);
             draw_gui_panel_sprite_centered(GetMouseX()+24*units_per_pixel/16, GetMouseY()+32*units_per_pixel/16, ps_units_per_px, rdata->medsym_sprite_idx);
         }
-        if ((!power_hand_is_empty(player)) && (game.small_map_state == 1))
+        if ((!power_hand_is_empty(player)) && (game.small_map_state == SmMapStat_HandDrop))
         {
             draw_mini_things_in_hand(GetMouseX()+10*units_per_pixel/16, GetMouseY()+10*units_per_pixel/16);
         }

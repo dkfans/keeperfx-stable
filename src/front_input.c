@@ -279,7 +279,7 @@ long get_small_map_inputs(long x, long y, long zoom)
   dummy_y = curr_my;
   dummy = 1;
   if (!grabbed_small_map)
-    game.small_map_state = 0;
+    game.small_map_state = SmMapStat_Normal;
   if (((game.operation_flags & GOF_ShowGui) != 0) && (mouse_is_over_pannel_map(x,y) || grabbed_small_map))
   {
     if (left_button_clicked)
@@ -302,7 +302,7 @@ long get_small_map_inputs(long x, long y, long zoom)
   old_mx = curr_mx;
   old_my = curr_my;
   if (grabbed_small_map)
-    game.small_map_state = 2;
+    game.small_map_state = SmMapStat_SetPos;
   SYNCDBG(8,"Finished");
   return result;
 }
@@ -778,7 +778,7 @@ long get_dungeon_control_action_inputs(void)
     if (is_game_key_pressed(Gkey_SwitchToMap, &val, false))
     {
       clear_key_pressed(val);
-      if ((player->view_mode != PVM_ParchFadeOut) && (game.small_map_state != PVM_IsometricView))
+      if ((player->view_mode != PVM_ParchFadeOut) && (game.small_map_state != SmMapStat_SetPos))
       {
           turn_off_all_window_menus();
           zoom_to_parchment_map();

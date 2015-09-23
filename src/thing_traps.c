@@ -33,6 +33,7 @@
 #include "map_utils.h"
 #include "room_util.h"
 #include "game_legacy.h"
+#include "frontmenu_ingame_map.h"
 #include "frontend.h"
 #include "engine_render.h"
 #include "gui_topmsg.h"
@@ -831,7 +832,7 @@ TbBool tag_cursor_blocks_place_trap(PlayerNumber plyr_idx, MapSubtlCoord stl_x, 
     floor_height = floor_height_for_volume_box(plyr_idx, slb_x, slb_y);
     if (is_my_player_number(plyr_idx))
     {
-        if (!game_is_busy_doing_gui() && (game.small_map_state != 2)) {
+        if (!game_is_busy_doing_gui() && (game.small_map_state != SmMapStat_SetPos)) {
             // Move to first subtile on a slab
             stl_x = slab_subtile(slb_x,0);
             stl_y = slab_subtile(slb_y,0);
