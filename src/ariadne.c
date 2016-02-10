@@ -2345,18 +2345,18 @@ void clear_wallhugging_path(struct Navigation *navi)
     navi->pos_final.x.val = subtile_coord_center(map_subtiles_x/2);
     navi->pos_final.y.val = subtile_coord_center(map_subtiles_y/2);
     navi->pos_final.z.val = subtile_coord(1,0);
-    navi->field_1[2] = 0;
-    navi->field_1[1] = 0;
-    navi->field_4 = 0;
+    navi->field_3 = 0;
+    navi->field_2 = 0;
+    navi->turns_in_unkn1 = 0;
 }
 
 void initialise_wallhugging_path_from_to(struct Navigation *navi, const struct Coord3d *mvstart, const struct Coord3d *mvend)
 {
     navi->navstate = NavS_Unkn1;
     navi->pos_final = *mvend;
-    navi->field_1[2] = 0;
-    navi->field_1[1] = 0;
-    navi->field_4 = 0;
+    navi->field_3 = 0;
+    navi->field_2 = 0;
+    navi->turns_in_unkn1 = 0;
 }
 
 long ariadne_get_blocked_flags(struct Thing *thing, const struct Coord3d *pos)

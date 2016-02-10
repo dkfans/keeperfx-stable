@@ -162,10 +162,12 @@ struct WayPoints { // sizeof = 1040
 
 struct Navigation { // sizeof = 0x27
   unsigned char navstate;
-  unsigned char field_1[3];
-  unsigned char field_4;
+  unsigned char hugside;
+  unsigned char field_2;
+  unsigned char field_3;
+  unsigned char turns_in_unkn1;
   long field_5;
-  long field_9;
+  long initial_dist_to_next;
   long angle_D;
   unsigned char field_11[4];
   unsigned short stl_15;
