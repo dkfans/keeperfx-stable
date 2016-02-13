@@ -2993,7 +2993,87 @@ struct Thing *get_creature_near_for_controlling(PlayerNumber plyr_idx, MapCoord 
 
 void set_first_creature(struct Thing *thing)
 {
-    _DK_set_first_creature(thing);
+    //_DK_set_first_creature(thing);
+    struct CreatureControl *cctrl;
+    cctrl = creature_control_get_from_thing(thing);
+
+    if ((thing->alloc_flags & TAlF_InDungeonList) != 0) {
+        ERRORLOG("Thing already in Peter list");
+        return;
+    }
+
+    if (is_neutral_thing(thing))
+    {
+        if (game.nodungeon_creatr_list_start > 0)
+        {
+            struct Thing *prevtng;
+            prevtng = thing_get(game.nodungeon_creatr_list_start);
+            struct CreatureControl *prevctrl;
+            prevctrl = creature_control_get_from_thing(prevtng);
+            prevctrl->players_prev_creature_idx = thing->index;
+            cctrl->players_next_creature_idx = game.nodungeon_creatr_list_start;
+            cctrl->players_prev_creature_idx = 0;
+            game.nodungeon_creatr_list_start = thing->index;
+        } else
+        {
+            cctrl->players_next_creature_idx = 0;
+            cctrl->players_prev_creature_idx = 0;
+            game.nodungeon_creatr_list_start = thing->index;
+        }
+        thing->alloc_flags |= TAlF_InDungeonList;
+    } else
+    if ((thing->model != get_players_special_digger_model(thing->owner)) || is_hero_thing(thing))
+    {
+        struct Dungeon *dungeon;
+        dungeon = get_players_num_dungeon(thing->owner);
+        if (dungeon->creatr_list_start > 0)
+        {
+            struct Thing *prevtng;
+            prevtng = thing_get(dungeon->creatr_list_start);
+            struct CreatureControl *prevctrl;
+            prevctrl = creature_control_get_from_thing(prevtng);
+            prevctrl->players_prev_creature_idx = thing->index;
+            cctrl->players_next_creature_idx = dungeon->creatr_list_start;
+            cctrl->players_prev_creature_idx = 0;
+            dungeon->creatr_list_start = thing->index;
+        } else
+        {
+            cctrl->players_next_creature_idx = 0;
+            cctrl->players_prev_creature_idx = 0;
+            dungeon->creatr_list_start = thing->index;
+        }
+        if ((cctrl->flgfield_2 & TF2_Spectator) == 0)
+        {
+            dungeon->num_active_creatrs++;
+            dungeon->owned_creatures_of_model[thing->model]++;
+        }
+        thing->alloc_flags |= TAlF_InDungeonList;
+    }
+    else
+    {
+        struct Dungeon *dungeon;
+        dungeon = get_players_num_dungeon(thing->owner);
+        if (dungeon->digger_list_start > 0)
+        {
+            struct Thing *prevtng;
+            prevtng = thing_get(dungeon->digger_list_start);
+            struct CreatureControl *prevctrl;
+            prevctrl = creature_control_get_from_thing(prevtng);
+            prevctrl->players_prev_creature_idx = thing->index;
+            cctrl->players_next_creature_idx = dungeon->digger_list_start;
+            cctrl->players_prev_creature_idx = 0;
+            dungeon->digger_list_start = thing->index;
+        }
+        else
+        {
+            cctrl->players_next_creature_idx = 0;
+            cctrl->players_prev_creature_idx = 0;
+            dungeon->digger_list_start = thing->index;
+        }
+        dungeon->num_active_diggers++;
+        dungeon->owned_creatures_of_model[thing->model]++;
+        thing->alloc_flags |= TAlF_InDungeonList;
+    }
 }
 
 void remove_first_creature(struct Thing *creatng)
