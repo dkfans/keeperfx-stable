@@ -2570,7 +2570,7 @@ void create_shadows(struct Thing *thing, struct EngineCoord *ecor, struct Coord3
     rotpers(&ecor4, &camera_matrix);
     int min_cor_z;
     min_cor_z = min(min(ecor1.z,ecor2.z),min(ecor3.z,ecor4.z));
-    if (getpoly >= poly_pool_end) {
+    if (!is_free_space_in_poly_pool(1)) {
         return;
     }
     int bckt_idx;
@@ -2854,7 +2854,7 @@ void do_a_gpoly_gourad_tr(struct EngineCoord *ec1, struct EngineCoord *ec2, stru
         max_z = ec2->z;
     if (max_z < ec3->z)
         max_z = ec3->z;
-    if (getpoly >= poly_pool_end) {
+    if (!is_free_space_in_poly_pool(1)) {
         return;
     }
     struct BasicUnk00 *poly;
@@ -2908,7 +2908,7 @@ void do_a_gpoly_gourad_bl(struct EngineCoord *ec1, struct EngineCoord *ec2, stru
         max_z = ec2->z;
     if (max_z < ec3->z)
         max_z = ec3->z;
-    if (getpoly >= poly_pool_end) {
+    if (!is_free_space_in_poly_pool(1)) {
         return;
     }
     struct BasicUnk00 *poly;
@@ -2952,12 +2952,98 @@ void do_a_gpoly_gourad_bl(struct EngineCoord *ec1, struct EngineCoord *ec2, stru
 
 void do_a_gpoly_unlit_tr(struct EngineCoord *ec1, struct EngineCoord *ec2, struct EngineCoord *ec3, short a4)
 {
-    _DK_do_a_gpoly_unlit_tr(ec1, ec2, ec3, a4); return;
+    //_DK_do_a_gpoly_unlit_tr(ec1, ec2, ec3, a4); return;
+    if (do_a_plane_of_engine_columns_sub5(ec1, ec2, ec3) <= 0) {
+        return;
+    }
+    int max_z;
+    max_z = ec1->z;
+    if (max_z < ec2->z)
+        max_z = ec2->z;
+    if (max_z < ec3->z)
+        max_z = ec3->z;
+    if (!is_free_space_in_poly_pool(1)) {
+        return;
+    }
+    struct BasicUnk00 *poly;
+    poly = (struct BasicUnk00 *)getpoly;
+    getpoly += sizeof(struct BasicUnk00);
+    int bckt_idx;
+    bckt_idx = max_z / 16;
+    poly->b.next = buckets[bckt_idx];
+    poly->b.kind = QK_PolyTriangle;
+    buckets[bckt_idx] = &poly->b;
+    poly->block = a4;
+
+    int col1, col2, col3;
+    col1 = ec1->field_A + 3072;
+    col2 = ec2->field_A + 3072;
+    col3 = ec3->field_A + 3072;
+    poly->p1.field_0 = ec1->view_width;
+    poly->p1.field_4 = ec1->view_height;
+    poly->p1.field_8 = 0;
+    poly->p1.field_C = 0;
+    poly->p1.field_10 = col1 << 8;
+
+    poly->p2.field_0 = ec2->view_width;
+    poly->p2.field_4 = ec2->view_height;
+    poly->p2.field_8 = 2097151;
+    poly->p2.field_C = 0;
+    poly->p2.field_10 = col2 << 8;
+
+    poly->p3.field_0 = ec3->view_width;
+    poly->p3.field_4 = ec3->view_height;
+    poly->p3.field_8 = 2097151;
+    poly->p3.field_C = 2097151;
+    poly->p3.field_10 = col3 << 8;
 }
 
 void do_a_gpoly_unlit_bl(struct EngineCoord *ec1, struct EngineCoord *ec2, struct EngineCoord *ec3, short a4)
 {
-    _DK_do_a_gpoly_unlit_bl(ec1, ec2, ec3, a4); return;
+    //_DK_do_a_gpoly_unlit_bl(ec1, ec2, ec3, a4); return;
+    if (do_a_plane_of_engine_columns_sub5(ec1, ec2, ec3) <= 0) {
+        return;
+    }
+    int max_z;
+    max_z = ec1->z;
+    if (max_z < ec2->z)
+        max_z = ec2->z;
+    if (max_z < ec3->z)
+        max_z = ec3->z;
+    if (!is_free_space_in_poly_pool(1)) {
+        return;
+    }
+    struct BasicUnk00 *poly;
+    poly = (struct BasicUnk00 *)getpoly;
+    getpoly += sizeof(struct BasicUnk00);
+    int bckt_idx;
+    bckt_idx = max_z / 16;
+    poly->b.next = buckets[bckt_idx];
+    poly->b.kind = QK_PolyTriangle;
+    buckets[bckt_idx] = &poly->b;
+    poly->block = a4;
+
+    int col1, col2, col3;
+    col1 = ec1->field_A + 3072;
+    col2 = ec2->field_A + 3072;
+    col3 = ec3->field_A + 3072;
+    poly->p1.field_0 = ec1->view_width;
+    poly->p1.field_4 = ec1->view_height;
+    poly->p1.field_8 = 2097151;
+    poly->p1.field_C = 2097151;
+    poly->p1.field_10 = col1 << 8;
+
+    poly->p2.field_0 = ec2->view_width;
+    poly->p2.field_4 = ec2->view_height;
+    poly->p2.field_8 = 0;
+    poly->p2.field_C = 2097151;
+    poly->p2.field_10 = col2 << 8;
+
+    poly->p3.field_0 = ec3->view_width;
+    poly->p3.field_4 = ec3->view_height;
+    poly->p3.field_8 = 0;
+    poly->p3.field_C = 0;
+    poly->p3.field_10 = col3 << 8;
 }
 
 void do_a_plane_of_engine_columns_cluedo(long stl_x, long stl_y, long plane_start, long plane_end)
