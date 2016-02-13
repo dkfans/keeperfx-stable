@@ -2069,6 +2069,15 @@ void trig_set_third_point(const struct EngineCoord *epA, const struct EngineCoor
     pA->field_10 += pmagn * (pB->field_10 - pA->field_10) >> 8;
 }
 
+long do_a_plane_of_engine_columns_sub5(struct EngineCoord *ec1, struct EngineCoord *ec2, struct EngineCoord *ec3)
+{
+    //return _DK_do_a_plane_of_engine_columns_sub5(ec1, ec2, ec3);
+    if ((ec1->field_8 & ec2->field_8 & ec3->field_8 & 0x1F8) != 0)
+        return 0;
+    return (ec2->view_width - ec1->view_width) * (ec3->view_height - ec2->view_height)
+         + (ec3->view_width - ec2->view_width) * (ec1->view_height - ec2->view_height);
+}
+
 void do_a_trig_gourad_tr(struct EngineCoord *ep1, struct EngineCoord *ep2, struct EngineCoord *ep3, short textr_idx, long a5)
 {
     //_DK_do_a_trig_gourad_tr(ep1, ep2, ep3, textr_idx, a5); return;
@@ -2077,11 +2086,7 @@ void do_a_trig_gourad_tr(struct EngineCoord *ep1, struct EngineCoord *ep2, struc
     struct BasicUnk09 *unkn09b;
     struct BasicUnk00 *unkn00;
 
-    if ((ep1->field_8 & ep2->field_8 & ep3->field_8 & 0x1F8) != 0) {
-        return;
-    }
-    if ((ep1->view_height - ep2->view_height) * (ep3->view_width - ep2->view_width)
-      + (ep3->view_height - ep2->view_height) * (ep2->view_width - ep1->view_width) <= 0) {
+    if (do_a_plane_of_engine_columns_sub5(ep1, ep2, ep3) <= 0) {
         return;
     }
     int bckt_idx;
@@ -2261,11 +2266,7 @@ void do_a_trig_gourad_bl(struct EngineCoord *ep1, struct EngineCoord *ep2, struc
     struct BasicUnk09 *unkn09b;
     struct BasicUnk00 *unkn00;
 
-    if ((ep1->field_8 & ep2->field_8 & ep3->field_8 & 0x1F8) != 0) {
-        return;
-    }
-    if ((ep1->view_height - ep2->view_height) * (ep3->view_width - ep2->view_width)
-      + (ep3->view_height - ep2->view_height) * (ep2->view_width - ep1->view_width) <= 0) {
+    if (do_a_plane_of_engine_columns_sub5(ep1, ep2, ep3) <= 0) {
         return;
     }
 
@@ -2662,7 +2663,35 @@ void create_shadows(struct Thing *thing, struct EngineCoord *ecor, struct Coord3
 
 void create_status_box(struct Thing *thing, struct EngineCoord *ecor)
 {
-    _DK_create_status_box(thing, ecor); return;
+    //_DK_create_status_box(thing, ecor); return;
+    struct EngineCoord loc_ecor;
+    memcpy(&loc_ecor, ecor, sizeof(struct EngineCoord));
+    loc_ecor.y += thing->clipbox_size_yz + shield_offset[thing->model];
+    rotpers(&loc_ecor, &camera_matrix);
+
+    if (!is_free_space_in_poly_pool(1)) {
+        return;
+    }
+    long bckt_idx;
+    bckt_idx = loc_ecor.z / 16;
+    if ( !lens_mode )
+        bckt_idx = 1;
+    if (bckt_idx >= BUCKETS_COUNT) {
+      bckt_idx = BUCKETS_COUNT-1;
+    } else
+    if (bckt_idx < 0) {
+      bckt_idx = 0;
+    }
+    struct BasicUnk14 *poly;
+    poly = (struct BasicUnk14 *)getpoly;
+    getpoly += sizeof(struct BasicUnk14);
+    poly->b.next = buckets[bckt_idx];
+    poly->b.kind = QK_StatusSprites;
+    buckets[bckt_idx] = (struct BasicQ *)poly;
+    poly->thing = thing;
+    poly->field_C = loc_ecor.view_width;
+    poly->field_10 = loc_ecor.view_height;
+    poly->field_14 = loc_ecor.z;
 }
 
 void do_a_plane_of_engine_columns_perspective(long stl_x, long stl_y, long plane_start, long plane_end)
@@ -2813,19 +2842,10 @@ void do_a_plane_of_engine_columns_perspective(long stl_x, long stl_y, long plane
     }
 }
 
-long do_a_plane_of_engine_columns_sub5(struct EngineCoord *ec1, struct EngineCoord *ec2, struct EngineCoord *ec3)
-{
-    return _DK_do_a_plane_of_engine_columns_sub5(ec1, ec2, ec3);
-}
-
 void do_a_gpoly_gourad_tr(struct EngineCoord *ec1, struct EngineCoord *ec2, struct EngineCoord *ec3, short a4, int a5)
 {
     //_DK_do_a_gpoly_gourad_tr(ec1, ec2, ec3, a4, a5); return;
-    if (((ec1->field_8 & ec2->field_8 & ec3->field_8) & 0x1F8) != 0) {
-        return;
-    }
-    if ((ec2->view_width - ec1->view_width) * (ec3->view_height - ec2->view_height)
-      + (ec1->view_height - ec2->view_height) * (ec3->view_width - ec2->view_width) <= 0) {
+    if (do_a_plane_of_engine_columns_sub5(ec1, ec2, ec3) <= 0) {
         return;
     }
     int max_z;
@@ -2846,6 +2866,7 @@ void do_a_gpoly_gourad_tr(struct EngineCoord *ec1, struct EngineCoord *ec2, stru
     poly->b.kind = QK_PolyTriangle;
     buckets[bckt_idx] = &poly->b;
     poly->block = a4;
+
     int col1, col2, col3;
     col1 = ec1->field_A;
     col2 = ec2->field_A;
@@ -2875,6 +2896,60 @@ void do_a_gpoly_gourad_tr(struct EngineCoord *ec1, struct EngineCoord *ec2, stru
     poly->p3.field_10 = col3 << 8;
 }
 
+void do_a_gpoly_gourad_bl(struct EngineCoord *ec1, struct EngineCoord *ec2, struct EngineCoord *ec3, short a4, int a5)
+{
+    //_DK_do_a_gpoly_gourad_bl(ec1, ec2, ec3, a4, a5); return;
+    if (do_a_plane_of_engine_columns_sub5(ec1, ec2, ec3) <= 0) {
+        return;
+    }
+    int max_z;
+    max_z = ec1->z;
+    if (max_z < ec2->z)
+        max_z = ec2->z;
+    if (max_z < ec3->z)
+        max_z = ec3->z;
+    if (getpoly >= poly_pool_end) {
+        return;
+    }
+    struct BasicUnk00 *poly;
+    poly = (struct BasicUnk00 *)getpoly;
+    getpoly += sizeof(struct BasicUnk00);
+    int bckt_idx;
+    bckt_idx = max_z / 16;
+    poly->b.next = buckets[bckt_idx];
+    poly->b.kind = QK_PolyTriangle;
+    buckets[bckt_idx] = &poly->b;
+    poly->block = a4;
+
+    int col1, col2, col3;
+    col1 = ec1->field_A;
+    col2 = ec2->field_A;
+    col3 = ec3->field_A;
+    if (a5 >= 0)
+    {
+        col1 = 4 * (a5 + 16384) * col1 >> 17;
+        col2 = 4 * (a5 + 16384) * col2 >> 17;
+        col3 = 4 * (a5 + 16384) * col3 >> 17;
+    }
+    poly->p1.field_0 = ec1->view_width;
+    poly->p1.field_4 = ec1->view_height;
+    poly->p1.field_8 = 2097151;
+    poly->p1.field_C = 2097151;
+    poly->p1.field_10 = col1 << 8;
+
+    poly->p2.field_0 = ec2->view_width;
+    poly->p2.field_4 = ec2->view_height;
+    poly->p2.field_8 = 0;
+    poly->p2.field_C = 2097151;
+    poly->p2.field_10 = col2 << 8;
+
+    poly->p3.field_0 = ec3->view_width;
+    poly->p3.field_4 = ec3->view_height;
+    poly->p3.field_8 = 0;
+    poly->p3.field_C = 0;
+    poly->p3.field_10 = col3 << 8;
+}
+
 void do_a_gpoly_unlit_tr(struct EngineCoord *ec1, struct EngineCoord *ec2, struct EngineCoord *ec3, short a4)
 {
     _DK_do_a_gpoly_unlit_tr(ec1, ec2, ec3, a4); return;
@@ -2883,11 +2958,6 @@ void do_a_gpoly_unlit_tr(struct EngineCoord *ec1, struct EngineCoord *ec2, struc
 void do_a_gpoly_unlit_bl(struct EngineCoord *ec1, struct EngineCoord *ec2, struct EngineCoord *ec3, short a4)
 {
     _DK_do_a_gpoly_unlit_bl(ec1, ec2, ec3, a4); return;
-}
-
-void do_a_gpoly_gourad_bl(struct EngineCoord *ec1, struct EngineCoord *ec2, struct EngineCoord *ec3, short a4, int a5)
-{
-    _DK_do_a_gpoly_gourad_bl(ec1, ec2, ec3, a4, a5); return;
 }
 
 void do_a_plane_of_engine_columns_cluedo(long stl_x, long stl_y, long plane_start, long plane_end)
