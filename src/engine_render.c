@@ -5590,7 +5590,58 @@ void display_fast_drawlist(struct Camera *cam)
 
 long convert_world_coord_to_front_view_screen_coord(struct Coord3d *pos, struct Camera *cam, long *x, long *y, long *z)
 {
-    return _DK_convert_world_coord_to_front_view_screen_coord(pos, cam, x, y, z);
+    //return _DK_convert_world_coord_to_front_view_screen_coord(pos, cam, x, y, z);
+    MapCoord cor_A, cor_B, cor_C;
+    MapCoordDelta delta;
+    int zoom;
+
+    zoom = 32 * cam->zoom / 256;
+    unsigned char qdrant;
+    qdrant = ((unsigned int)(cam->orient_a + LbFPMath_PI/4) >> 9) & 0x03;
+
+    switch (qdrant)
+    {
+    case 0:
+        cor_A = pos->y.val;
+        delta = pos->x.val - (MapCoordDelta)cam->mappos.x.val;
+        cor_B = cam->mappos.y.val;
+        cor_C = pos->z.val;
+        break;
+    case 1:
+        cor_A = cam->mappos.x.val;
+        delta = pos->y.val - (MapCoordDelta)cam->mappos.y.val;
+        cor_B = pos->x.val;
+        cor_C = pos->z.val;
+        break;
+    case 2:
+        cor_A = cam->mappos.y.val;
+        delta = cam->mappos.x.val - (MapCoordDelta)pos->x.val;
+        cor_B = pos->y.val;
+        cor_C = pos->z.val;
+        break;
+    case 3:
+        cor_A = pos->x.val;
+        delta = cam->mappos.y.val - (MapCoordDelta)pos->y.val;
+        cor_B = cam->mappos.x.val;
+        cor_C = pos->z.val;
+        break;
+      default:
+          ERRORLOG("Impossible reached");
+          return 0;
+    }
+    MapCoordDelta dist_AB;
+    struct PlayerInfo *player;
+    player = get_my_player();
+    dist_AB = (zoom * delta) >> 8;
+    *x = (dist_AB >> 8) + (player->engine_window_width >> 1);
+    dist_AB = (zoom * (cor_A - cor_B)) >> 8;
+    MapCoordDelta ew_height;
+    ew_height = (player->engine_window_height & 0xFFFFFFFE) << 7;
+    *z = player->engine_window_height - ((dist_AB + ew_height) >> 8) + 64;
+    MapCoordDelta dist_C;
+    dist_C = (zoom * cor_C) >> 9;
+    *y = (dist_AB + ew_height - dist_C) >> 8;
+    return (*x >= 0) && (*x < player->engine_window_width) && (*y >= 0) && (*y < player->engine_window_height);
 }
 
 void add_unkn11_to_polypool(struct Thing *thing, long scr_x, long scr_y, long a4, long bckt_idx)
@@ -6878,7 +6929,7 @@ void create_frontview_map_volume_box(struct Camera *cam, unsigned char stl_width
 {
     struct Coord3d pos;
     long coord_x,coord_y,coord_z;
-    unsigned char orient;
+    unsigned char qdrant;
     long i;
     long slb_width,depth;
     long vstart,vend;
@@ -6887,11 +6938,11 @@ void create_frontview_map_volume_box(struct Camera *cam, unsigned char stl_width
     pos.y.val = map_volume_box.beg_y;
     pos.x.val = map_volume_box.beg_x;
     pos.z.val = subtile_coord(5,0);
-    orient = ((unsigned int)(cam->orient_a + LbFPMath_PI/4) >> 9) & 0x03;
+    qdrant = ((unsigned int)(cam->orient_a + LbFPMath_PI/4) >> 9) & 0x03;
     convert_world_coord_to_front_view_screen_coord(&pos, cam, &coord_x, &coord_y, &coord_z);
     depth = (5 - map_volume_box.field_13) * ((long)stl_width << 7) / 256;
     slb_width = STL_PER_SLB * (long)stl_width;
-    switch ( orient )
+    switch (qdrant)
     {
     case 1:
         coord_y -= slb_width;
