@@ -405,14 +405,24 @@ int draw_overlay_creatures(struct PlayerInfo *player, long units_per_px, long zo
                 {
                     if ((thing->model == gui_creature_type_highlighted) && (game.play_gameturn & 1))
                     {
+                        // cross of the highlight color
                         pannel_map_draw_pixel(mapos_x+basepos,   mapos_y+basepos,   31);
-                        pannel_map_draw_pixel(mapos_x+basepos-1, mapos_y+basepos,   col2);
-                        pannel_map_draw_pixel(mapos_x+basepos+1, mapos_y+basepos,   col2);
-                        pannel_map_draw_pixel(mapos_x+basepos,   mapos_y+basepos,   col2);
-                        pannel_map_draw_pixel(mapos_x+basepos,   mapos_y+basepos-1, col2);
+                        pannel_map_draw_pixel(mapos_x+basepos, mapos_y+basepos+1, 31);
+                        pannel_map_draw_pixel(mapos_x+basepos, mapos_y+basepos-1, 31);
+                        pannel_map_draw_pixel(mapos_x+basepos+1, mapos_y+basepos, 31);
+                        pannel_map_draw_pixel(mapos_x+basepos-1, mapos_y+basepos, 31);
+                        //corners filled in
+                        pannel_map_draw_pixel(mapos_x+basepos-1, mapos_y+basepos-1, col2);
+                        pannel_map_draw_pixel(mapos_x+basepos+1, mapos_y+basepos-1, col2);
+                        pannel_map_draw_pixel(mapos_x+basepos+1, mapos_y+basepos+1, col2);
+                        pannel_map_draw_pixel(mapos_x+basepos-1, mapos_y+basepos+1, col2);
+
                     } else
                     {
                         pannel_map_draw_pixel(mapos_x+basepos, mapos_y+basepos, col2);
+                        pannel_map_draw_pixel(mapos_x+basepos, mapos_y+basepos+1, col2);
+                        pannel_map_draw_pixel(mapos_x+basepos+1, mapos_y+basepos, col2);
+                        pannel_map_draw_pixel(mapos_x+basepos+1, mapos_y+basepos+1, col2);
                     }
                 } else
                 {
@@ -422,6 +432,9 @@ int draw_overlay_creatures(struct PlayerInfo *player, long units_per_px, long zo
                         col = col1;
                     }
                     pannel_map_draw_pixel(mapos_x+basepos, mapos_y+basepos, col);
+                    pannel_map_draw_pixel(mapos_x+basepos, mapos_y+basepos+1, col);
+                    pannel_map_draw_pixel(mapos_x+basepos+1, mapos_y+basepos, col);
+                    pannel_map_draw_pixel(mapos_x+basepos+1, mapos_y+basepos+1, col);
                 }
             }
             // Hero tunnelers may be visible even on unrevealed terrain
@@ -456,6 +469,9 @@ int draw_overlay_creatures(struct PlayerInfo *player, long units_per_px, long zo
                         col = col1;
                     }
                     pannel_map_draw_pixel(mapos_x+basepos, mapos_y+basepos, col);
+                    pannel_map_draw_pixel(mapos_x+basepos, mapos_y+basepos+1, col);
+                    pannel_map_draw_pixel(mapos_x+basepos+1, mapos_y+basepos, col);
+                    pannel_map_draw_pixel(mapos_x+basepos+1, mapos_y+basepos+1, col);
                 }
             }
         }
